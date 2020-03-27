@@ -9,7 +9,3 @@ target_compile_features(boost_ut
   INTERFACE
   cxx_std_17
 )
-# set_target_properties(boost_ut
-#   PROPERTIES
-#   CXX_STANDARD 17
-# )
