@@ -73,5 +73,5 @@ int main() {
 }
 ```
 
-Note also that following the notion of [Extreme Programming](https://en.wikipedia.org/wiki/Extreme_programming) we might even follow the notion of defining the tests for a feature even before implementing the feature itself.
+Note also that following the notion of [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) and [Extreme Programming](https://en.wikipedia.org/wiki/Extreme_programming) we might even follow the notion of defining the tests for a feature even before implementing the feature itself.
 This way, the requirements are quite clear and can be well tested while developing/chaning other code.
