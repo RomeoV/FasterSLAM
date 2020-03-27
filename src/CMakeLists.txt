@@ -5,4 +5,4 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOL "Export compile commands" FORC
 enable_testing()
 add_subdirectory(external)
 add_subdirectory(core)
-# add_subdirectory(cpp/fastslam1)
+add_subdirectory(fastslam1)
