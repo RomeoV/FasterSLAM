@@ -5,15 +5,15 @@ file(GLOB testfiles "*_test.cpp")
 foreach(file ${testfiles})
   get_filename_component(name ${file} NAME_WE)  # strip file ending
   # message("Detected test: ${name}")
-  add_executable(${name}_exe
+  add_executable(lib_${name}_exe
     ${file}
   )
-  target_link_libraries(${name}_exe
+  target_link_libraries(lib_${name}_exe
     boost_ut
     FasterSlamCore
     FasterSlamLib
   )
   add_test(lib_${name}
-    ${name}_exe
+    lib_${name}_exe
   )
 endforeach()
