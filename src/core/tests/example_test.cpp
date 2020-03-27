@@ -1,8 +1,9 @@
-#include "ut.hpp"
-#include "example.hpp"
-#include <vector>
-using namespace boost::ut;
-using namespace boost::ut::bdd;
+#include "example.hpp"  // import file to test
+
+#include <vector>  // used for test input
+#include "ut.hpp"  // import functionality and namespaces from single header file
+using namespace boost::ut;  // provides `expect`, `""_test`, etc
+using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 int main() {
   "example test"_test = [] {
