@@ -1,6 +1,6 @@
 #include "KF_cholesky_update.h"
 
-void KF_cholesky_update(Vector2d &x, Matrix2d &P,Vector2d v,Matrix2d R,Matrix2d H)
+void KF_cholesky_update(Vector2d &x, Matrix2d &P, Vector2d v, Matrix2d R, Matrix2d H)
 {
     Matrix2d PHt = P*H.transpose();
     Matrix2d S = H*PHt + R;
