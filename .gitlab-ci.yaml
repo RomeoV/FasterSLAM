@@ -13,6 +13,7 @@ before_script:
 
 build_test:
   script:
+    - cd src
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Debug -DTEST_COVERAGE=True
