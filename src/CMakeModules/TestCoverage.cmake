@@ -9,10 +9,15 @@ if(TEST_COVERAGE)
         message(FATAL_ERROR "gcov not found! Aborting...")
     endif()
 
-    find_program( GCOVR gcovr )
-    if(NOT GCOVR)
-        message(FATAL_ERROR "gcovr not found! Aborting... Please run `pip install gcovr`.")
-    endif()
+    include(ExternalProject)
+    ExternalProject_Add(gcovr
+        URL https://github.com/gcovr/gcovr/archive/3.4.zip
+        CONFIGURE_COMMAND ""
+        BUILD_COMMAND ""
+        INSTALL_COMMAND ""
+    )
+    ExternalProject_Get_Property(gcovr source_dir)
+    SET(GCOVR ${source_dir}/scripts/gcovr)
 
     set(HTML_DIR "${PROJECT_BINARY_DIR}/coverage")
     file(MAKE_DIRECTORY ${HTML_DIR})
@@ -33,7 +38,9 @@ if(TEST_COVERAGE)
               --filter="${PROJECT_SOURCE_DIR}/core/"
               --filter="${PROJECT_SOURCE_DIR}/fastslam1/"
               --exclude=".+_test.cpp"
-              --html-details=${HTML_DIR}/coverage.html
+              --output=${HTML_DIR}/coverage.html
+              --html
+              --html-details
       COMMENT "Find coverage html output at `${HTML_DIR}`"
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
     )
