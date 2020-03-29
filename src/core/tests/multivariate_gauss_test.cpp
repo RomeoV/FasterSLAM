@@ -1,31 +1,30 @@
-#include "example.hpp"  // import file to test
+#include "multivariate_gauss.h"  // import file to test
+#include <cmath>
 
-#include <vector>  // used for test input
-#include "ut.hpp"  // import functionality and namespaces from single header file
-using namespace boost::ut;  // provides `expect`, `""_test`, etc
-using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+#include "ut.hpp"
+using namespace boost::ut;
+using namespace boost::ut::bdd;
 
 int main() {
-  "example test"_test = [] {
-    expect(true) << "with more information!";
-  };
 
-  "vector add"_test = [] {
-    given("I have two arrays") = [] {
-      const size_t N = 5;
-      double lhs[N] = {1,2,3,4,5};
-      double rhs[N] = {1,2,3,4,5};
+    srand(1994);
 
-      when("I add them") = [&] {
-        double res[N];
-        add_two_arrays(&lhs[0], &rhs[0], &res[0], N);
+    "multivariate_gauss"_test = [] {
+        given("I have the arguments x and P") = [] {
+            double x[2] = {3.0, -0.008726646250000001};
+            double P[4] = {0.089999999999999997, 0, 0, 0.0027415567718150069};
 
-        then("I get the elementwise sum") = [=] {
-          "elementwise equal"_test = [res](size_t i) {
-            expect(res[i-1] == 2*i);
-          } | std::vector{1,2,3,4,5};
+            when("I call multivariate_gauss(x, P, res)") = [=] {
+                double res[2];
+                multivariate_gauss(x, P, res);
+
+                then("This is equal with the actual result") = [=] {
+                    double actual_res[2] = {3.0525574792886885, -0.045342232735551199};
+                    expect(fabs(res[0] - actual_res[0]) < 1e-10);
+                    expect(fabs(res[1] - actual_res[1]) < 1e-10);
+                };
+            };
         };
-      };
     };
-  };
+
 };
