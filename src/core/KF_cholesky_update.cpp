@@ -1,7 +1,7 @@
 #include "KF_cholesky_update.h"
 #include "linalg.h"
 
-void KF_cholesky_update(Vector2d x, Matrix2d P, Vector2d v, Matrix2d R, Matrix2d H)
+void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double Ht[4], PHt[4], HPHt[4];
     double S[4], St[4], SChol[4], SCholInv[4], SCholInvt[4];
