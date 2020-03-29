@@ -6,7 +6,7 @@
 //! ------------------------------------------------------- //
 
 //! Prints an array
-void print(double *x, size_t rows, size_t cols);
+void print(const double *x, size_t rows, size_t cols);
 
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);
@@ -19,7 +19,7 @@ void fill_rand(double *x, size_t size, double lo, double hi);
 //! ------------------------------------------------------- //
 
 //! Matrix Transpose
-void transpose(double *A, size_t mA, size_t nA, double *T); 
+void transpose(const double *A, size_t mA, size_t nA, double *T); 
 
 //! Adds two arrays
 void add(double *x, double *y, size_t size, double* z); 
@@ -34,7 +34,7 @@ void scal(double *x, size_t size, double a);
 void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
-void llt_2x2(double *A, double *L);
+void llt_2x2(const double *A, double *L);
 
 //! Inverse of a 2x2 Matrix
 void inv_2x2(const double *A, double *Ainv);

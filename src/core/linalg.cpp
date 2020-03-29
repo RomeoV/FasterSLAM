@@ -8,7 +8,7 @@
 //! ------------------------------------------------------- //
 
 //! Prints an array
-void print(double *x, size_t rows, size_t cols) {
+void print(const double *x, size_t rows, size_t cols) {
     assert( x != NULL );
     for (size_t i = 0; i < rows; i++) {
         std::cout << std::endl;
@@ -44,7 +44,7 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 //! Matrix A ( mA x nA ) -> Input
 //! Matrix T ( nA x mA ) -> Output
 //! CAUTION!!! For in place transposition use stranspose() instead
-void transpose(double *A, size_t mA, size_t nA, double *T) {
+void transpose(const double *A, size_t mA, size_t nA, double *T) {
     assert( A != NULL && T != NULL );
     for (size_t i = 0; i < nA; i++) {
         for (size_t j = 0; j < mA; j++) {
@@ -94,7 +94,7 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
 }
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
-void llt_2x2(double *A, double *L) {
+void llt_2x2(const double *A, double *L) {
     assert( A != NULL && L != NULL );
     L[0] = sqrt( A[0] );             // 0*2+0 -> (0,0)
     L[1] = 0.0;                      // 0*2+1 -> (0,1)
@@ -103,7 +103,7 @@ void llt_2x2(double *A, double *L) {
 }
 
 //! Inverse of a 2x2 Matrix
-void inv_2x2(const double *A, double *Ainv) {
+void nv_2x2(const double *A, double *Ainv) {
     double s = 1.0 / fabs( A[0]*A[3] - A[1]*A[2] );
     Ainv[0] =  s * A[3];
     Ainv[1] = -s * A[1];
