@@ -1,4 +1,5 @@
 #include "linalg.h"  // import file to test
+#include <cmath>
 
 #include "ut.hpp"
 using namespace boost::ut;
