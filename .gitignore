@@ -1,0 +1,4 @@
+.tags
+compile_commands.json
+.clangd
+build
