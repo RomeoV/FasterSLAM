@@ -1,17 +1,11 @@
-#ifndef MULTIVARIATE_GAUSS_H
-#define MULTIVARIATE_GAUSS_H
+#pragma once
+#include "typedefs.h"
 
 /*!
-    Computes Multivariate Gaussian for n Samples. [Pretty simple adaptions, usually x is size 2 and P is 2x2]
-    @param[out]          Sample set. Size len(x) x n (not necessarily a vector if n!=1)
-    @param[in]  x        Mean vector (e.g. (V,G)).
-    @param[in]  P        Covariance Matrix.
-    @param[in]  n        Number of samples.
+    Computes Multivariate Gaussian for one sample.
+    @param[out] result   Sample set.
+    @param[in]  x        Mean vector.
+    @param[in]  P        Covariance matrix.
  */
 
-typedef double* VectorXd;
-typedef double* MatrixXd;
-
-void multivariate_gauss(VectorXd x, MatrixXd P, int n, VectorXd result);
-
-#endif //MULTIVARIATE_GAUSS_H
+void multivariate_gauss(Vector2d x, Matrix2d P, Vector2d result);

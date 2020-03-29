@@ -1,6 +1,6 @@
-// #include "linalg.h"
 #pragma once
 #include <iostream>
+#include <cmath>
 #include <cassert>
 
 // ------------------------------------------------------- //
@@ -69,6 +69,13 @@ void sub(double *x, double *y, size_t size, double* z) {
     }
 }
 
+// Scales an array by a scalar
+void scal(double *x, size_t size, double a) {
+    for (size_t i = 0; i < size; i++) {
+        x[i] *= a;
+    }
+}
+
 // Matrix x Matrix Multiplication: C = A * B 
 // Matrix A ( mA x nA ) -> Input
 // Matrix B ( nA x nB ) -> Input
@@ -86,9 +93,20 @@ void mul(double *A, double *B, size_t mA, size_t nA, size_t nB, double *C) {
     }
 }
 
-// Cholesky Factorization A = L * L^T
-// Matrix A ( mA x mA )
-// Matrix L ( mA x mA, Lower triangular ) 
-void llt(double *A, size_t mA, double *L) {
+// Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
+void llt_2x2(double *A, double *L) {
     assert( A != NULL && L != NULL );
+    L[0] = sqrt( A[0] );             // 0*2+0 -> (0,0)
+    L[1] = 0.0;                      // 0*2+1 -> (0,1)
+    L[2] = A[2] / L[0];              // 1*2+0 -> (1,0)
+    L[3] = sqrt( A[3] - L[2]*L[2] ); // 1*2+1 -> (1,1)
+}
+
+// Inverse of a 2x2 Matrix
+void inv_2x2(double *A, double *Ainv) {
+    double s = A[0]*A[4] - A[1]*A[2];
+    Ainv[0] =  s * A[4];
+    Ainv[1] = -s * A[1];
+    Ainv[2] = -s * A[2];
+    Ainv[3] =  s * A[0];
 }
