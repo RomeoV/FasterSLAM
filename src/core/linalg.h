@@ -22,10 +22,10 @@ void fill_rand(double *x, size_t size, double lo, double hi);
 void transpose(const double *A, size_t mA, size_t nA, double *T); 
 
 //! Adds two arrays
-void add(double *x, double *y, size_t size, double* z); 
+void add(const double *x, const double *y, size_t size, double* z); 
 
 //! Subtracts two arrays
-void sub(double *x, double *y, size_t size, double* z);
+void sub(const double *x, const double *y, size_t size, double* z);
 
 //! Scales an array by a scalar
 void scal(double *x, size_t size, double a);

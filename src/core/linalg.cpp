@@ -54,7 +54,7 @@ void transpose(const double *A, size_t mA, size_t nA, double *T) {
 }
 
 //! Adds two arrays
-void add(double *x, double *y, size_t size, double* z) {
+void add(const double *x, const double *y, size_t size, double* z) {
     assert( x != NULL && y != NULL && z != NULL );
     for (size_t i = 0; i < size; i++) {
         z[i] = x[i] + y[i];
@@ -62,7 +62,7 @@ void add(double *x, double *y, size_t size, double* z) {
 }
 
 //! Subtracts two arrays
-void sub(double *x, double *y, size_t size, double* z) {
+void sub(const double *x, const double *y, size_t size, double* z) {
     assert( x != NULL && y != NULL && z != NULL );
     for (size_t i = 0; i < size; i++) {
         z[i] = x[i] - y[i];

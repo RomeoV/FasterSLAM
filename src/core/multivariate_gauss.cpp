@@ -1,7 +1,7 @@
 #include "multivariate_gauss.h"
 #include "linalg.h"
 
-void multivariate_gauss(Vector2d x, Matrix2d P, Vector2d result)
+void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result)
 {
     double S[4]; //! 2x2 matrix, lower triangular cholesky factor
     llt_2x2(P, S); //! P = S * S^T
