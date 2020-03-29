@@ -80,7 +80,7 @@ void scal(double *x, size_t size, double a) {
 // Matrix A ( mA x nA ) -> Input
 // Matrix B ( nA x nB ) -> Input
 // Matrix C ( mA x nB ) -> Output
-void mul(double *A, double *B, size_t mA, size_t nA, size_t nB, double *C) {
+void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
     assert( A != NULL && B != NULL && C != NULL );
     for (size_t i = 0; i < mA; i++) {
         for (size_t j = 0; j < nB; j++) {
@@ -103,10 +103,10 @@ void llt_2x2(double *A, double *L) {
 }
 
 // Inverse of a 2x2 Matrix
-void inv_2x2(double *A, double *Ainv) {
-    double s = A[0]*A[4] - A[1]*A[2];
-    Ainv[0] =  s * A[4];
-    Ainv[1] = -s * A[1];
-    Ainv[2] = -s * A[2];
-    Ainv[3] =  s * A[0];
+void inv_2x2(const double *A, double *Ainv) {
+    double s = fabs(A[0]*A[3] - A[1]*A[2]);
+    Ainv[0] =  1/s * A[3];
+    Ainv[1] = -1/s * A[1];
+    Ainv[2] = -1/s * A[2];
+    Ainv[3] =  1/s * A[0];
 }
