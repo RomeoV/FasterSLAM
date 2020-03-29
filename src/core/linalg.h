@@ -1,4 +1,5 @@
 #pragma once
+#include <iostream>
 
 //! ------------------------------------------------------- //
 //! ---------- Linear Algebra Utility Functions ----------- //

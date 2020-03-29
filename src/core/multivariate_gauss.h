@@ -2,7 +2,7 @@
 #include "typedefs.h"
 
 /*!
-    Computes Multivariate Gaussian for one sample.
+    Computes Multivariate Gaussian for ONE sample.
     @param[out] result   Sample set.
     @param[in]  x        Mean vector.
     @param[in]  P        Covariance matrix.
