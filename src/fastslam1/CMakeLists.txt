@@ -17,3 +17,12 @@ target_link_libraries(FasterSlamExe PUBLIC
 )
 
 add_subdirectory(tests)
+
+if(TEST_COVERAGE)
+  target_compile_options(FasterSlamLib PRIVATE
+    --coverage
+  )
+  target_link_libraries(FasterSlamLib PRIVATE
+    gcov
+  )
+endif()
