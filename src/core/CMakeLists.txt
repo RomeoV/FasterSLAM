@@ -1,5 +1,8 @@
 add_library(FasterSlamCore
   example.cpp
+  KF_cholesky_update.cpp
+  multivariate_gauss.cpp
+  linalg.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

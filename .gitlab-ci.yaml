@@ -1,0 +1,32 @@
+image: gcc
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+
+before_script:
+  - apt-get update
+  - apt-install python-pip -y
+  - pip install gcovr
+
+build_test:
+  script:
+    - cd src
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Debug -DTEST_COVERAGE=True
+    - make -j
+
+test:
+  script:
+    - ctest . -V
+
+build_coverage:
+  script:
+    - make core_coverage
+    - make lib_coverage
+    - cat core_coverage.txt
+    - cat core_coverage.txt
+  coverage: '/\d+(\.\d+)?/'
