@@ -24,12 +24,12 @@ using namespace std;
  * Status: Not started.
  ****************************************************************************/
 
-void stratified_random(int N, double* di)
+void stratified_random(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
     //deterministic intervals
     double temp = k/2;
-    di[0] = temp;
+    di[0] = temp + unifRand() * k - (k/2);
 
     int i = 0;
 
