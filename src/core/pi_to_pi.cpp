@@ -1,7 +1,6 @@
 #include "pi_to_pi.h"
 
 #include <math.h>
-#include <stdio.h>
 
 
 /*****************************************************************************
@@ -38,7 +37,7 @@ double pi_to_pi(double ang)
     return ang;
 }
 
-void pi_to_pi_arr(double* angles, int n) 
+void pi_to_pi_arr(double* angles,const size_t n) 
 {
     for (int i=0; i<n; i++) {
         angles[i] = pi_to_pi(angles[i]);

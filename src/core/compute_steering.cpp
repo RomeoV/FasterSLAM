@@ -20,8 +20,9 @@
  * Status: Not started.
  ****************************************************************************/
 
-void compute_steering(Vector3d x, double* wp, int N_wp, double minD, 
-                      double rateG, double maxG, double dt, int* iwp, double* G) {
+void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD, 
+                      const double rateG, const double maxG, const double dt, 
+                      int* iwp, double* G) {
     //determine if current waypoint reached
     double cwp[2];
     cwp[0] = wp[*iwp];   

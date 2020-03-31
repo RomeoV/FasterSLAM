@@ -1,5 +1,6 @@
 #pragma once
 #include "typedefs.h"
+#include <stddef.h>
 
 /*!
     Stratified resampling based on weights w. Interval size is N_w. [If we assume w is
@@ -10,7 +11,7 @@
     @param[out]  Neff       = 1/sum(w_i^2).
     @param[out]  keep       Array of ints that indicate whether w[i] should be kept or not.
  */
-void stratified_resample(double* w, int N_w, double* Neff, int* keep);
+void stratified_resample(double* w, const size_t N_w, double* Neff, int* keep);
 
 /*!
     Returns an array where all weights leq its index are summed up. 
@@ -18,4 +19,4 @@ void stratified_resample(double* w, int N_w, double* Neff, int* keep);
     @param[out] w       Array of weights.
     @param[in]  N_w   Length of array.
  */
-void cumsum(double* w, int N_w);
+void cumsum(double* w, const size_t N_w);

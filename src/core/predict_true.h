@@ -10,6 +10,7 @@
     @param[out] xv  State vector (x,y,angle).
  */
 
-void predict_true(double V,double G,double WB,double dt, Vector3d xv);
+void predict_true(const double V,const double G,const double WB,
+                const double dt, Vector3d xv);
     
 

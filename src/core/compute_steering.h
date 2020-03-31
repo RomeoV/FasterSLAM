@@ -1,6 +1,6 @@
 #pragma once
 #include "typedefs.h"
-
+#include <stddef.h>
 /*!
     Motion Model along given set of waypoints.
     Required for prediction step. [Simple computations, could start now]
@@ -14,8 +14,9 @@
     @param[out] iwp 	index to current waypoint. ToDo: Handle iwp=-1 (second round)
     @param[out] G 		current steering angle.
  */
-void compute_steering(Vector3d x, double* wp, int N_wp, double minD, 
-                      double rateG, double maxG, double dt, int* iwp, double* G);
+void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD, 
+                      const double rateG, const double maxG, const double dt, 
+                      int* iwp, double* G);
 
                       
 

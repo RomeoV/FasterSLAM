@@ -1,5 +1,6 @@
 #pragma once
 #include "typedefs.h"
+#include <stddef.h>
 
 /*!
     Clips ang  to range [-pi,pi].
@@ -13,6 +14,6 @@ double pi_to_pi(double ang);
     @param[out] angles   Vector of angles (radiants).
     @param[in]  n       Length of angles array. [NEW]
  */
-void pi_to_pi_arr(double* angles, int n);
+void pi_to_pi_arr(double* angles, const size_t n);
 
 

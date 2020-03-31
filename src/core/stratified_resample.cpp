@@ -4,9 +4,6 @@
 #include <math.h>
 #include <stdio.h>
 
-using namespace std;
-
-
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Last Worked on: 30.03.2020
@@ -24,7 +21,7 @@ using namespace std;
  * Status: Not started.
  ****************************************************************************/
 
-void stratified_resample(double* w, int N_w, double* Neff, int* keep) {    
+void stratified_resample(double* w, const size_t N_w, double* Neff, int* keep) {    
     double wsum = 0.0;
     double wsqrd_sum = 0.0;
 
@@ -79,7 +76,7 @@ void stratified_resample(double* w, int N_w, double* Neff, int* keep) {
  * Status: Not started.
  ****************************************************************************/
 
-void cumsum(double* w, int N_w) {
+void cumsum(double* w, const size_t N_w) {
     for (int i = 1; i<N_w; i++) {
         w[i]+=w[i-1];
     }
