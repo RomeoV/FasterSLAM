@@ -9,7 +9,7 @@ def checkMessage(message, commit):
 	message = message.split("\n")
 	index = message.index("")
 	message = message[index+1:]
-	match = re.search("(?:VECGEOM|GEANT)-[0-9]+", message[0])
+	match = re.search("(?:VECGEOM|GEANT|Team40)-[0-9]+", message[0])
 	if not match:
 		print("Error - no issue number in commit message for {}. The message you entered is shown below.".format(commit))
 		print("\n".join(message))
