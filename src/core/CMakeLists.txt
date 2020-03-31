@@ -3,6 +3,11 @@ add_library(FasterSlamCore
   KF_cholesky_update.cpp
   multivariate_gauss.cpp
   linalg.cpp
+  pi_to_pi.cpp
+  predict_true.cpp
+  stratified_random.cpp
+  stratified_resample.cpp
+  compute_steering.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
