@@ -2,3 +2,6 @@
 compile_commands.json
 .clangd
 build
+.vscode
+*.out
+*.gch
