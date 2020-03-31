@@ -8,7 +8,7 @@ with open(sys.argv[1]) as f:
 
 for line in commit:
     if not line.isspace():
-        match = re.search("(?:VECCORE|VECGEOM|GEANT)-[0-9]+", line)
+        match = re.search("(?:Team40)-[0-9]+", line)
         if match:
             sys.exit(0)
         else:
