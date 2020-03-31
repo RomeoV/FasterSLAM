@@ -10,7 +10,7 @@ int main() {
     "predict_true"_test = [] {
         given("I have the arguments N, di") = [] {
 
-            int N = 5;
+            const size_t N = 5;
             double di[5];
 
             when("I call stratified_random(N, di) with a fixed seed") = [&] {

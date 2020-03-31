@@ -29,22 +29,10 @@ void stratified_random(const size_t N, double* di)
     double k = 1.0/(double)N;
     //deterministic intervals
     double temp = k/2;
-    di[0] = temp + unifRand() * k - (k/2);
 
-    int i = 0;
-
-    while (temp < 1.0-k/2.0) {
-        i++;
-        temp = temp+k;
-        di[i] = temp + unifRand() * k - (k/2); //For-Loop below done here
+    for (int i = 0; i<N; i++) {
+        di[i] = temp + k*i + unifRand() * k - (k/2);
     }
-    /*
-    //dither within interval
-    vector<double>::iterator diter; 
-    for (diter = di.begin(); diter != di.end(); diter++) {
-        *diter = (*diter) + unifRand() * k - (k/2);
-    }
-    */
 }
 
 double unifRand() {
