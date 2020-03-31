@@ -1,0 +1,42 @@
+#!/usr/bin/env python
+
+import subprocess, sys, re
+
+def sh(cmd):
+    return subprocess.check_output(cmd, shell=True, stderr=subprocess.STDOUT)
+
+def checkMessage(message, commit):
+	message = message.split("\n")
+	index = message.index("")
+	message = message[index+1:]
+	match = re.search("(?:VECGEOM|GEANT)-[0-9]+", message[0])
+	if not match:
+		print("Error - no issue number in commit message for {}. The message you entered is shown below.".format(commit))
+		print("\n".join(message))
+		print("\nIf this is your most recent commit, try 'git commit --amend' to edit it.")
+		print("If there's more history after it, try to do a rebase with 'git rebase -i' and select 'reword' for each of the commits whose message you need to change.")
+		print("Please use the client-side hook to avoid having the server reject your commits!")
+		return False
+
+	return True
+
+def main():
+    refname = sys.argv[1]
+    oldrev = sys.argv[2]
+    newrev = sys.argv[3]
+
+    if oldrev != "0000000000000000000000000000000000000000":
+    	commits = sh("git rev-list {0}..{1}".format(oldrev, newrev))
+    else:
+    	commits = newrev
+
+    for commit in commits.split():
+    	msg = sh("git cat-file commit {0}".format(commit))
+    	if not checkMessage(msg, commit):
+    		sys.exit(1)
+
+    sys.exit(0)
+
+if __name__ == '__main__':
+	main()
+
