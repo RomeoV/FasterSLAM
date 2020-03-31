@@ -98,5 +98,26 @@ int main() {
     };
 };
 
+//! Dummy fill test
+"fill"_test = [] {
+    given("I have a static array initialized to zero and a variable val set to some value") = [] {
+        const int n = 4;
+        double x[n] = { };
+        const double val = 2.0;
+
+        when("I call fill(x, n, val)") = [&] {
+            fill(x, n, val);
+
+            then("All elements of x are set to the value of val") = [&] {
+                "Compare x[i]s to val"_test = [&] {
+                    for (int i = 0; i < n; i++) {
+                        expect( x[i] == val ) << "x[" << i << "] = " << x[i] << " != val = " << val;
+                    }
+                };
+            };
+        };
+    };
+};
+
 }
 

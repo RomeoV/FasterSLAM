@@ -41,9 +41,6 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 //! ------------------------------------------------------- //
 
 //! Matrix Transpose
-//! Matrix A ( mA x nA ) -> Input
-//! Matrix T ( nA x mA ) -> Output
-//! CAUTION!!! For in place transposition use stranspose() instead
 void transpose(const double *A, size_t mA, size_t nA, double *T) {
     assert( A != NULL && T != NULL );
     for (size_t i = 0; i < nA; i++) {
@@ -70,16 +67,13 @@ void sub(const double *x, const double *y, size_t size, double* z) {
 }
 
 //! Scales an array by a scalar
-void scal(double *x, size_t size, double a) {
+void scal(const double *x, size_t size, double a, double *y) {
     for (size_t i = 0; i < size; i++) {
-        x[i] *= a;
+        y[i] = a*x[i];
     }
 }
 
 //! Matrix x Matrix Multiplication: C = A * B 
-//! Matrix A ( mA x nA ) -> Input
-//! Matrix B ( nA x nB ) -> Input
-//! Matrix C ( mA x nB ) -> Output
 void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
     assert( A != NULL && B != NULL && C != NULL );
     for (size_t i = 0; i < mA; i++) {

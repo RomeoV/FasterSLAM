@@ -14,7 +14,7 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
  
     transpose(S, 2, 2, St);               //! St = S.transpose();
     add(S, St, 4, S);                     //! S = S + St
-    scal(S, 4, 0.5);                      //! S = 0.5*S;
+    scal(S, 4, 0.5, S);                   //! S = 0.5*S;
 
     llt_2x2(S, SChol);                    //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv);             //! SCholInv = inv( SChol )
