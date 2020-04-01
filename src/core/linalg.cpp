@@ -8,15 +8,15 @@
 //! ------------------------------------------------------- //
 
 //! Prints an array
-void print(const double *x, size_t rows, size_t cols) {
+void print(const double *x, size_t rows, size_t cols, std::ostream& stream) {
     assert( x != NULL );
     for (size_t i = 0; i < rows; i++) {
-        std::cout << std::endl;
+        stream << std::endl;
         for (size_t j = 0; j < cols; j++) {
-            std::cout << "\t" << x[i*cols+j];
+            stream << "\t" << x[i*cols+j];
         }
     }
-    std::cout << std::endl;
+    stream << std::endl;
 }
 
 //! Fills an array with a specific value
