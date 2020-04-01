@@ -8,6 +8,7 @@ add_library(FasterSlamCore
   stratified_random.cpp
   stratified_resample.cpp
   compute_steering.cpp
+  particle.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
