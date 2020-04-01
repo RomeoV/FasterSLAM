@@ -1,6 +1,14 @@
 # FasterSLAM
 > Fast Slam on steroids.
 
+#### References
+> Montemerlo, M., Thrun, S., Koller, D., & Wegbreit, B. (2002). FastSLAM: A factored solution to the simultaneous localization and mapping problem. Aaai/iaai, 593598.
+[paper link](https://www.aaai.org/Papers/AAAI/2002/AAAI02-089.pdf)
+
+> Thrun, S., Montemerlo, M., Koller, D., Wegbreit, B., Nieto, J., & Nebot, E. (2004). Fastslam: An efficient solution to the simultaneous localization and mapping problem with unknown data association. Journal of Machine Learning Research, 4(3), 380-407.
+[paper link](http://robots.stanford.edu/papers/Thrun03g.pdf)
+
+
 ## Directory layout
 Please consider this documented directory layout.
 The structure is mostly preserved from the _yglee_ repository.
