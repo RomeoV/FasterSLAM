@@ -19,6 +19,34 @@
  * Status: Not started.
  ****************************************************************************/
 
+void initParticle(particle* p, const size_t Nf) {
+
+	p->xf = (double*) malloc (2* Nf * sizeof (double));
+    if (p->xf == NULL) {
+        free (p);
+		return;
+	}
+	// Try to allocate Pf, free structure if fail.
+
+	p->Pf = (double*) malloc (4* Nf * sizeof (double));
+	if (p->Pf == NULL) {
+        free (p);
+		return;
+	}
+
+	p-> Nfa = 0;
+	p->Nf = Nf;
+	p->set_xv = set_xv;
+	p->set_Pv = set_Pv;
+	p->set_xfi = set_xfi;
+	p->set_Pfi = set_Pfi;	
+}
+
+void initParticle(particle* p, const size_t Nf, int particle_index) {
+	initParticle(p,Nf);
+	p->index = particle_index;
+}
+
 particle* newParticle(const size_t Nf) {
 	// Try to allocate particle structure.
 	particle* p = (particle*) malloc(sizeof(struct particle));
@@ -27,28 +55,7 @@ particle* newParticle(const size_t Nf) {
         return NULL;
 	}
 
-	// Try to allocate xf, free structure if fail.
-
-    p->xf = (double*) malloc (2* Nf * sizeof (double));
-    if (p->xf == NULL) {
-        free (p);
-        return NULL;
-	}
-	// Try to allocate Pf, free structure if fail.
-
-	p->Pf = (double*) malloc (4* Nf * sizeof (double));
-	if (p->Pf == NULL) {
-        free (p);
-        return NULL;
-	}
-
-	p-> Nfa = 0;
-	p->Nf = Nf;
-	p->set_xv = set_xv;
-	p->set_Pv = set_Pv;
-	p->set_xfi = set_xfi;
-	p->set_Pfi = set_Pfi;
-
+	initParticle(p,Nf);
 	
 	return p;
 }
@@ -66,6 +73,12 @@ void delParticle (particle* p) {
 		free (p->Pf);
         free (p);
     }
+}
+
+void delParticle (particle p) {
+    // Only free additionally allocated memory (used for particle array!)
+    free (p.xf);
+	free (p.Pf);
 }
 
 void set_xv(particle* p, Vector3d xv) {

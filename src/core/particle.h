@@ -27,6 +27,21 @@ typedef struct particle {
 } particle;
 
 /*!
+    Initialize existing particle.
+    @param[out] p   Pointer to a particle.
+	@param[in]  Nf  	Maximum number of expected features.
+ */
+void initParticle(particle* p, const size_t Nf);
+
+/*!
+    Initialize existing particle with particle_index.
+    @param[out] p   Pointer to a particle.
+	@param[in]  Nf  	Maximum number of expected features.
+	@param[in]  index  	Index for the constructed particle.
+ */
+void initParticle(particle* p, const size_t Nf, int particle_index);
+
+/*!
     Constructor for an empty particle.
     @param[in]  Nf  Maximum number of expected features.
 	@return 	p	Constructed particle.
@@ -46,6 +61,12 @@ particle* newParticle(const size_t Nf, int particle_index);
     @param[in]  p   Pointer to a particle.
  */
 void delParticle (particle* p);
+
+/*!
+    Initialize existing particle.
+    @param[in]  p   Pointer to a particle.
+ */
+void delParticle (particle p);
 
 /*!
     Set covariance matrix of this particles state vector.

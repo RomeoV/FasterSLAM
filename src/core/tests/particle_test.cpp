@@ -141,7 +141,7 @@ int main() {
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
-                    particles[i] = *newParticle(Nf,i); //Not sure if we really need the index in the particle, but I keep it for now
+                    initParticle(particles+i, Nf, i); //Not sure if we really need the index in the particle, but I keep it for now
                     particles[i].w = weights+i;
                 }
                 then("I want to access the particle weights in an aligned way.") = [=] {
@@ -149,15 +149,18 @@ int main() {
                         expect(that % weights[i] == particles[i].w[0]);
                     }
                 };
+                for (int i = 0; i<N; i++) {
+                    delParticle(particles[i]);
+                }
             };
-
+            
             when("I want to initialize the set of particles and an array of corresponding weights and update an element in the weights array") = [=] {
                 double weights[N];
                 particle particles[N];
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
-                    particles[i] = *newParticle(Nf,i);
+                    initParticle(particles+i, Nf, i);
                     particles[i].w = weights+i;
                 }
                 //Update
@@ -167,6 +170,9 @@ int main() {
                     expect(that % *(particles[2].w) == new_weight);
                     expect(that % weights[2] == new_weight);
                 };
+                for (int i = 0; i<N; i++) {
+                    delParticle(particles[i]);
+                }
             };
 
             when("I want to initialize the set of particles and an array of corresponding weights and update the weight in a particle") = [=] {
@@ -175,7 +181,7 @@ int main() {
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
-                    particles[i] = *newParticle(Nf,i);
+                    initParticle(particles+i, Nf, i);
                     particles[i].w = weights+i;
                 }
                 //Update
@@ -185,7 +191,11 @@ int main() {
                     expect(that % *(particles[3].w) == new_weight);
                     expect(that % weights[3] == new_weight);
                 };
+                for (int i = 0; i<N; i++) {
+                    delParticle(particles[i]);
+                }
             };
+            
         };
     };
 };
