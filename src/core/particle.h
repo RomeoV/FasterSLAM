@@ -5,15 +5,12 @@
 #include <stdio.h>
 
 
-/*!
-	Since the weights are gonna be accessed together frequently, I will redo this that
-	w is a pointer to an element in an array. Follows tomorrow! For now, you can assume to
-	have an array weights where the weight of this particle is stored at weights[p.particle_index]
- */
 typedef struct particle {
 	double* w; //! importance weight
 	double xv[3]; //! robot pose: x,y,theta (heading dir)
 	double Pv[9]; //! control inputs, i.e. velocities
+	int Nf; //! Max Number of features (you should hardly ever need this)
+	int Nfa; //! Actual number of known features (you should hardly ever need this)
 	double* xf; //! 2d means of EKF
 	double* Pf; //! covariance matrices for EKF 
 	void (*del) (particle* p);
@@ -21,8 +18,6 @@ typedef struct particle {
 	void (*set_Pv) (particle* p, Matrix3d Pv);
 	void (*set_xfi) (particle* p, Vector3d xf, int index);
 	void (*set_Pfi) (particle* p, Matrix3d Pf, int index);
-	int Nf; //! Max Number of features (you should hardly ever need this)
-	int Nfa; //! Actual number of known features (you should hardly ever need this)
 	int index;
 } particle;
 
