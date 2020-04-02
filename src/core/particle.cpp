@@ -3,8 +3,10 @@
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Last Worked on: 01.04.2020
- * Done: Base Implementation, unit test
- * ToDo: Start optimizing
+ * Done: Base Implementation, unit test, weights as an outside array
+ * ToDo: Check if index necessary (increases array size by 8 Bytes atm!),
+ * 		 maybe create get/set for weights for safe access (instead of pointer
+ * 		 juggling).
  ****************************************************************************/
 
 /*****************************************************************************
@@ -53,7 +55,7 @@ particle* newParticle(const size_t Nf) {
 
 particle* newParticle(const size_t Nf, int particle_index) {
 	particle* p = newParticle(Nf);
-	p->particle_index = particle_index;
+	p->index = particle_index;
 }
 
 void delParticle (particle* p) {

@@ -1,7 +1,7 @@
 #include "particle.h"  // import file to test
 #include <cmath>
 #include <stdio.h>
-
+#include <iostream>
 #include "ut.hpp"
 using namespace boost::ut;
 using namespace boost::ut::bdd;
@@ -21,15 +21,15 @@ int main() {
                 };
 
                 then("I expect its size to be a fixed value.") = [=] {
-                    size_t p_size = 2*4+8+12*8+2*8+5*8; //2 ints + 1 double + the (3+9) = 12 double arr elements + 2 pointers + 5*8 voids
+                    size_t p_size = 4*4+12*8+3*8+5*8; //(3+1empty) ints + the (3+9) = 12 double arr elements + 3 pointers + 5*8 voids
                     expect(that % sizeof(*p) == p_size);
                 };
 
-                when("I want to set a weight to p.w then") = [=] {
+                when("I want to set a scalar weight to p.w then (You should use an array indexer instead, see test below)") = [=] {
                     double weight = 0.5;
-                    p->w = weight;
+                    (p->w) = &weight;
                     then("I expect that the weight is set.") = [=] {
-                        expect(that % p->w == weight);
+                        expect(that % *(p->w) == weight);
                     };
                 };
 
@@ -130,4 +130,62 @@ int main() {
         };
     };
 
+    "particle_array"_test = [] {
+        given("I have the total number of features Nf, the number of particles N") = [] {
+            const size_t Nf = 10;
+            const size_t N = 5;
+
+            when("I want to initialize the set of particles and an array of corresponding weights") = [=] {
+                double weights[N];
+                particle particles[N];
+
+                for (int i = 0; i<N;i++) {
+                    weights[i] = 1.0/N;
+                    particles[i] = *newParticle(Nf,i); //Not sure if we really need the index in the particle, but I keep it for now
+                    particles[i].w = weights+i;
+                }
+                then("I want to access the particle weights in an aligned way.") = [=] {
+                    for (int i = 0; i<N; i++) {
+                        expect(that % weights[i] == particles[i].w[0]);
+                    }
+                };
+            };
+
+            when("I want to initialize the set of particles and an array of corresponding weights and update an element in the weights array") = [=] {
+                double weights[N];
+                particle particles[N];
+
+                for (int i = 0; i<N;i++) {
+                    weights[i] = 1.0/N;
+                    particles[i] = *newParticle(Nf,i);
+                    particles[i].w = weights+i;
+                }
+                //Update
+                double new_weight = 0.8;
+                weights[2] = new_weight;
+                then("I want the update to be seen in the particle weight.") = [=] {
+                    expect(that % *(particles[2].w) == new_weight);
+                    expect(that % weights[2] == new_weight);
+                };
+            };
+
+            when("I want to initialize the set of particles and an array of corresponding weights and update the weight in a particle") = [=] {
+                double weights[N];
+                particle particles[N];
+
+                for (int i = 0; i<N;i++) {
+                    weights[i] = 1.0/N;
+                    particles[i] = *newParticle(Nf,i);
+                    particles[i].w = weights+i;
+                }
+                //Update
+                double new_weight = 0.5;
+                *(particles[3].w) = new_weight;
+                then("I want the update to be seen in the particle weight.") = [=] {
+                    expect(that % *(particles[3].w) == new_weight);
+                    expect(that % weights[3] == new_weight);
+                };
+            };
+        };
+    };
 };
