@@ -28,10 +28,9 @@ void stratified_random(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
     //deterministic intervals
-    double temp = k/2;
 
     for (int i = 0; i<N; i++) {
-        di[i] = temp + k*i + unifRand() * k - (k/2);
+        di[i] = k*i + k*unifRand();
     }
 }
 
