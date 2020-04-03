@@ -19,9 +19,11 @@ int main() {
                 then("I get the clipped angle in the range [-PI, PI]") = [=] {
 
                     double exact_angle = M_PI;
-                    double error = fabs(computed_angle - exact_angle);
+                    double error_same = fabs(computed_angle - exact_angle);
+                    double error_2pi = fabs(error_same - 2*M_PI);
                     
-                    expect(that % error < 1e-14);
+                    expect(that % -M_PI <= computed_angle and computed_angle <= M_PI);
+                    expect(that % error_same < 1e-14 or error_2pi < 1e-14);
                 };
             };
         };
@@ -40,8 +42,11 @@ int main() {
 
                     double exact_angles[N] = {M_PI,0.0,-M_PI,-M_PI/2,M_PI};
                     for (int i = 0; i<N; i++){
-                        double error = fabs(angles[i] - exact_angles[i]);
-                        expect(that % error < 1e-14) << i;
+                        double error_same = fabs(angles[i] - exact_angles[i]);
+                        double error_2pi = fabs(error_same - 2*M_PI);
+                        
+                        expect(that % -M_PI <= angles[i] and angles[i] <= M_PI) << i;
+                        expect(that % error_same < 1e-14 or error_2pi < 1e-14) << i;
                     }
                 };
             };
