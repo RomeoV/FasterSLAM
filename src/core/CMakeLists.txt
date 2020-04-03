@@ -10,6 +10,7 @@ add_library(FasterSlamCore
   compute_steering.cpp
   particle.cpp
   predict.cpp
+  resample_particles.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
