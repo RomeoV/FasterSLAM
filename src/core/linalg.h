@@ -11,6 +11,9 @@ void print(const double *x, size_t rows, size_t cols);
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);
 
+//! Copies all values from ref to target
+void copy(const double* ref, size_t N, double* target);
+
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi);
 

@@ -27,6 +27,13 @@ void fill(double *x, size_t size, double val) {
     }
 }
 
+//! Copies all values from ref to target
+void copy(const double* ref, size_t N, double* target) {
+    for (size_t i = 0; i < N; i++) {
+        target[i] = ref[i];
+    }
+}
+
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi) {
     assert( x != NULL && hi > lo );
