@@ -19,7 +19,7 @@
  * Status: Not started.
  ****************************************************************************/
 
-void initParticle(particle* p, const size_t Nf) {
+void initParticle(Particle* p, const size_t Nf) {
 
 	p->xf = (double*) malloc (2* Nf * sizeof (double));
     if (p->xf == NULL) {
@@ -42,14 +42,14 @@ void initParticle(particle* p, const size_t Nf) {
 	p->set_Pfi = set_Pfi;	
 }
 
-void initParticle(particle* p, const size_t Nf, int particle_index) {
+void initParticle(Particle* p, const size_t Nf, int particle_index) {
 	initParticle(p,Nf);
 	p->index = particle_index;
 }
 
-particle* newParticle(const size_t Nf) {
+Particle* newParticle(const size_t Nf) {
 	// Try to allocate particle structure.
-	particle* p = (particle*) malloc(sizeof(struct particle));
+	Particle* p = (Particle*) malloc(sizeof(Particle));
 
 	if (p == NULL) {
         return NULL;
@@ -60,12 +60,13 @@ particle* newParticle(const size_t Nf) {
 	return p;
 }
 
-particle* newParticle(const size_t Nf, int particle_index) {
-	particle* p = newParticle(Nf);
+Particle* newParticle(const size_t Nf, int particle_index) {
+	Particle* p = newParticle(Nf);
 	p->index = particle_index;
+	return p;
 }
 
-void delParticle (particle* p) {
+void delParticle (Particle* p) {
     // Can safely assume particle is NULL or fully built.
 
     if (p != NULL) {
@@ -75,25 +76,25 @@ void delParticle (particle* p) {
     }
 }
 
-void delParticle (particle p) {
+void delParticle (Particle p) {
     // Only free additionally allocated memory (used for particle array!)
     free (p.xf);
 	free (p.Pf);
 }
 
-void set_xv(particle* p, Vector3d xv) {
+void set_xv(Particle* p, Vector3d xv) {
 	p->xv[0] = xv[0];
 	p->xv[1] = xv[1];
 	p->xv[2] = xv[2];
 }
 
-void set_Pv(particle* p, Matrix3d Pv) {
+void set_Pv(Particle* p, Matrix3d Pv) {
 	for (int i = 0; i<9; i++) {
 		p->Pv[i] = Pv[i];
 	}
 }
 
-void set_xfi(particle* p, Vector2d xf, int index) {
+void set_xfi(Particle* p, Vector2d xf, int index) {
 	if (index > p->Nfa) {
 		p->Nfa = index;
 	}
@@ -101,7 +102,7 @@ void set_xfi(particle* p, Vector2d xf, int index) {
 	p->xf[2*index+1] = xf[1];
 }
 
-void set_Pfi(particle* p, Matrix2d Pf, int index) {
+void set_Pfi(Particle* p, Matrix2d Pf, int index) {
 	if (index > p->Nfa) {
 		p->Nfa = index;
 	}

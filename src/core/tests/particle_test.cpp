@@ -13,7 +13,7 @@ int main() {
             const size_t Nf = 10;
 
             when("I initialize the particle with newParticle(Nf)") = [=] {
-                particle* p = newParticle(Nf);
+                Particle* p = newParticle(Nf);
 
                 then("I expect his parameters Nfa, Nf to be 0, Nf.") = [=] {
                     expect(that % p->Nfa == 0);
@@ -137,7 +137,7 @@ int main() {
 
             when("I want to initialize the set of particles and an array of corresponding weights") = [=] {
                 double weights[N];
-                particle particles[N];
+                Particle particles[N];
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
@@ -156,7 +156,7 @@ int main() {
             
             when("I want to initialize the set of particles and an array of corresponding weights and update an element in the weights array") = [=] {
                 double weights[N];
-                particle particles[N];
+                Particle particles[N];
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
@@ -177,7 +177,7 @@ int main() {
 
             when("I want to initialize the set of particles and an array of corresponding weights and update the weight in a particle") = [=] {
                 double weights[N];
-                particle particles[N];
+                Particle particles[N];
 
                 for (int i = 0; i<N;i++) {
                     weights[i] = 1.0/N;
