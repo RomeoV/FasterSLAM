@@ -12,5 +12,6 @@ add_subdirectory(fastslam1)
 add_subdirectory(external)
 
 if(TEST_COVERAGE)
+  include(CTest)
   include(TestCoverage)
 endif()
