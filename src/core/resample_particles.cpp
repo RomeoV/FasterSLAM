@@ -14,6 +14,27 @@ void resample_particles(Particle* particles, double* weights, size_t N)
     normalize_weights(weights, N);
 
     double Neff;  // discard this?
+
+    // What is happening here:
+    // Basically, we want to prevent deleting and reallocating memory,
+    // since the total memory requirements after resampling are the same as before.
+    // In order to resample in-place (i.e. without new allocations), we have to be careful
+    // though to not override a particle with a new value while it's contents are still
+    // needed for copying later.
+    // 
+    // Idea:
+    // We basically create a DAG of which particles depend on which other particles,
+    // i.e. will copy from the other particle.
+    // Then we check the DAG for particles without dependencies (i.e. which will not be copied from),
+    // process/fill it and remove it from the DAG, thus loosing the information of that particle.
+    // We repeat this until all particles have been copied.
+    // 
+    // This idea relies on the fact that `keep_indices` is sorted and thus will not create
+    // any circular dependencies.
+    // 
+    // Note that particles that kopy itself (i.e. `keep_indices[i] == i`) will stay in the
+    // DAG forever and will thus not be copied --- but luckily they already contain exactly
+    // what they should contain!
     size_t keep_indices[N];  // can be seen as dependencies
     stratified_resample(weights, N, Neff, keep_indices);
 
