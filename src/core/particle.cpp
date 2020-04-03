@@ -1,4 +1,5 @@
 #include "particle.h"
+#include "linalg.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -34,8 +35,10 @@ void initParticle(Particle* p, const size_t Nf) {
 		return;
 	}
 
-	p-> Nfa = 0;
+	p->Nfa = 0;
 	p->Nf = Nf;
+	p->del = delParticle;
+	p->delPtr = delParticlePtr;
 	p->set_xv = set_xv;
 	p->set_Pv = set_Pv;
 	p->set_xfi = set_xfi;
@@ -45,6 +48,18 @@ void initParticle(Particle* p, const size_t Nf) {
 void initParticle(Particle* p, const size_t Nf, int particle_index) {
 	initParticle(p,Nf);
 	p->index = particle_index;
+}
+
+/* This method assumes that all particle have allocated the same amount of memory for xf and Pf, namely 2*Nf and 4*Nf respectively. */
+void copyParticle(const Particle& p_ref, Particle& p_target) {
+    *p_target.w = *p_ref.w;
+    copy(p_ref.xv, 3, p_target.xv);
+    copy(p_ref.Pv, 9, p_target.Pv);
+	p_target.Nf = p_ref.Nf;
+	p_target.Nfa = p_ref.Nfa;
+
+    copy(p_ref.xf, 2*p_ref.Nfa, p_target.xf);
+    copy(p_ref.Pf, 4*p_ref.Nfa, p_target.Pf);
 }
 
 Particle* newParticle(const size_t Nf) {
@@ -66,7 +81,12 @@ Particle* newParticle(const size_t Nf, int particle_index) {
 	return p;
 }
 
-void delParticle (Particle* p) {
+void delParticle (Particle& p) {
+    free (p.xf);
+    free (p.Pf);
+}
+
+void delParticlePtr (Particle* p) {
     // Can safely assume particle is NULL or fully built.
 
     if (p != NULL) {
@@ -74,12 +94,6 @@ void delParticle (Particle* p) {
 		free (p->Pf);
         free (p);
     }
-}
-
-void delParticle (Particle p) {
-    // Only free additionally allocated memory (used for particle array!)
-    free (p.xf);
-	free (p.Pf);
 }
 
 void set_xv(Particle* p, Vector3d xv) {
