@@ -6,12 +6,12 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOL "Export compile commands" FORC
 
 set(TEST_COVERAGE FALSE CACHE BOOL "Debug compile and test coverage output")
 
+include(CTest)
 enable_testing()
 add_subdirectory(core)
 add_subdirectory(fastslam1)
 add_subdirectory(external)
 
 if(TEST_COVERAGE)
-  include(CTest)
   include(TestCoverage)
 endif()
