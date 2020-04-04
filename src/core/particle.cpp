@@ -55,8 +55,8 @@ void copyParticle(const Particle& p_ref, Particle& p_target) {
     *p_target.w = *p_ref.w;
     copy(p_ref.xv, 3, p_target.xv);
     copy(p_ref.Pv, 9, p_target.Pv);
-	p_target.Nf = p_ref.Nf;
-	p_target.Nfa = p_ref.Nfa;
+    p_target.Nf = p_ref.Nf;
+    p_target.Nfa = p_ref.Nfa;
 
     copy(p_ref.xf, 2*p_ref.Nfa, p_target.xf);
     copy(p_ref.Pf, 4*p_ref.Nfa, p_target.Pf);

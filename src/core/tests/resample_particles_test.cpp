@@ -22,8 +22,10 @@ int main() {
             when("I resample the particles") = [&] {
                 resample_particles(particles, weights, 3);
                 
-                then("The 0th particle will stay the same, the 1st particle will deep copy the 0th and the 2nd will deep copy the 1st,"
-                     "with the order [2, 1, 0]") = [&] {
+                then("The 0th particle will stay the same, "
+                     "the 1st particle will deep copy the 0th "
+                     "and the 2nd will deep copy the 1st,"
+                     "with the execution order [2, 1, 0]") = [&] {
                     "0th particle"_test = [&]{
                         "xv"_test = [&](const auto& i) {
                             expect(particles[0].xv[i] == 0);

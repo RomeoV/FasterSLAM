@@ -17,7 +17,7 @@ int main() {
 
                 const double V = random()*1.0/RAND_MAX;
                 const double dt = random()*1.0/RAND_MAX;
-		double intermediate_pos[3] = {1-2*V*dt, 1 - V*dt, -M_PI/2};
+                double intermediate_pos[3] = {1-2*V*dt, 1 - V*dt, -M_PI/2};
 
                 predict(p, 2*V, M_PI/2 + 0*M_PI, Q, dt);
                 predict(p, 1*V, M_PI/2 + 2*M_PI, Q, dt);  // +2PI to check invariance to values outside of (-PI,PI]
