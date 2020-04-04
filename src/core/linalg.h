@@ -6,7 +6,7 @@
 //! ------------------------------------------------------- //
 
 //! Prints an array
-void print(const double *x, size_t rows, size_t cols);
+void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout);
 
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);
@@ -22,6 +22,9 @@ void fill_rand(double *x, size_t size, double lo, double hi);
 //! ------------------------------------------------------- //
 
 //! Matrix Transpose
+//! Matrix A ( mA x nA ) -> Input
+//! Matrix T ( nA x mA ) -> Output
+//! CAUTION!!! For in place transposition use stranspose() instead
 void transpose(const double *A, size_t mA, size_t nA, double *T); 
 
 //! Adds two arrays
@@ -31,9 +34,12 @@ void add(const double *x, const double *y, size_t size, double* z);
 void sub(const double *x, const double *y, size_t size, double* z);
 
 //! Scales an array by a scalar
-void scal(double *x, size_t size, double a);
+void scal(const double *x, size_t size, double a, double *y);
 
 //! Matrix x Matrix Multiplication: C = A * B 
+//! Matrix A ( mA x nA ) -> Input
+//! Matrix B ( nA x nB ) -> Input
+//! Matrix C ( mA x nB ) -> Output
 void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
