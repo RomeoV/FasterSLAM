@@ -63,7 +63,7 @@ int main() {
                     };
                 };
             };
-            for (size_t i = 0; i < 3; i++) { delParticle(particles[i]); }
+            for (size_t i = 0; i < 3; i++) { delParticleMembers(&particles[i]); }
         };
     };
 }

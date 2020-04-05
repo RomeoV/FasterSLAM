@@ -44,7 +44,7 @@ void resample_particles(Particle* particles, double* weights, size_t N)
     int i = find_particle_without_dependency(count, N);
     while (i != -1) {  // O(N^2)
         count[i] = -1;  // was 0 before
-        copyParticle(particles[keep_indices[i]], particles[i]);
+        copyParticle(&particles[keep_indices[i]], &particles[i]);
         count[keep_indices[i]]--;  // should make at least one particle have no dependency, so we can change it's memory
 
         i = find_particle_without_dependency(count, N);  // O(N)

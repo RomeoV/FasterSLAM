@@ -125,7 +125,7 @@ int main() {
                     };
                 };
                 //! Delete Particle
-                delParticlePtr(p);
+                delParticleMembersAndFreePtr(p);
             };
         };
     };
@@ -150,7 +150,7 @@ int main() {
                     }
                 };
                 for (int i = 0; i<N; i++) {
-                    delParticle(particles[i]);
+                    delParticleMembers(&particles[i]);
                 }
             };
             
@@ -171,7 +171,7 @@ int main() {
                     expect(that % weights[2] == new_weight);
                 };
                 for (int i = 0; i<N; i++) {
-                    delParticle(particles[i]);
+                    delParticleMembers(&particles[i]);
                 }
             };
 
@@ -192,7 +192,7 @@ int main() {
                     expect(that % weights[3] == new_weight);
                 };
                 for (int i = 0; i<N; i++) {
-                    delParticle(particles[i]);
+                    delParticleMembers(&particles[i]);
                 }
             };
             
