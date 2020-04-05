@@ -22,6 +22,29 @@
 
 double pi_to_pi(double ang) 
 {
+    int n;
+    if ((ang < (-M_PI)) || (ang > (M_PI))) {
+        n=floor(ang/(2*M_PI));
+        ang = ang-n*(2*M_PI);    
+ 
+        if (ang > M_PI) {
+            ang = ang - (2*M_PI);
+        }
+        if (ang < -M_PI) {
+            ang = ang + (2*M_PI);
+        }
+    }
+    return ang;
+}
+
+void pi_to_pi_arr(double* angles,const size_t n) 
+{
+    for (int i=0; i<n; i++) {
+        angles[i] = pi_to_pi(angles[i]);
+    }
+}
+
+double pi_to_pi_fmod(double ang) {
     /* I think this can be done more efficiently with
      * ```
      * theta = ((theta+pi)%(2*pi)-pi)
@@ -33,25 +56,4 @@ double pi_to_pi(double ang)
     double tmp = fmod(ang+M_PI, 2*M_PI);
     if (tmp < 0) tmp += 2*M_PI;
     return tmp - M_PI;
-    //return fmod((ang+M_PI)%2*M_PI)-M_PI;
-    /* int n; */
-    /* if ((ang < (-M_PI)) || (ang > (M_PI))) { */
-    /*     n=floor(ang/(2*M_PI)); */
-    /*     ang = ang-n*(2*M_PI);     */
- 
-    /*     if (ang > M_PI) { */
-    /*         ang = ang - (2*M_PI); */
-    /*     } */
-    /*     if (ang < -M_PI) { */
-    /*         ang = ang + (2*M_PI); */
-    /*     } */
-    /* } */
-    /* return ang; */
-}
-
-void pi_to_pi_arr(double* angles,const size_t n) 
-{
-    for (int i=0; i<n; i++) {
-        angles[i] = pi_to_pi(angles[i]);
-    }
 }
