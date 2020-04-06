@@ -80,6 +80,16 @@ matches_extension() {
     return 1
 }
 
+# necessary check for initial commit
+# jonathan: seemed to delete everything
+
+# if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
+#     against=HEAD
+# else
+#     # Initial commit: diff against an empty tree object
+#     against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
+# fi
+
 if [ ! -x "$CLANG_FORMAT" ] ; then
     printf "Error: clang-format executable not found.\n"
     printf "Set the correct path in $(canonicalize_filename "$0").\n"

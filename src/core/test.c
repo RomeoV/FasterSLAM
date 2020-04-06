@@ -96,7 +96,7 @@ void llt_2x2(const double *A, double *L) {
   L[1] = 0.0;                       // 0*2+1 -> (0,1)
   L[2] = A[2] / L[0];               // 1*2+0 -> (1,0)
   L[3] = sqrt(A[3] - L[2] * L[2]);  // 1*2+1 -> (1,1)
-}
+}nnnmm 
 
 //! Inverse of a 2x2 Matrix
 void inv_2x2(const double *A, double *Ainv) {
