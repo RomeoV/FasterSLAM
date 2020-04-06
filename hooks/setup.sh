@@ -10,7 +10,7 @@ else
     chmod +x $ROOT/.git/hooks/commit-msg
 fi
 
-if [ -f $ROOT/.git/hooks/pre-commit-clang-format ];then
+if false && [ -f $ROOT/.git/hooks/pre-commit-clang-format ];then
     echo "File .git/hooks/pre-commit-clang-format already exists! Will not attempt to overwrite."
 else
     cp $ROOT/hooks/pre-commit-clang-format $ROOT/.git/hooks/pre-commit-clang-format

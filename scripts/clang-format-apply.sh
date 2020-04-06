@@ -1,10 +1,5 @@
 #!/bin/bash
 
-#
-# This is apllying clang-format 
-# by doing a filtering step and then 
-#  applying ./scripts/clang-format-and-fix-macros.sh
-#
 
 # check that we are in a clean state in order to prevent accidential
 # changes
@@ -60,7 +55,7 @@ for f in $filelist; do
     if checkCPP $f; then
 	echo "CHECKING MATCHING FILE ${f}"
 	# apply the clang-format script
-	./scripts/clang-format-and-fix-macros.sh ${f}
+	./scripts/clang-format.sh ${f}
     fi
 done
 

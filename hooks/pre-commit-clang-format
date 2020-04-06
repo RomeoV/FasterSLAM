@@ -80,14 +80,6 @@ matches_extension() {
     return 1
 }
 
-# necessary check for initial commit
-if git rev-parse --verify HEAD >/dev/null 2>&1 ; then
-    against=HEAD
-else
-    # Initial commit: diff against an empty tree object
-    against=4b825dc642cb6eb9a060e54bf8d69288fbee4904
-fi
-
 if [ ! -x "$CLANG_FORMAT" ] ; then
     printf "Error: clang-format executable not found.\n"
     printf "Set the correct path in $(canonicalize_filename "$0").\n"
@@ -117,7 +109,7 @@ do
     #    +++ - timestamp
     # to both lines working on the same file and having a a/ and b/ prefix.
     # Else it can not be applied with 'git apply'.
-    ./scripts/clang-format-and-fix-macros.sh -style=file "$file" | \
+    ./scripts/clang-format.sh -style=google "$file" | \
         diff -u "$file" - | \
         sed -e "1s|--- |--- a/|" -e "2s|+++ -|+++ b/$file|" >> "$patch"
 done
