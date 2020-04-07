@@ -1,6 +1,10 @@
 # FasterSLAM
 > Fast Slam on steroids.
 
+# Hooks
+Install the hooks:
+- cd clang-format-hooks && ./git-pre-commit-format install
+
 ### Directory layout
 Please consider this documented directory layout.
 The structure is mostly preserved from the _yglee_ repository.
