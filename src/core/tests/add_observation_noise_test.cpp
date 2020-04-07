@@ -7,7 +7,7 @@ using namespace boost::ut::bdd;
 
 int main() {
 
-    //! This seed was set in the multivariate_gauss() function implemented in the yglee code,
+    //! This seed was set in the add_observation_noise() function implemented in the yglee code,
     //! in order to be able to take the respective inputs and outputs of the function in that
     //! code, and test if we can exactly reproduce the results in our code.
     srand(1994);
