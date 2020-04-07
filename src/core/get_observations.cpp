@@ -1,11 +1,11 @@
 #include "get_observations.h"
 #include <iostream>
-#include <math.h>
+#include <cmath>
 
 vector<Vector2d> get_observations(Vector3d x, MatrixXd lm, vector<int> &idf, double rmax)
 {
-	get_visible_landmarks(x,lm,idf,rmax);
-	return compute_range_bearing(x,lm);	
+	get_visible_landmarks(x, lm, idf, rmax);
+	return compute_range_bearing(x, lm);	
 }
 
 
@@ -66,17 +66,22 @@ vector<Vector2d> compute_range_bearing(Vector3d x, MatrixXd lm)
 
 	return z; 
 }
-
-vector<int> find2(vector<double> dx, vector<double> dy, double phi, double rmax)
+//! index should be preallocated with size equal to size
+void find2(const double *dx, const double *dy, const size_t size, 
+           const double phi, const double rmax, double *index, size_t *index_size)
 {
-	vector<int> index;
+    size_t cnt = 0;
 	//incremental tests for bounding semi-circle
-	for (int j=0; j<dx.size(); j++) {
-		if ((abs(dx[j]) < rmax) && (abs(dy[j]) < rmax)
-				&& ((dx[j]* cos(phi) + dy[j]* sin(phi)) > 0.0)
-				&& (((double)pow(dx[j],2) + (double)pow(dy[j],2)) < (double)pow(rmax,2))){
-			index.push_back(j);			
-		}
+	for (size_t j = 0; j < size; j++) {
+        const double dxj = dx[j];
+        const double dyj = dy[j];
+		if ( (abs(dxj) < rmax) && 
+             (abs(dyj) < rmax) && 
+             ((dxj*cos(phi) + dyj*sin(phi)) > 0.0) && 
+             ((pow(dxj,2) + pow(dyj,2)) < pow(rmax,2)) )
+        {
+            index[cnt++] = j;
+        }
 	}
-	return index;				
+    *index_size = cnt;
 }
