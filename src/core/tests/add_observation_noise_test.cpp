@@ -1,4 +1,4 @@
-#include "multivariate_gauss.h"  // import file to test
+#include "add_observation_noise.h"  // import file to test
 #include <cmath>
 
 #include "ut.hpp"
@@ -14,16 +14,16 @@ int main() {
 
     "add_observation_noise"_test = [] {
         given("I have some arguments") = [] {
-            double *z;
-            const int zlen;
-            cMatrix2d R;
+            double z[4] = {25.77444969441645, -1.4733774573801159, 25.276107769232738, 0.13836675004531551};
+            const int zlen = 2;
+            double R[4] = {0.010000000000000002, 0, 0, 0.00030461741909055634};
             const int addnoise = 1;
 
             when("I call add_observation_noise(z, zlen, R, addnoise)") = [&] {
                 add_observation_noise(z, zlen, R, addnoise);
 
                 then("This is equal with the actual result") = [&] {
-                    double *actual_z;
+                    const double actual_z[4] = {25.791968854179345, -1.4749004792119464, 25.206177150152218, 0.14779058881507551};
                     for (int i = 0; i < zlen; i++) {    
                         expect(fabs(z[i*2+0] - actual_z[i*2+0]) < 1e-10);
                         expect(fabs(z[i*2+1] - actual_z[i*2+1]) < 1e-10);
@@ -33,4 +33,4 @@ int main() {
         };
     };
 
-};
+}

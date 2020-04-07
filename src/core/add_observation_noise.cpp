@@ -1,4 +1,7 @@
 #include "add_observation_noise.h"
+#include "linalg.h"
+#include <cstdlib>
+#include <cmath>
 
 //! Adds random measurement noise. We assume R is diagnoal matrix.
 //! TOCHECK: vector<Vector2d> z -> Storage choice for z, ROW-WISE for now
