@@ -21,7 +21,8 @@ int main() {
                 };
 
                 then("I expect its size to be a fixed value.") = [=] {
-                    size_t p_size = 4*4+12*8+3*8+6*8; //(3+1empty) ints + the (3+9) = 12 double arr elements + 3 pointers + 6*8 voids
+                    // (1+1empty) ints + 2 size_t +  (3+9) = 12 double arr elements + 3 pointers + 6*8 function pointers
+                    size_t p_size = 2*sizeof(int) + 2*sizeof(size_t) + 12*sizeof(double) + 3*sizeof(double*) + 6*sizeof(void*);  
                     expect(that % sizeof(*p) == p_size);
                 };
 
