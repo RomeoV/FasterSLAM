@@ -16,21 +16,27 @@ void create_array_2(int n, double& d) {
 }
 
 
-int main() {
-  double sum = 0;
+int main(int argc, char* argv[]) {
   int n;
-  std::cin >> n;
+  if (argc == 1)
+    std::cin >> n;
+  else
+    n = std::stoi(argv[1]);
   auto bench = ankerl::nanobench::Bench();
+  bench.minEpochIterations(300);
+
+  double sum = 0;
   bench.run("dynamic size", [&] {
       double d;
       create_array(n, d);
       sum += d;
     }
-  );
+  ).doNotOptimizeAway(sum);
+
   bench.run("malloc", [&] {
       double d;
       create_array_2(n, d);
       sum += d;
     }
-  );
+  ).doNotOptimizeAway(sum);
 }
