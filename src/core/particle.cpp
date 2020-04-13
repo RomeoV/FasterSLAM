@@ -24,13 +24,14 @@ void initParticle(Particle* p, const size_t Nf) {
 
 	p->xf = (double*) malloc (2* Nf * sizeof (double));
     if (p->xf == NULL) {
-        free (p);
+        free (p);  // \todo is this correct? What if particle is statically allocated...
 		return;
 	}
 	// Try to allocate Pf, free structure if fail.
 
 	p->Pf = (double*) malloc (4* Nf * sizeof (double));
 	if (p->Pf == NULL) {
+		free(p->xf);
         free (p);
 		return;
 	}
