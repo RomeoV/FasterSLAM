@@ -6,8 +6,11 @@
 #include "linalg.h"
 
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
-  double* xf = (double*)malloc(2 * N_z * sizeof(double));
-  double* Pf = (double*)malloc(4 * N_z * sizeof(double));
+  // double* xf = (double*)malloc(2 * N_z * sizeof(double));
+  // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
+  Vector2d xf[N_z];
+  Matrix2d Pf[N_z];
+
   Vector3d xv;
   copy(particle->xv, 3, xv);
 
@@ -22,7 +25,7 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
     Vector2d measurement;
     measurement[0] = xv[0] + r * c;
     measurement[1] = xv[1] + r * s;
-    copy(measurement, 2, xf + 2 * i);  // xf[i,:] = measurement[0:2]
+    copy(measurement, 2, xf[i]);  // xf[i,:] = measurement[0:2]
 
     Matrix2d Gz = {c, -r * s, s, r * c};
     Matrix2d MatResult_1;
@@ -32,7 +35,7 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
     Matrix2d MatResult_2;
     mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2);
 
-    copy(MatResult_2, 2 * 2, Pf + 4 * i);  // Pf[i,0:4] = Gz*R*Gz.T
+    copy(MatResult_2, 2 * 2, Pf[i]);  // Pf[i,0:4] = Gz*R*Gz.T
   }
 
   size_t N_x = particle->Nfa;
@@ -40,10 +43,10 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   particle->Nfa += N_z;
 
   for (size_t i = 0; i < N_z; i++) {
-    particle->set_xfi(particle, xf + 2 * i, i + N_x);
-    particle->set_Pfi(particle, Pf + 4 * i, i + N_x);
+    particle->set_xfi(particle, xf[i], i + N_x);
+    particle->set_Pfi(particle, Pf[i], i + N_x);
   }
 
-  free(xf);
-  free(Pf);
+  // free(xf);
+  // free(Pf);
 }
