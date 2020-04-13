@@ -26,13 +26,13 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
 
     Matrix2d Gz = {c, -r * s, s, r * c};
     Matrix2d MatResult_1;
-    mul(Gz, R, 4, 4, 4, MatResult_1);
+    mul(Gz, R, 2, 2, 2, MatResult_1);
     Matrix2d Gz_T;
-    transpose(Gz, 4, 4, Gz_T);
+    transpose(Gz, 2, 2, Gz_T);
     Matrix2d MatResult_2;
-    mul(MatResult_1, Gz_T, 4, 4, 4, MatResult_2);
+    mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2);
 
-    copy(MatResult_2, 4 * 4, Pf + 4 * i);  // Pf[i,0:4] = Gz*R*Gz.T
+    copy(MatResult_2, 2 * 2, Pf + 4 * i);  // Pf[i,0:4] = Gz*R*Gz.T
   }
 
   size_t N_x = particle->Nfa;
@@ -43,4 +43,7 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
     particle->set_xfi(particle, xf + 2 * i, i + N_x);
     particle->set_Pfi(particle, Pf + 4 * i, i + N_x);
   }
+
+  free(xf);
+  free(Pf);
 }

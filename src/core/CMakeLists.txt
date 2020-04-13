@@ -1,7 +1,9 @@
 add_library(FasterSlamCore
   add_feature.cpp
+  compute_jacobians.cpp
   compute_steering.cpp
   example.cpp
+  feature_update.cpp
   KF_cholesky_update.cpp
   linalg.cpp
   multivariate_gauss.cpp
