@@ -3,11 +3,30 @@
 #include <sstream>
 #include <algorithm>
 
+#include "typedefs.h"
 #include "ut.hpp"
 using namespace boost::ut;
 using namespace boost::ut::bdd;
 
 int main() {
+
+"v*A*vT"_test = [] {
+    given("I have a 3-dim vector v of ones and a 3x3 matrix M with all ones") = [] {
+        Vector3d v = {1., 1., 1.};
+        Matrix3d M = {1., 1., 1.,
+                      1., 1., 1.,
+                      1., 1., 1.};
+        when("I multiply v*M*v.T") = [&] {
+            Vector2d M_vT;
+            double v_M_vT;
+            mul(M, v, 3, 3, 1, M_vT);
+            mul(v, M_vT, 1, 3, 1, &v_M_vT);
+            then("I get a double with value 9") = [&] {
+                expect(that % fabs(v_M_vT - 9) < 1e-14);
+            };
+        };
+    };
+};
 
 //!
 //! Matrix multiplication test
