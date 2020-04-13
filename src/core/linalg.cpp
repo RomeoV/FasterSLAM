@@ -111,3 +111,7 @@ void inv_2x2(const double *A, double *Ainv) {
     Ainv[2] = -s * A[2];
     Ainv[3] =  s * A[0];
 }
+
+double determinant_2x2(const double* A) {
+    return A[0] * A[3] - A[1] * A[2];
+}

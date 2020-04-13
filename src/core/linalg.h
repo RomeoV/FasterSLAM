@@ -47,3 +47,7 @@ void llt_2x2(const double *A, double *L);
 
 //! Inverse of a 2x2 Matrix
 void inv_2x2(const double *A, double *Ainv);
+
+//! Determinant for 2x2 matrix
+//! @param A pointer to row major continuous memory
+double determinant_2x2(const double* A);
