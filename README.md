@@ -155,6 +155,7 @@ The benchmark itself is best wrapped in a boost::ut test. See existing benchmark
 
 #### Example benchmark output
 **Rendered with markdown**
+
 |               ns/op |                op/s |    err% |          ins/op |          cyc/op |    IPC |         bra/op |   miss% |     total | benchmark
 |--------------------:|--------------------:|--------:|----------------:|----------------:|-------:|---------------:|--------:|----------:|:----------
 |               16.53 |       60,497,583.68 |    9.1% |           60.54 |           44.88 |  1.349 |           9.16 |    3.4% |      0.00 | `pi_to_pi`
