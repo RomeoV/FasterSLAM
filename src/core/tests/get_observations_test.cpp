@@ -17,7 +17,7 @@ int main() {
             double z[4] = { };
             size_t lm_cols = 35, nidf = 35;
 
-            FILE* fp = fopen("/home/nikolas/Documents/ETHZ-CSE/Advanced_Systems_Lab/Project/team040/src/core/tests/lm.txt", "r"); 
+            FILE* fp = fopen("../../../core/tests/lm.txt", "r"); 
 
             double *lm = (double*) malloc( 2*lm_cols * sizeof(double) ); 
             for (size_t i = 0; i < lm_cols; i++) {
