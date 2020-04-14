@@ -84,8 +84,8 @@ int main() {
 Note also that following the notion of [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) and [Extreme Programming](https://en.wikipedia.org/wiki/Extreme_programming) we might even follow the notion of defining the tests for a feature even before implementing the feature itself.
 This way, the requirements are quite clear and can be well tested while developing/chaning other code.
 
-## On coverage
-We use the tool [`gcov`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwig3szplsjoAhWB1aYKHZlVCZIQFjAKegQIBRAB&url=https%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FGcov.html&usg=AOvVaw2pGbCRoAgXY0dR57SJIuOH) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
+## On test coverage
+We use the tool [`gcov`](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
 We additionally use the python library [`gcovr`](https://github.com/gcovr/gcovr) to produce nicely formatted coverage output, similar to that of python test coverage tools (e.g. the [`nosetests`](https://nose.readthedocs.io/en/latest/plugins/cover.html) library).
 
 ### How to generate test coverage
@@ -131,3 +131,18 @@ lines: 92.7% (153 out of 165)
 branches: 64.4% (94 out of 146)
 ```
 ![Coverage html output](doc/images/gcovr.png)
+
+## On microbenchmarking
+We use the library [`nanobench`](https://github.com/martinus/nanobench) to conduct basic microbenchmarks, located under `src/microbenchmarks`.
+In order to run the benchmarks, simply compile in Release mode and run the target _benchmarks_:
+```sh
+cd src/build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make
+make benchmarks
+```
+
+### On writing microbenchmarks
+Similar to the tests, it is sufficient to place a file ending in `*_bench.cpp` in the `src/microbenchmarks` directory.
+It will get registered, compiled and added to the _benchmarks_ target automatically.
+The benchmark itself is best wrapped in a boost::ut test. See existing benchmarks for examples.
