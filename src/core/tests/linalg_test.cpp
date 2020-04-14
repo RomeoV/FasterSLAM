@@ -17,7 +17,7 @@ int main() {
                       1., 1., 1.,
                       1., 1., 1.};
         when("I multiply v*M*v.T") = [&] {
-            Vector2d M_vT;
+            Vector3d M_vT;
             double v_M_vT;
             mul(M, v, 3, 3, 1, M_vT);
             mul(v, M_vT, 1, 3, 1, &v_M_vT);
