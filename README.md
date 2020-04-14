@@ -148,7 +148,23 @@ make
 make benchmarks
 ```
 
-### On writing microbenchmarks
+### Writing microbenchmarks
 Similar to the tests, it is sufficient to place a file ending in `*_bench.cpp` in the `src/microbenchmarks` directory.
 It will get registered, compiled and added to the _benchmarks_ target automatically.
 The benchmark itself is best wrapped in a boost::ut test. See existing benchmarks for examples.
+
+#### Example benchmark output
+**Rendered with markdown**
+|               ns/op |                op/s |    err% |          ins/op |          cyc/op |    IPC |         bra/op |   miss% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------------:|----------------:|-------:|---------------:|--------:|----------:|:----------
+|               16.53 |       60,497,583.68 |    9.1% |           60.54 |           44.88 |  1.349 |           9.16 |    3.4% |      0.00 | `pi_to_pi`
+|               26.42 |       37,856,605.04 |   12.3% |          117.18 |           71.55 |  1.638 |          25.82 |    3.8% |      0.00 | `pi_to_pi_fmod`
+
+**Raw output**
+```sh
+|               ns/op |                op/s |    err% |          ins/op |          cyc/op |    IPC |         bra/op |   miss% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------------:|----------------:|-------:|---------------:|--------:|----------:|:----------
+|               16.53 |       60,497,583.68 |    9.1% |           60.54 |           44.88 |  1.349 |           9.16 |    3.4% |      0.00 | `pi_to_pi`
+|               26.42 |       37,856,605.04 |   12.3% |          117.18 |           71.55 |  1.638 |          25.82 |    3.8% |      0.00 | `pi_to_pi_fmod`
+All tests passed (1000 asserts in 3 tests)
+```
