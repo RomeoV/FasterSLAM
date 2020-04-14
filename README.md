@@ -18,8 +18,11 @@ More on tests below.
 src
 ├── build/                          <-- run `cmake ..`, `make` and `ctest` here
 ├── CMakeLists.txt
+├── microbenchmarks
+│   ├── CMakeLists.txt              <-- benchmark files ending in `_bench.cpp` get registered automatically
+│   └── example_bench.cpp           <-- use boost::ut and nanobench for (micro-)benchmarking
 ├── core
-│   ├── CMakeLists.txt              <-- add your source files here (no headers)
+│   ├── CMakeLists.txt              <-- add your source files here (no need to add headers)
 │   ├── example.cpp
 │   ├── example.hpp
 │   └── tests
@@ -27,10 +30,13 @@ src
 │       └── example_test.cpp        <-- testfiles ending in `_test.cpp` get registered automatically
 ├── external
 │   ├── CMakeLists.txt
-│   └── ut
-│       └── ut.hpp
+│   ├── ut
+│   │   └── ut.hpp
+│   └── nanobench
+│       ├── nanobench.h
+│       └── nanobench.cpp
 └── fastslam1
-    ├── CMakeLists.txt              <-- add your source files here (no headers)
+    ├── CMakeLists.txt              <-- add your source files here (no need for headers)
     ├── fastslam1.hpp               <-- header and source files with \
     ├── fastslam1.cpp               <-- the same name
     ├── main.cpp                    <-- main executable
@@ -133,7 +139,7 @@ branches: 64.4% (94 out of 146)
 ![Coverage html output](doc/images/gcovr.png)
 
 ## On microbenchmarking
-We use the library [`nanobench`](https://github.com/martinus/nanobench) to conduct basic microbenchmarks, located under `src/microbenchmarks`.
+We use the library [nanobench](https://github.com/martinus/nanobench) to conduct basic microbenchmarks, located under `src/microbenchmarks`.
 In order to run the benchmarks, simply compile in Release mode and run the target _benchmarks_:
 ```sh
 cd src/build
