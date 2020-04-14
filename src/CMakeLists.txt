@@ -10,6 +10,7 @@ enable_testing()
 add_subdirectory(core)
 add_subdirectory(fastslam1)
 add_subdirectory(external)
+add_subdirectory(microbenchmarks)
 
 if(TEST_COVERAGE)
   include(TestCoverage)
