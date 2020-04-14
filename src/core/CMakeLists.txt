@@ -9,6 +9,7 @@ add_library(FasterSlamCore
   stratified_resample.cpp
   compute_steering.cpp
   add_observation_noise.cpp
+  get_observations.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
