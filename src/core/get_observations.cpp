@@ -2,56 +2,53 @@
 #include <iostream>
 #include <cmath>
 
-void get_observations(cVector3d x, double *lm, size_t lm_cols, int **idf, size_t *nidf, const double rmax, double *z)
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z)
 {
-    get_visible_landmarks(x, &lm, &lm_cols, idf, nidf, rmax);
-    compute_range_bearing(x, lm, lm_cols, z);	
+    double *lm_new;
+    get_visible_landmarks(x, rmax, lm, lm_cols, &lm_new, idf, nidf);
+    compute_range_bearing(x, lm_new, *nidf, z);	
 }
 
 // lm is a double matrix of dimension 2 x nlm
-// !!! Pointers and sizes of ``lm'' and ``idf'' are modified inside get_visible_landmarks() !!!
-void get_visible_landmarks(cVector3d x, double **lm, size_t *lm_cols, int **idf, size_t *nidf, const double rmax)
+void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, double **lm_new, int **idf, size_t *nidf)
 {
     //select set of landmarks that are visible within vehicle's 
     //semi-circular field of view
-    double *dx = (double*) malloc( *lm_cols * sizeof(double) );
-    double *dy = (double*) malloc( *lm_cols * sizeof(double) );
+    double *dx = (double*) malloc( lm_cols * sizeof(double) );
+    double *dy = (double*) malloc( lm_cols * sizeof(double) );
 
-    for (size_t j = 0; j < *lm_cols; j++) {
-        dx[j] = (*lm)[0*(*lm_cols)+j] - x[0];
-        dy[j] = (*lm)[1*(*lm_cols)+j] - x[1];
+    for (size_t j = 0; j < lm_cols; j++) {
+        dx[j] = lm[0*lm_cols+j] - x[0];
+        dy[j] = lm[1*lm_cols+j] - x[1];
     }
 
     double phi = x[2];
 
     //distant points are eliminated
     //allocate results of find2() ii and ii_size
-    size_t ii_size = *lm_cols; 
+    size_t ii_size = lm_cols; 
     size_t *ii = (size_t*) malloc( ii_size * sizeof(size_t) );
 
-    find2(dx, dy, *lm_cols, phi, rmax, ii, &ii_size); // fills ii and modifies ii_size
+    find2(dx, dy, lm_cols, phi, rmax, ii, &ii_size); // fills ii and modifies ii_size
 
-    double *lm_new = (double*) malloc( 2*ii_size * sizeof(double) ); // size: 2 x ii_size
+    free(dx); free(dy);
+
+    *lm_new = (double*) malloc( 2*ii_size * sizeof(double) ); // size: 2 x ii_size
     for (size_t j = 0; j < 2; j++){
         for(size_t k = 0; k < ii_size; k++){
             // lm_new(j,k) = lm(j,ii[k]);
-            lm_new[ j*ii_size + k ] = (*lm)[ j*(*lm_cols) + ii[k] ]; 
+            (*lm_new)[ j*ii_size + k ] = lm[ j*lm_cols + ii[k] ]; 
         }
     }
-
-    // Do lm = MatrixXd(lm_new) without reallocation
-    free(*lm); *lm = lm_new; lm_new = NULL; *lm_cols = ii_size;
-
+ 
     int *idf_buff = (int*) malloc( ii_size * sizeof(int) );
 
-    for(int i=0; i<ii_size; i++) {
+    for(int i = 0; i < ii_size; i++) {
         idf_buff[i] = (*idf)[ ii[i] ];
     }
 
     free(*idf); *idf = idf_buff; idf_buff = NULL; *nidf = ii_size;
 
-    free(dx);
-    free(dy);
     free(ii);
 }
 

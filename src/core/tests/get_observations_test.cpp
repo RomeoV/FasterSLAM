@@ -31,7 +31,7 @@ int main() {
 
             when("I call get_observations()") = [&] {
 
-                get_observations(x, lm, lm_cols, &idf, &nidf, rmax, z);
+                get_observations(x, rmax, lm, lm_cols, &idf, &nidf, z);
 
                 then("This is equal with the actual result") = [&] {
                     const double actual_z[4] = {25.77444969441645, -1.4733774573801159, 25.276107769232738, 0.13836675004531551};
@@ -42,7 +42,7 @@ int main() {
             };
 
             fclose( fp );
-            //            free( lm );
+            free( lm );
             free( idf );
         };
     };

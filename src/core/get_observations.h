@@ -14,7 +14,7 @@
 
   @return Vector of distance and bearing to each landmark.
   */
-void get_observations(cVector3d x, double *lm, size_t lm_cols, int **idf, size_t *nidf, const double rmax, double *z);
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z);
 
 /*!
   Computes which landmarks are visible by comparing the distance x<->lm(:,i) to rmax.
@@ -24,7 +24,7 @@ void get_observations(cVector3d x, double *lm, size_t lm_cols, int **idf, size_t
   @param[out] idf 	Index of known landmarks. (updated)
   @param[in] 	rmax 	Maximal distance between x and lm(:,i) to be considered visible.
   */
-void get_visible_landmarks(cVector3d x, double **lm, size_t *lm_cols, int **idf, size_t *nidf, const double rmax);
+void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, double **lm_new, int **idf, size_t *nidf);
 
 /*!
   Computes distance and bearing between x and all landmarks in lm.
