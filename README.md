@@ -145,3 +145,8 @@ lines: 92.7% (153 out of 165)
 branches: 64.4% (94 out of 146)
 ```
 ![Coverage html output](doc/images/gcovr.png)
+
+
+
+## Godbolt links
+[Contiguous memory for VLAs](https://godbolt.org/z/-NaaF5)
