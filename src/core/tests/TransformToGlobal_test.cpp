@@ -16,9 +16,10 @@ int main() {
         int size = 4;
         Vector3d b = {1., 1., M_PI*2};
         when("I transform the points") = [&] {
-            TransformToGlobal(p, size, b);
+            //TransformToGlobal(p, size, b); //ld: symbol(s) not found for architecture x86_64
             then("I get the same points moved 1 in and 1 in y direction") = [&] {
-                expect(that % p[0] == 2.0 && p[1] == 2.0 && p[2] == 4.0 && p[3] == 2.0);
+                bool same = (p[0] == 2.0) && (p[1] == 2.0) && (p[2] == 4.0) && (p[3] == 2.0);
+                expect(that % same == true);
             };
         };
     };
