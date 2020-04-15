@@ -5,8 +5,9 @@
 void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z)
 {
     double *lm_new;
-    get_visible_landmarks(x, rmax, lm, lm_cols, &lm_new, idf, nidf);
+    get_visible_landmarks(x, rmax, lm, lm_cols, &lm_new, idf, nidf); // allocates lm_new
     compute_range_bearing(x, lm_new, *nidf, z);	
+    free(lm_new);
 }
 
 // lm is a double matrix of dimension 2 x nlm
