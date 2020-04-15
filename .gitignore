@@ -6,3 +6,4 @@ build
 *.out
 *.gch
 doc
+.DS_Store
