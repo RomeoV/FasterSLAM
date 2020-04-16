@@ -1,5 +1,7 @@
 #include "linalg.h"  // import file to test
 #include <cmath>
+#include <sstream>
+#include <algorithm>
 
 #include "ut.hpp"
 using namespace boost::ut;
@@ -114,6 +116,40 @@ int main() {
                         expect( x[i] == val ) << "x[" << i << "] = " << x[i] << " != val = " << val;
                     }
                 };
+            };
+        };
+    };
+};
+
+"print"_test = [] {
+    given("I have a 3x2 matrix with running numbers 1..6") = [] {
+        const size_t n = 3, m = 2;
+        double x[n*m] = {1, 2, 3, 4, 5, 6};
+
+        when("I print it") = [=] {
+            std::stringstream ss;
+            print(x, n, m, ss);
+            std::string str = ss.str();
+
+            then("I find all numbers after each other, seperated by commas, whitespace or line breaks") = [=] {
+                auto is_whitespace_or_comma = [](char c){return c == ' ' or c == '\t' or c == ',';};
+
+                auto iter = str.begin();
+                for (size_t r = 0; r < n; r++) {
+                    for (size_t c = 0; c < m-1; c++) {
+                        iter = std::find(iter, str.end(), '0'+(r*m)+c+1);
+                        expect(iter != str.end()) << "Couldn't find " << (r*m)+c+1;
+
+                        iter = std::find_if(iter, str.end(), is_whitespace_or_comma);
+                        expect(iter != str.end()) << "Couldn't find whitespace";
+                    }
+
+                    iter = std::find(iter, str.end(), '0'+(r+1)*m);
+                    expect(iter != str.end());
+
+                    iter = std::find(iter, str.end(), '\n');
+                    expect(iter != str.end()) << "Couldn't find newline";
+                }
             };
         };
     };

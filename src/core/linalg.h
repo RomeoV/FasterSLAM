@@ -6,7 +6,7 @@
 //! ------------------------------------------------------- //
 
 //! Prints an array
-void print(const double *x, size_t rows, size_t cols);
+void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout);
 
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);
