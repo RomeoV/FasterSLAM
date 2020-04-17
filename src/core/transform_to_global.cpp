@@ -12,10 +12,10 @@ void transform_to_global(Matrix2d p, int p_size, Vector3d b)
 	// sin(b[2]) cos(b[2]) for 2pi --> 0, 1
 	//assert(rot[0] == 1);
 	//assert(rot[1] == 0);
-	rot[0] = int(cos(b[2]));
-	rot[1] = int(-sin(b[2]));
-	rot[2] = int(sin(b[2]));
-	rot[3] = int(cos(b[2]));
+	rot[0] = double(cos(b[2]));
+	rot[1] = double(-sin(b[2]));
+	rot[2] = double(sin(b[2]));
+	rot[3] = double(cos(b[2]));
 
 	Matrix2d p_resized;
 	copy(p, p_size, p_resized);
