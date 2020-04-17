@@ -1,4 +1,4 @@
-#include "TransformToGlobal.h"  // import file to test
+#include "transform_to_global.h"  // import file to test
 #include <cmath>
 #include <sstream>
 #include <algorithm>
@@ -16,7 +16,7 @@ int main() {
         int size = 4;
         Vector3d b = {1., 1., M_PI*2};
         when("I transform the points") = [&] {
-            TransformToGlobal(p, size, b);
+            transform_to_global(p, size, b);
             then("I get the same points moved 1 in and 1 in y direction") = [&] {
                 expect(that % p[0] == 2);
                 expect(that % p[1] == 2);
