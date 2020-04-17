@@ -41,7 +41,7 @@ void compute_jacobians(Particle* particle,
     zp_vec[0] = d;
     zp_vec[1] = atan2(dy, dx) - xv[2];
     zp_vec[1] = pi_to_pi(zp_vec[1]);
-	copy(zp_vec, 2, zp[i]);
+    copy(zp_vec, 2, zp[i]);
 
     // Jacobian wrt vehicle states
     Matrix23d HvMat = {-dx / d, -dy / d, 0, dy / d2, -dx / d2, -1};
@@ -49,20 +49,20 @@ void compute_jacobians(Particle* particle,
     // Jacobian wrt feature states
     Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
 
-	copy(HvMat, 4, Hv[4*i]);
-	copy(HfMat, 4, Hf[4*i]);
+    copy(HvMat, 4, Hv[4*i]);
+    copy(HfMat, 4, Hf[4*i]);
 
     // innovation covariance of feature observation given the vehicle'
-	// Eq. 60 in Thrun03g
-	Matrix2d HfMat_T;
-	Matrix2d Hf_Pf;
-	Matrix2d Hf_Pf_HfT;
-	Matrix2d Hf_Pf_HfT_R;
-	transpose(HfMat, 2, 2, HfMat_T);
-	mul(HfMat, Pf[i], 2, 2, 2, Hf_Pf);
-	mul(Hf_Pf, HfMat_T, 2, 2, 2, Hf_Pf_HfT);
-	add(Hf_Pf_HfT, R, 2 * 2, Hf_Pf_HfT_R);
-	copy(Hf_Pf_HfT_R, 2 * 2, Sf[i]);
-	// ........ I hate this madness
+    // Eq. 60 in Thrun03g
+    Matrix2d HfMat_T;
+    Matrix2d Hf_Pf;
+    Matrix2d Hf_Pf_HfT;
+    Matrix2d Hf_Pf_HfT_R;
+    transpose(HfMat, 2, 2, HfMat_T);
+    mul(HfMat, Pf[i], 2, 2, 2, Hf_Pf);
+    mul(Hf_Pf, HfMat_T, 2, 2, 2, Hf_Pf_HfT);
+    add(Hf_Pf_HfT, R, 2 * 2, Hf_Pf_HfT_R);
+    copy(Hf_Pf_HfT_R, 2 * 2, Sf[i]);
+    // ........ I hate this madness
   };
 }
