@@ -1,9 +1,9 @@
-#include "TransformToGlobal.h"
+#include "transform_to_global.h"
 #include "pi_to_pi.h"
 #include <math.h>
 #include "linalg.h"
 
-void TransformToGlobal(Matrix2d p, int p_size, Vector3d b) 
+void transform_to_global(Matrix2d p, int p_size, Vector3d b) 
 {
 	//rotation matrix
 	//since it is defined as double Matrix2d[4];
