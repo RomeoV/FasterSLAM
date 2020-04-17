@@ -16,11 +16,11 @@ int main() {
     given("I have speed, a steering angle and a covariance matrix") = [] {
         double V = 10;
         double G = 0.5;
-        double Q[2];
+        double Q[4] = {0.1, 0.1, 0.3, 0.5};
         int addnoise = 1; // adding noise
         when("I add control noise") = [&] {
             double VnGn[2];
-            //add_control_noise(V, G, Q, addnoise, VnGn);
+            add_control_noise(V, G, Q, addnoise, VnGn);
             then("I get the other speed and velocity than I had before") = [=] {
                 bool different = ((VnGn[0] != V) && (VnGn[1] != G));
                 expect(that % different == true);
@@ -37,11 +37,11 @@ int main() {
     given("I have speed, a steering angle and a covariance matrix") = [] {
         double V = 10;
         double G = 0.5;
-        double Q[4]; // = {0.1, 0.1, 0.3, 0.5};
+        double Q[4] = {0.1, 0.1, 0.3, 0.5};
         int addnoise = 0; // not adding noise
         when("I do not add control noise") = [&] {
             double VnGn[2];
-            //add_control_noise(V, G, Q, addnoise, VnGn);
+            add_control_noise(V, G, Q, addnoise, VnGn);
             then("I get the same speed and velocity I had before") = [&] {
                 bool same = ((VnGn[0] == V) && (VnGn[1] == G));
                 expect(that % same == true);

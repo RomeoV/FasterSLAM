@@ -15,6 +15,9 @@ add_library(FasterSlamCore
   resample_particles.cpp
   stratified_random.cpp
   stratified_resample.cpp
+  add_control_noise.cpp
+  data_associate_known.cpp
+  TransformToGlobal.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
