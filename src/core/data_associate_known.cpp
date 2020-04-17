@@ -1,6 +1,7 @@
 #include "data_associate_known.h"
 
-//z is range and bearing of visible landmarks
+// z is range and bearing of visible landmarks
+// todo <change table to int? seems there are no doubles>
 void data_associate_known(double* z, int* idz, double* table, int Nf, \
 						  double* zf, int* idf, double* zn)
 {

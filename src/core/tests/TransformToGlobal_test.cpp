@@ -18,8 +18,10 @@ int main() {
         when("I transform the points") = [&] {
             TransformToGlobal(p, size, b);
             then("I get the same points moved 1 in and 1 in y direction") = [&] {
-                bool same = (p[0] == 2.0) && (p[1] == 2.0) && (p[2] == 4.0) && (p[3] == 2.0);
-                expect(that % same == true);
+                expect(that % p[0] == 2);
+                expect(that % p[1] == 2);
+                expect(that % p[2] == 4);
+                expect(that % p[3] == 2);
             };
         };
     };
