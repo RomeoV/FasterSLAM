@@ -90,7 +90,8 @@ int main() {
 Note also that following the notion of [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) and [Extreme Programming](https://en.wikipedia.org/wiki/Extreme_programming) we might even follow the notion of defining the tests for a feature even before implementing the feature itself.
 This way, the requirements are quite clear and can be well tested while developing/chaning other code.
 
-## On test coverage
+
+## On coverage
 We use the tool [`gcov`](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
 We additionally use the python library [`gcovr`](https://github.com/gcovr/gcovr) to produce nicely formatted coverage output, similar to that of python test coverage tools (e.g. the [`nosetests`](https://nose.readthedocs.io/en/latest/plugins/cover.html) library).
 
@@ -138,6 +139,20 @@ branches: 64.4% (94 out of 146)
 ```
 ![Coverage html output](doc/images/gcovr.png)
 
+
+## On memory leak checking
+CTest easily allows us to check our tests for memory leaks.
+Make sure you have `valgrind` installed (e.g. check `> which valgrind`) and then
+run
+```sh
+cd src; mkdir build; cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug  # or -DTEST_COVERAGE=On
+make
+ctest . -T memcheck
+```
+Note that at the moment `core_example_test` produces a memory leak on purpose.
+
+
 ## On microbenchmarking
 We use the library [nanobench](https://github.com/martinus/nanobench) to conduct basic microbenchmarks, located under `src/microbenchmarks`.
 In order to run the benchmarks, simply compile in Release mode and run the target _benchmarks_:
@@ -169,3 +184,7 @@ The benchmark itself is best wrapped in a boost::ut test. See existing benchmark
 |               26.42 |       37,856,605.04 |   12.3% |          117.18 |           71.55 |  1.638 |          25.82 |    3.8% |      0.00 | `pi_to_pi_fmod`
 All tests passed (1000 asserts in 3 tests)
 ```
+
+
+## Godbolt links
+[Contiguous memory for VLAs](https://godbolt.org/z/-NaaF5)

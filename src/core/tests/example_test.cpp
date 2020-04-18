@@ -28,4 +28,8 @@ int main() {
       };
     };
   };
+
+  "memory leak"_test = [] {
+    double* foo = (double*)malloc(4*sizeof(double));
+  };
 };
