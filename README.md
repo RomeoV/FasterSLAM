@@ -84,6 +84,20 @@ int main() {
 Note also that following the notion of [Test-Driven Development](https://en.wikipedia.org/wiki/Test-driven_development) and [Extreme Programming](https://en.wikipedia.org/wiki/Extreme_programming) we might even follow the notion of defining the tests for a feature even before implementing the feature itself.
 This way, the requirements are quite clear and can be well tested while developing/chaning other code.
 
+
+## On memory leak checking
+CTest easily allows us to check our tests for memory leaks.
+Make sure you have `valgrind` installed (e.g. check `> which valgrind`) and then
+run
+```sh
+cd src; mkdir build; cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug  # or -DTEST_COVERAGE=On
+make
+ctest . -T memcheck
+```
+Note that at the moment `core_example_test` produces a memory leak on purpose.
+
+
 ## On coverage
 We use the tool [`gcov`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwig3szplsjoAhWB1aYKHZlVCZIQFjAKegQIBRAB&url=https%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FGcov.html&usg=AOvVaw2pGbCRoAgXY0dR57SJIuOH) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
 We additionally use the python library [`gcovr`](https://github.com/gcovr/gcovr) to produce nicely formatted coverage output, similar to that of python test coverage tools (e.g. the [`nosetests`](https://nose.readthedocs.io/en/latest/plugins/cover.html) library).
@@ -131,3 +145,8 @@ lines: 92.7% (153 out of 165)
 branches: 64.4% (94 out of 146)
 ```
 ![Coverage html output](doc/images/gcovr.png)
+
+
+
+## Godbolt links
+[Contiguous memory for VLAs](https://godbolt.org/z/-NaaF5)

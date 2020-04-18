@@ -6,7 +6,6 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Last Worked on: 30.03.2020
  * Done: Base Implementation, unit test
  * ToDo: Start optimizing
  ****************************************************************************/
@@ -15,13 +14,13 @@
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
-void stratified_resample(double* w, const size_t N_w, double* Neff, int* keep) {    
+void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep) {
     double wsum = 0.0;
     double wsqrd_sum = 0.0;
 
@@ -35,10 +34,6 @@ void stratified_resample(double* w, const size_t N_w, double* Neff, int* keep) {
     }
     
     *Neff = 1.0f/wsqrd_sum;
-
-    for (int i=0; i<N_w; i++) {
-        keep[i] = -1;
-    }
 
     double *select = (double*) malloc(N_w * sizeof(double));
 

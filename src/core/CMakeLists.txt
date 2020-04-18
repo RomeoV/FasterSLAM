@@ -1,13 +1,22 @@
 add_library(FasterSlamCore
-  example.cpp
   KF_cholesky_update.cpp
-  multivariate_gauss.cpp
+  add_feature.cpp
+  add_observation_noise.cpp
+  compute_jacobians.cpp
+  compute_steering.cpp
+  compute_weight.cpp
+  example.cpp
+  feature_update.cpp
+  get_observations.cpp
   linalg.cpp
+  multivariate_gauss.cpp
+  particle.cpp
   pi_to_pi.cpp
+  predict.cpp
   predict_true.cpp
+  resample_particles.cpp
   stratified_random.cpp
   stratified_resample.cpp
-  compute_steering.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

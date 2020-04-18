@@ -11,6 +11,9 @@ void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout)
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);
 
+//! Copies all values from ref to target
+void copy(const double* ref, size_t N, double* target);
+
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi);
 
@@ -44,3 +47,7 @@ void llt_2x2(const double *A, double *L);
 
 //! Inverse of a 2x2 Matrix
 void inv_2x2(const double *A, double *Ainv);
+
+//! Determinant for 2x2 matrix
+//! @param A pointer to row major continuous memory
+double determinant_2x2(const double* A);

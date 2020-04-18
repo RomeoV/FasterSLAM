@@ -1,5 +1,6 @@
-#include "multivariate_gauss.h"
-#include "linalg.h"
+#include "predict.h"
+#include "pi_to_pi.h"
+#include <cmath>
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -17,15 +18,12 @@
  * Status: TBD
  ****************************************************************************/
 
-void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result)
-{
-    double S[4]; //! 2x2 matrix, lower triangular cholesky factor
-    llt_2x2(P, S); //! P = S * S^T
-
-    double X[2]; //! 2-vector
-    fill_rand(X, 2, -1.0, 1.0);
+void predict(Particle &particle, double V, double G, Matrix2d Q, double dt) {
+    // Turn first, move forwards after
+    // \todo Noise on input (Maybe the noise should be added at anothere place in the code?)
     
-    //! result = S*X + x
-    mul(S, X, 2, 2, 1, result);
-    add(result, x, 2, result);
+    double& theta = particle.xv[2];
+    theta = pi_to_pi(theta + G);
+    particle.xv[0] += V*dt*cos(theta);
+    particle.xv[1] += V*dt*sin(theta);
 }

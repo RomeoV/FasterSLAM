@@ -9,9 +9,9 @@
     @param[in]   w          Array of weights.
     @param[in]   N_w        Size of w and keep array.
     @param[out]  Neff       = 1/sum(w_i^2).
-    @param[out]  keep       Array of ints that indicate whether w[i] should be kept or not.
+    @param[out]  keep       Array of indices to keep (sorted, may contain same index multiple times)
  */
-void stratified_resample(double* w, const size_t N_w, double* Neff, int* keep);
+void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep);
 
 /*!
     Returns an array where all weights leq its index are summed up. 
