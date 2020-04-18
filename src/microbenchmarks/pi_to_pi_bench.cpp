@@ -12,6 +12,12 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
+template <typename F>
+struct NamedFunction {
+    std::string name;
+    F function;
+};
+
 int main() {
     // Generate test data
     const size_t N = 1000;
@@ -35,18 +41,17 @@ int main() {
     bench.minEpochIterations(100);
     bench.warmup(N);
 
-    // Maybe this could be a bit clearer
     // Register functions to benchmark (with given name)
     using TestFunctionSignature = std::function<double (double)>;
-    using NamedTestFunctions = std::vector<std::pair<std::string, TestFunctionSignature>>;
-    NamedTestFunctions test_functions = {{"pi_to_pi", pi_to_pi},
+    std::vector<NamedFunction<TestFunctionSignature>> test_functions = 
+                                        {{"pi_to_pi", pi_to_pi},
                                          {"pi_to_pi_fmod", pi_to_pi_fmod}};
 
     // Generic benchmarking test
     "benchmark methods"_test = [&] (auto f) {
         i = 0;
-        bench.run(f.first, [&] {
-            sum += f.second(angles[i%N]);
+        bench.run(f.name, [&] {
+            sum += f.function(angles[i%N]);
             i++;
         }).doNotOptimizeAway(sum);
     } | test_functions;
