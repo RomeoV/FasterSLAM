@@ -18,8 +18,11 @@ More on tests below.
 src
 ├── build/                          <-- run `cmake ..`, `make` and `ctest` here
 ├── CMakeLists.txt
+├── microbenchmarks
+│   ├── CMakeLists.txt              <-- benchmark files ending in `_bench.cpp` get registered automatically
+│   └── example_bench.cpp           <-- use boost::ut and nanobench for (micro-)benchmarking
 ├── core
-│   ├── CMakeLists.txt              <-- add your source files here (no headers)
+│   ├── CMakeLists.txt              <-- add your source files here (no need to add headers)
 │   ├── example.cpp
 │   ├── example.hpp
 │   └── tests
@@ -27,10 +30,13 @@ src
 │       └── example_test.cpp        <-- testfiles ending in `_test.cpp` get registered automatically
 ├── external
 │   ├── CMakeLists.txt
-│   └── ut
-│       └── ut.hpp
+│   ├── ut
+│   │   └── ut.hpp
+│   └── nanobench
+│       ├── nanobench.h
+│       └── nanobench.cpp
 └── fastslam1
-    ├── CMakeLists.txt              <-- add your source files here (no headers)
+    ├── CMakeLists.txt              <-- add your source files here (no need for headers)
     ├── fastslam1.hpp               <-- header and source files with \
     ├── fastslam1.cpp               <-- the same name
     ├── main.cpp                    <-- main executable
@@ -85,21 +91,8 @@ Note also that following the notion of [Test-Driven Development](https://en.wiki
 This way, the requirements are quite clear and can be well tested while developing/chaning other code.
 
 
-## On memory leak checking
-CTest easily allows us to check our tests for memory leaks.
-Make sure you have `valgrind` installed (e.g. check `> which valgrind`) and then
-run
-```sh
-cd src; mkdir build; cd build
-cmake .. -DCMAKE_BUILD_TYPE=Debug  # or -DTEST_COVERAGE=On
-make
-ctest . -T memcheck
-```
-Note that at the moment `core_example_test` produces a memory leak on purpose.
-
-
 ## On coverage
-We use the tool [`gcov`](https://www.google.com/url?sa=t&rct=j&q=&esrc=s&source=web&cd=11&cad=rja&uact=8&ved=2ahUKEwig3szplsjoAhWB1aYKHZlVCZIQFjAKegQIBRAB&url=https%3A%2F%2Fgcc.gnu.org%2Fonlinedocs%2Fgcc%2FGcov.html&usg=AOvVaw2pGbCRoAgXY0dR57SJIuOH) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
+We use the tool [`gcov`](https://gcc.gnu.org/onlinedocs/gcc/Gcov.html) (distributed with any installation of gcc) to provide information on [test/code coverage](https://en.wikipedia.org/wiki/Code_coverage).
 We additionally use the python library [`gcovr`](https://github.com/gcovr/gcovr) to produce nicely formatted coverage output, similar to that of python test coverage tools (e.g. the [`nosetests`](https://nose.readthedocs.io/en/latest/plugins/cover.html) library).
 
 ### How to generate test coverage
@@ -146,6 +139,51 @@ branches: 64.4% (94 out of 146)
 ```
 ![Coverage html output](doc/images/gcovr.png)
 
+
+## On memory leak checking
+CTest easily allows us to check our tests for memory leaks.
+Make sure you have `valgrind` installed (e.g. check `> which valgrind`) and then
+run
+```sh
+cd src; mkdir build; cd build
+cmake .. -DCMAKE_BUILD_TYPE=Debug  # or -DTEST_COVERAGE=On
+make
+ctest . -T memcheck
+```
+Note that at the moment `core_example_test` produces a memory leak on purpose.
+
+
+## On microbenchmarking
+We use the library [nanobench](https://github.com/martinus/nanobench) to conduct basic microbenchmarks, located under `src/microbenchmarks`.
+In order to run the benchmarks, simply compile in Release mode and run the target _benchmarks_:
+```sh
+cd src/build
+cmake .. -DCMAKE_BUILD_TYPE=Release
+make
+make benchmarks
+```
+
+### Writing microbenchmarks
+Similar to the tests, it is sufficient to place a file ending in `*_bench.cpp` in the `src/microbenchmarks` directory.
+It will get registered, compiled and added to the _benchmarks_ target automatically.
+The benchmark itself is best wrapped in a boost::ut test. See existing benchmarks for examples.
+
+#### Example benchmark output
+**Rendered with markdown**
+
+|               ns/op |                op/s |    err% |          ins/op |          cyc/op |    IPC |         bra/op |   miss% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------------:|----------------:|-------:|---------------:|--------:|----------:|:----------
+|               16.53 |       60,497,583.68 |    9.1% |           60.54 |           44.88 |  1.349 |           9.16 |    3.4% |      0.00 | `pi_to_pi`
+|               26.42 |       37,856,605.04 |   12.3% |          117.18 |           71.55 |  1.638 |          25.82 |    3.8% |      0.00 | `pi_to_pi_fmod`
+
+**Raw output**
+```sh
+|               ns/op |                op/s |    err% |          ins/op |          cyc/op |    IPC |         bra/op |   miss% |     total | benchmark
+|--------------------:|--------------------:|--------:|----------------:|----------------:|-------:|---------------:|--------:|----------:|:----------
+|               16.53 |       60,497,583.68 |    9.1% |           60.54 |           44.88 |  1.349 |           9.16 |    3.4% |      0.00 | `pi_to_pi`
+|               26.42 |       37,856,605.04 |   12.3% |          117.18 |           71.55 |  1.638 |          25.82 |    3.8% |      0.00 | `pi_to_pi_fmod`
+All tests passed (1000 asserts in 3 tests)
+```
 
 
 ## Godbolt links
