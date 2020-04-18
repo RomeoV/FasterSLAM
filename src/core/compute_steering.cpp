@@ -5,8 +5,7 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Last Worked on: 30.03.2020
- * Done: Base Implementation, unit test
+ * Done: Base implementation, unit test
  * ToDo: Start optimizing
  ****************************************************************************/
 
@@ -14,10 +13,10 @@
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
 void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD, 

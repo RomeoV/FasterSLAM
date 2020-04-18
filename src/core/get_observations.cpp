@@ -2,6 +2,22 @@
 #include <iostream>
 #include <cmath>
 
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base implementation, unit test
+ * ToDo: Start optimizing
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
+
 void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z)
 {
     double *lm_new;

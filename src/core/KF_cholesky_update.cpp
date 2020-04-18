@@ -1,6 +1,22 @@
 #include "KF_cholesky_update.h"
 #include "linalg.h"
 
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base implementation, unit test
+ * ToDo: Start optimizing
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
+
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double Ht[4], PHt[4], HPHt[4];

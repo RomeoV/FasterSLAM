@@ -3,6 +3,22 @@
 #include <cstdlib>
 #include <cmath>
 
+/*****************************************************************************
+ * IMPLEMENTATION STATUS
+ * Done: Base implementation, unit test
+ * ToDo: Start optimizing
+ *****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ *****************************************************************************/
+
 //! Adds random measurement noise. We assume R is diagnoal matrix.
 //! TOCHECK: vector<Vector2d> z -> Storage choice for z, ROW-WISE for now
 void add_observation_noise(double *z, const int zlen, cMatrix2d R, const int addnoise)
