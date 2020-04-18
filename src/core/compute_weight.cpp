@@ -8,7 +8,7 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Done: Base Implementation
+ * Done: Base implementation
  * ToDo: Unit tests
  ****************************************************************************/
 
@@ -16,10 +16,10 @@
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
 double compute_weight(Particle* particle,

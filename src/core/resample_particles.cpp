@@ -1,23 +1,22 @@
 #include "stratified_resample.h"
 #include <cassert>
 #include <cmath>
-
 #include "resample_particles.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation
- * ToDo: -
+ * ToDo: Start optimizing
  ****************************************************************************/
 
 /*****************************************************************************
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
 void normalize_weights(double* weights, size_t N);

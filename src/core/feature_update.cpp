@@ -1,8 +1,22 @@
-#include "feature_update.h"
-
 #include <cstdlib>
-
+#include "feature_update.h"
 #include "linalg.h"
+
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base implementation
+ * ToDo: Unit tests, check if correct
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,

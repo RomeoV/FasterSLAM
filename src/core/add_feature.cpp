@@ -7,18 +7,18 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Done: Base Implementation, unit test
- * ToDo: -
+ * Done: Base implementation, unit test
+ * ToDo: Start optimizing
  ****************************************************************************/
 
 /*****************************************************************************
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
