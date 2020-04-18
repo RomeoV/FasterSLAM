@@ -6,9 +6,22 @@
 #include "linalg.h"
 #include "pi_to_pi.h"
 
-//
-// compute particle weight for sampling
-//
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base Implementation
+ * ToDo: Unit tests
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: Not measured.
+ * Performance: Not measured.
+ * Optimal: Not measured.
+ * Status: Not started.
+ ****************************************************************************/
+
 double compute_weight(Particle* particle,
                       Vector2d z[],
                       size_t N_z,

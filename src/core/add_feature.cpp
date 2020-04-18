@@ -5,6 +5,22 @@
 
 #include "linalg.h"
 
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base Implementation, unit test
+ * ToDo: -
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: Not measured.
+ * Performance: Not measured.
+ * Optimal: Not measured.
+ * Status: Not started.
+ ****************************************************************************/
+
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   // double* xf = (double*)malloc(2 * N_z * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_z * sizeof(double));

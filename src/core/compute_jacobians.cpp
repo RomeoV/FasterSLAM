@@ -5,6 +5,22 @@
 #include "linalg.h"
 #include "pi_to_pi.h"
 
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base Implementation
+ * ToDo: Unit tests, check if correct
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: Not measured.
+ * Performance: Not measured.
+ * Optimal: Not measured.
+ * Status: Not started.
+ ****************************************************************************/
+
 void compute_jacobians(Particle* particle,
                        int idf[],
                        size_t N_z,
