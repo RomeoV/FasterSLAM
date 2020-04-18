@@ -16,3 +16,10 @@ foreach(file ${testfiles})
     core_${name}_exe
   )
 endforeach()
+
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test)
+configure_file(
+    lm.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/lm.txt
+    COPYONLY
+)

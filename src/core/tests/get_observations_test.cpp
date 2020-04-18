@@ -17,7 +17,7 @@ int main() {
             double z[4] = { };
             size_t lm_cols = 35, nidf = 35;
 
-            FILE* fp = fopen("../../../core/tests/lm.txt", "r"); 
+            FILE* fp = fopen("inputfiles_test/lm.txt", "r"); 
 
             double *lm = (double*) malloc( 2*lm_cols * sizeof(double) ); 
             for (size_t i = 0; i < lm_cols; i++) {
@@ -34,7 +34,10 @@ int main() {
                 get_observations(x, rmax, lm, lm_cols, &idf, &nidf, z);
 
                 then("This is equal with the actual result") = [&] {
-                    const double actual_z[4] = {25.77444969441645, -1.4733774573801159, 25.276107769232738, 0.13836675004531551};
+                    const double actual_z[4] = {25.77444969441645,
+                                                -1.4733774573801159, 
+                                                25.276107769232738,
+                                                0.13836675004531551};
                     for (int i = 0; i < 4; i++) {    
                         expect(fabs(z[i] - actual_z[i]) < 1e-06) << std::setprecision(12) << z[i] << " != " << actual_z[i];
                     }
