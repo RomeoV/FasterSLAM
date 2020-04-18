@@ -4,6 +4,22 @@
 
 #include "resample_particles.h"
 
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base Implementation
+ * ToDo: -
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: Not measured.
+ * Performance: Not measured.
+ * Optimal: Not measured.
+ * Status: Not started.
+ ****************************************************************************/
+
 void normalize_weights(double* weights, size_t N);
 int find_particle_without_dependency(int* count, size_t N);
 void fill_int(int *x, size_t size, int val);
