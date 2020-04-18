@@ -21,7 +21,7 @@
  * Status: Not started.
  ****************************************************************************/
 
-void stratified_resample(double* w, const size_t N_w, double& Neff, size_t* keep) {
+void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep) {
     double wsum = 0.0;
     double wsqrd_sum = 0.0;
 
@@ -34,7 +34,7 @@ void stratified_resample(double* w, const size_t N_w, double& Neff, size_t* keep
         wsqrd_sum += w[i] * w[i];
     }
     
-    Neff = 1.0f/wsqrd_sum;
+    *Neff = 1.0f/wsqrd_sum;
 
     double *select = (double*) malloc(N_w * sizeof(double));
 

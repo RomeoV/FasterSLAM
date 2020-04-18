@@ -17,7 +17,7 @@ int main() {
 
             when("I call stratified_resample(w, N_w, &Neff, keep) with a fixed seed") = [&] {
                 
-                stratified_resample(w, N_w, Neff, keep);
+                stratified_resample(w, N_w, &Neff, keep);
 
                 then("I get the the outputs w, Neff and keep I want") = [=] {
                     double exact_Neff = 4.090909090909;

@@ -36,7 +36,7 @@ void resample_particles(Particle* particles, double* weights, size_t N)
     // DAG forever and will thus not be copied --- but luckily they already contain exactly
     // what they should contain!
     size_t keep_indices[N];  // can be seen as dependencies
-    stratified_resample(weights, N, Neff, keep_indices);
+    stratified_resample(weights, N, &Neff, keep_indices);
 
     int count[N];
     count_occurences(keep_indices, N, count);
