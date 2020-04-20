@@ -34,5 +34,3 @@ test:coverage:
   stage: test
   script:
     - make coverage -C src/build
-  dependencies:
-    - test:unittests
