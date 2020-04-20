@@ -1,8 +1,23 @@
 #include "stratified_resample.h"
 #include <cassert>
 #include <cmath>
-
 #include "resample_particles.h"
+
+/*****************************************************************************
+ * OPTIMIZATION STATUS
+ * Done: Base Implementation
+ * ToDo: Start optimizing
+ ****************************************************************************/
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: TBD
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 
 void normalize_weights(double* weights, size_t N);
 int find_particle_without_dependency(int* count, size_t N);
@@ -36,7 +51,7 @@ void resample_particles(Particle* particles, double* weights, size_t N)
     // DAG forever and will thus not be copied --- but luckily they already contain exactly
     // what they should contain!
     size_t keep_indices[N];  // can be seen as dependencies
-    stratified_resample(weights, N, Neff, keep_indices);
+    stratified_resample(weights, N, &Neff, keep_indices);
 
     int count[N];
     count_occurences(keep_indices, N, count);

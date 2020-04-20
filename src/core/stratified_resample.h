@@ -11,7 +11,7 @@
     @param[out]  Neff       = 1/sum(w_i^2).
     @param[out]  keep       Array of indices to keep (sorted, may contain same index multiple times)
  */
-void stratified_resample(double* w, const size_t N_w, double& Neff, size_t* keep);
+void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep);
 
 /*!
     Returns an array where all weights leq its index are summed up. 

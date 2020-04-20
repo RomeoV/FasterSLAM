@@ -3,7 +3,6 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Last Worked on: 01.04.2020
  * Done: Base Implementation, unit test, weights as an outside array
  * ToDo: Check if index necessary (increases array size by 8 Bytes atm!),
  * 		 maybe create get/set for weights for safe access (instead of pointer
@@ -14,10 +13,10 @@
  * PERFORMANCE STATUS
  * Work: TBD
  * Memory moved: TBD
- * Cycles: Not measured.
- * Performance: Not measured.
- * Optimal: Not measured.
- * Status: Not started.
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
  ****************************************************************************/
 
 void initParticle(Particle* p, const size_t Nf) {

@@ -9,3 +9,15 @@ target_compile_features(boost_ut
   INTERFACE
   cxx_std_17
 )
+
+add_library(nanobench
+  nanobench/nanobench.cpp
+)
+target_include_directories(nanobench
+  PUBLIC
+  ./nanobench
+)
+target_compile_features(nanobench
+  PUBLIC
+  cxx_std_17
+)

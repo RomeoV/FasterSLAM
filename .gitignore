@@ -7,3 +7,4 @@ build
 *.gch
 doc
 .DS_Store
+*-checkpoint.ipynb

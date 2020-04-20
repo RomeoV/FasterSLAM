@@ -1,0 +1,41 @@
+image: romeov/fasterslam_docker
+
+stages:
+  - build
+  - test
+  - coverage
+
+cache:
+  paths:
+    - src/build
+
+build:
+  stage: build
+  script:
+    - mkdir src/build -p
+    - cmake -S src -B src/build -DTEST_COVERAGE=On
+    - cmake --build src/build -j
+  artifacts:
+    paths:
+      - src/build
+
+unittests:
+  stage: test
+  script:
+    - make test -C src/build
+  artifacts:
+    paths:
+      - src/build
+
+valgrind:
+  stage: test
+  script:
+    - cd src/build
+    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
+
+coverage:
+  stage: coverage
+  script:
+    - make coverage -C src/build
+  dependencies:
+    - unittests

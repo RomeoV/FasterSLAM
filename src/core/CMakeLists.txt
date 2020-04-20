@@ -1,11 +1,13 @@
 add_library(FasterSlamCore
+  KF_cholesky_update.cpp
   add_feature.cpp
+  add_observation_noise.cpp
   compute_jacobians.cpp
   compute_steering.cpp
   compute_weight.cpp
   example.cpp
   feature_update.cpp
-  KF_cholesky_update.cpp
+  get_observations.cpp
   linalg.cpp
   multivariate_gauss.cpp
   particle.cpp
