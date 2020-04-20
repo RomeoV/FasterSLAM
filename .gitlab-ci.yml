@@ -1,4 +1,10 @@
 image: gcc
+
+stages:
+  - build
+  - test
+  - coverage
+
 variables:
   PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
 
@@ -31,6 +37,8 @@ test:unittests:
       - src/build
 
 test:coverage:
-  stage: test
+  stage: coverage
   script:
     - make coverage -C src/build
+  dependencies:
+    - test:unittests
