@@ -5,6 +5,7 @@ variables:
 cache:
   paths:
     - .cache/pip
+    - src/build
 
 before_script:
   - apt-get update
@@ -12,18 +13,26 @@ before_script:
   - pip install gcovr
 
 build:
+  stage: build
   script:
-    - cd src
-    - mkdir build
-    - cmake -S . -B build -DTEST_COVERAGE=On
-    - cmake --build build -j
+    - mkdir src/build -p
+    - cmake -S src -B src/build -DTEST_COVERAGE=On
+    - cmake --build src/build -j
+  artifacts:
+    paths:
+      - src/build
 
-test:
+test:unittests:
+  stage: test
   script:
-    - cd src
-    - make test -C build
+    - make test -C src/build
+  artifacts:
+    paths:
+      - src/build
 
-coverage:
+test:coverage:
+  stage: test
   script:
-    - cd src
-    - make coverage -C build
+    - make coverage -C src/build
+  dependencies:
+    - test:unittests
