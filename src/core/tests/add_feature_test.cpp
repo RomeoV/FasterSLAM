@@ -57,6 +57,7 @@ int main() {
           };
         };
       };
+      delParticleMembers(&p);
     };
   };
 }
