@@ -30,6 +30,7 @@ int main() {
   };
 
   "memory leak"_test = [] {
-    double* foo = (double*)malloc(4*sizeof(double));
+    // double* foo = (double*)malloc(4*sizeof(double));
+    // We don't want this anymore because of the CI pipeline
   };
 };

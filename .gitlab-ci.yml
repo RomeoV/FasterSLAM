@@ -15,7 +15,7 @@ cache:
 
 before_script:
   - apt-get update
-  - apt-get install -y python-pip cmake
+  - apt-get install -y python-pip cmake valgrind
   - pip install gcovr
 
 build:
@@ -35,6 +35,20 @@ test:unittests:
   artifacts:
     paths:
       - src/build
+
+test:unittests:
+  stage: test
+  script:
+    - make test -C src/build
+  artifacts:
+    paths:
+      - src/build
+
+test:valgrind:
+  stage: test
+  script:
+    - cd src/build
+    - ctest . -T memcheck
 
 test:coverage:
   stage: coverage
