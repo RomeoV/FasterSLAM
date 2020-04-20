@@ -27,6 +27,11 @@ unittests:
     paths:
       - src/build
 
+benchmarks:
+  stage: test
+  script:
+    - make benchmarks -C src/build
+
 valgrind:
   stage: test
   script:
