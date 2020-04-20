@@ -20,8 +20,10 @@ build:
 
 test:
   script:
+    - cd src
     - make test -C build
 
 coverage:
   script:
+    - cd src
     - make coverage -C build
