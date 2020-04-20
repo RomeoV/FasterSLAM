@@ -26,7 +26,8 @@ int main() {
     "functional equality"_test = [&] {
         auto is_close = [](auto lhs, auto rhs) -> bool {return lhs - rhs < 1e-14 and rhs - lhs < 1e-14;};
         for (size_t i = 0; i < N; i++) {
-            expect(same_results(test_functions, is_close, angles[i]));
+            expect(same_results(test_functions, is_close, angles[i]).is_equal) // otherwise print msg
+                << same_results(test_functions, is_close, angles[i]).error_msg;
         }
     };
 
