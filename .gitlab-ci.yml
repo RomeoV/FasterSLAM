@@ -8,10 +8,11 @@ cache:
 
 before_script:
   - apt-get update
-  - apt-get install python-pip -y
+  - apt-get install -y python-pip \
+                       cmake
   - pip install gcovr
 
-build_test:
+build:
   script:
     - cd src
     - mkdir build
