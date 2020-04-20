@@ -19,7 +19,7 @@ build:
     paths:
       - src/build
 
-test:unittests:
+unittests:
   stage: test
   script:
     - make test -C src/build
@@ -27,23 +27,15 @@ test:unittests:
     paths:
       - src/build
 
-test:unittests:
-  stage: test
-  script:
-    - make test -C src/build
-  artifacts:
-    paths:
-      - src/build
-
-test:valgrind:
+valgrind:
   stage: test
   script:
     - cd src/build
-    - ctest . -T memcheck
+    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
 
-test:coverage:
+coverage:
   stage: coverage
   script:
     - make coverage -C src/build
   dependencies:
-    - test:unittests
+    - unittests
