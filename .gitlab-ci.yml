@@ -1,0 +1,58 @@
+image: gcc
+
+stages:
+  - build
+  - test
+  - coverage
+
+variables:
+  PIP_CACHE_DIR: "$CI_PROJECT_DIR/.cache/pip"
+
+cache:
+  paths:
+    - .cache/pip
+    - src/build
+
+before_script:
+  - apt-get update
+  - apt-get install -y python-pip cmake valgrind
+  - pip install gcovr
+
+build:
+  stage: build
+  script:
+    - mkdir src/build -p
+    - cmake -S src -B src/build -DTEST_COVERAGE=On
+    - cmake --build src/build -j
+  artifacts:
+    paths:
+      - src/build
+
+test:unittests:
+  stage: test
+  script:
+    - make test -C src/build
+  artifacts:
+    paths:
+      - src/build
+
+test:unittests:
+  stage: test
+  script:
+    - make test -C src/build
+  artifacts:
+    paths:
+      - src/build
+
+test:valgrind:
+  stage: test
+  script:
+    - cd src/build
+    - ctest . -T memcheck
+
+test:coverage:
+  stage: coverage
+  script:
+    - make coverage -C src/build
+  dependencies:
+    - test:unittests
