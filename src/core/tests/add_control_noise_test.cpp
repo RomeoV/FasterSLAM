@@ -21,7 +21,7 @@ int main() {
         when("I add control noise") = [&] {
             double VnGn[2];
             add_control_noise(V, G, Q, addnoise, VnGn);
-            then("I get the other speed and velocity than I had before") = [=] {
+            then("I get the other speed and velocity than I had before") = [&] {
                 bool different = ((VnGn[0] != V) && (VnGn[1] != G));
                 expect(that % different == true);
             };
@@ -40,11 +40,11 @@ int main() {
         double Q[4] = {0.1, 0.1, 0.3, 0.5};
         int addnoise = 0; // not adding noise
         when("I do not add control noise") = [&] {
-            double VnGn[2];
+            double VnGn[2] = {0., 0.};
             add_control_noise(V, G, Q, addnoise, VnGn);
             then("I get the same speed and velocity I had before") = [&] {
-                bool same = ((VnGn[0] == V) && (VnGn[1] == G));
-                expect(that % same == true);
+                expect(that % VnGn[0] == 0.);
+                expect(that % VnGn[1] == 0.);
             };
         };
     };
