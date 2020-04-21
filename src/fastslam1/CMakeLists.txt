@@ -1,5 +1,5 @@
 add_library(FasterSlamLib
-  fastslam1.cpp
+  fastslam1_sim.cpp
 )
 target_include_directories(FasterSlamLib PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
