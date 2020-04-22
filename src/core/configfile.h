@@ -1,5 +1,4 @@
-#ifndef CONFIGFILE_H
-#define CONFIGFILE_H
+#pragma once
 
 //******************
 // Global Variables
@@ -40,5 +39,3 @@ extern int SWITCH_HEADING_KNOWN;
 extern int SWITCH_RESAMPLE;
 extern int SWITCH_PROFILE;
 extern int SWITCH_SEED_RANDOM;
-
-#endif
