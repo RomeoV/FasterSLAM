@@ -1,5 +1,6 @@
 #include <iostream>
 #include <math.h>
+#include <string.h>
 #include "add_control_noise.h"
 #include "add_feature.h"
 #include "add_observation_noise.h"
@@ -23,8 +24,6 @@ typedef struct {
     double alpha; // initial steer angle, used to be called G in yglee
 } Vehicle;
 
-// allocs and inits array of particles (its size will change)
-// allocs and inits particle weights as uniform
 void setup_initial_particles(Particle **p_, double **w_, const size_t N_features);
 void setup_initial_Q_R();
 void setup_initial_vehicle(Vehicle* v);
@@ -102,7 +101,8 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 // observe()
 //////////////////////////////////////////////////////////////////////////
             //Compute true data, then add noise
-            ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+            // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+            memcpy(ftag_visible, ftag, N_features*sizeof(int));
 
             //z is the range and bearing of the observed landmark
             size_t N_measurements;
@@ -119,18 +119,18 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             vector<Vector2d> zf;
             vector<Vector2d> zn;            
 
-            bool testflag= false;
-            data_associate_known(z,ftag_visible,da_table,Nf,zf,idf,zn);
+            bool testflag = false;
+            data_associate_known(z, ftag_visible, da_table, Nf, zf, idf, zn);
 
             // perform update
-            for (int i =0; i<NPARTICLES; i++) {
-                if (!zf.empty()) { //observe map features
-                    double w = compute_weight(&particles[i],zf,idf,*R);
+            for (int i = 0; i < NPARTICLES; i++) {
+                if ( !zf.empty() ) { //observe map features
+                    double w = compute_weight(&particles[i], zf, idf, *R);
                     w = (*particles[i].w)*w;
                     *particles[i].w = w;
-                    feature_update(&particles[i],zf,idf,*R);
+                    feature_update(&particles[i], zf, idf, *R);
                 }
-                if (!zn.empty()) {
+                if ( !zn.empty() ) {
                     add_feature(&particles[i], zn, *R);
                 }
             }
