@@ -89,7 +89,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 
         // Predict step	
         for (unsigned int i = 0; i < NPARTICLES; i++) {
-            predict(particles[i], Vn, Gn, *Q, dt);
+            predict(&particles[i], Vn, Gn, *Q, dt);
         }
 
 //////////////////////////////////////////////////////////////////////////
