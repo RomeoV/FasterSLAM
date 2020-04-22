@@ -40,9 +40,9 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     int *ftag_visible;
     setup_measurements(&z, &ftag_visible, N_features);
 
-    if ( SWITCH_PREDICT_NOISE ) {
-        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
-    }
+//    if ( SWITCH_PREDICT_NOISE ) {
+//        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
+//    }
  
     if ( SWITCH_SEED_RANDOM ) {
         srand( SWITCH_SEED_RANDOM );
@@ -129,6 +129,4 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 ///////////////////////////////////////////////////////////////////////////////////
         }
     }
-    std::cout << "done with all functions and has updated particles"<<std::endl<<std::flush;
-    // return particles;
 }
