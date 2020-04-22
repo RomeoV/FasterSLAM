@@ -24,7 +24,7 @@ int find_particle_without_dependency(int* count, size_t N);
 void fill_int(int *x, size_t size, int val);
 void count_occurences(const size_t* indices, size_t N, int* count);
 
-void resample_particles(Particle* particles, double* weights, size_t N)
+void resample_particles(Particle* particles, size_t N, double* weights)
 { 
     normalize_weights(weights, N);
 

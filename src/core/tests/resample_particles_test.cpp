@@ -20,7 +20,7 @@ int main() {
                 }
             }
             when("I resample the particles") = [&] {
-                resample_particles(particles, weights, 3);
+                resample_particles(particles, 3, weights);
                 
                 then("The 0th particle will stay the same, "
                      "the 1st particle will deep copy the 0th "
