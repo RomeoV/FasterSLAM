@@ -2,6 +2,8 @@
 #include "typedefs.h"
 #include "stddef.h"
 
+// \TODO Fix comments documenting functions
+
 /******************************************************************
  * All Compute-heavy
  ************************************************************/
@@ -14,7 +16,7 @@
 
   @return Vector of distance and bearing to each landmark.
   */
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z);
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, double *z);
 
 /*!
   Computes which landmarks are visible by comparing the distance x<->lm(:,i) to rmax.
@@ -24,7 +26,7 @@ void get_observations(cVector3d x, const double rmax, const double *lm, const si
   @param[out] idf 	Index of known landmarks. (updated)
   @param[in] 	rmax 	Maximal distance between x and lm(:,i) to be considered visible.
   */
-void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, double **lm_new, int **idf, size_t *nidf);
+void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int **idf, size_t *nidf);
 
 /*!
   Computes distance and bearing between x and all landmarks in lm.
@@ -33,7 +35,7 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
 
   @return Vector  of 2d vectors (distance, angle) between x and each landmark in lm. 
   */
-void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_cols, double *z);
+void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, double *z);
 
 /*!
   Finds all visible landmarks given current state.

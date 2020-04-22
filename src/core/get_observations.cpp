@@ -18,44 +18,43 @@
  * Status: TBD
  ****************************************************************************/
 
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, int **idf, size_t *nidf, double *z)
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, double *z)
 {
     double *lm_new;
-    get_visible_landmarks(x, rmax, lm, lm_cols, &lm_new, idf, nidf); // allocates lm_new
+    get_visible_landmarks(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
     compute_range_bearing(x, lm_new, *nidf, z);	
     free(lm_new);
 }
 
-// lm is a double matrix of dimension 2 x nlm
-void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_cols, double **lm_new, int **idf, size_t *nidf)
+// lm is a double matrix of dimension nlm x 2
+void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int **idf, size_t *nidf)
 {
     //select set of landmarks that are visible within vehicle's 
     //semi-circular field of view
-    double *dx = (double*) malloc( lm_cols * sizeof(double) );
-    double *dy = (double*) malloc( lm_cols * sizeof(double) );
+    double *dx = (double*) malloc( lm_rows * sizeof(double) );
+    double *dy = (double*) malloc( lm_rows * sizeof(double) );
 
-    for (size_t j = 0; j < lm_cols; j++) {
-        dx[j] = lm[0*lm_cols+j] - x[0];
-        dy[j] = lm[1*lm_cols+j] - x[1];
+    for (size_t i = 0; i < lm_rows; i++) {
+        dx[i] = lm[i*2+0] - x[0];
+        dy[i] = lm[i*2+1] - x[1];
     }
 
     double phi = x[2];
 
     //distant points are eliminated
     //allocate results of find2() ii and ii_size
-    size_t ii_size = lm_cols; 
+    size_t ii_size = lm_rows; 
     size_t *ii = (size_t*) malloc( ii_size * sizeof(size_t) );
 
-    find2(dx, dy, lm_cols, phi, rmax, ii, &ii_size); // fills ii and modifies ii_size
+    find2(dx, dy, lm_rows, phi, rmax, ii, &ii_size); // fills ii and modifies ii_size
 
     free(dx); free(dy);
 
     *lm_new = (double*) malloc( 2*ii_size * sizeof(double) ); // size: 2 x ii_size
-    for (size_t j = 0; j < 2; j++){
-        for(size_t k = 0; k < ii_size; k++){
-            // lm_new(j,k) = lm(j,ii[k]);
-            (*lm_new)[ j*ii_size + k ] = lm[ j*lm_cols + ii[k] ]; 
-        }
+    for(size_t i = 0; i < ii_size; i++){
+        // lm_new(i,j) = lm(ii[i],j);
+        (*lm_new)[ i*2 + 0 ] = lm[ ii[i]*2 + 0 ]; 
+        (*lm_new)[ i*2 + 1 ] = lm[ ii[i]*2 + 1 ]; 
     }
  
     int *idf_buff = (int*) malloc( ii_size * sizeof(int) );
@@ -69,22 +68,22 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
     free(ii);
 }
 
-// Just fills z which has size lm_cols x 2 and is allocated in the caller of this function
-void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_cols, double *z) 
+// Just fills z which has size lm_rows x 2 and is allocated in the caller of this function
+void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, double *z) 
 {
-    double *dx = (double*) malloc( lm_cols * sizeof(double) ); 
-    double *dy = (double*) malloc( lm_cols * sizeof(double) ); 
+    double *dx = (double*) malloc( lm_rows * sizeof(double) ); 
+    double *dy = (double*) malloc( lm_rows * sizeof(double) ); 
 
-    for (int j = 0; j < lm_cols; j++) {
-        dx[j] = lm[0*lm_cols+j] - x[0];
-        dy[j] = lm[1*lm_cols+j] - x[1];
+    for (int i = 0; i < lm_rows; i++) {
+        dx[i] = lm[i*2+0] - x[0];
+        dy[i] = lm[i*2+1] - x[1];
     }	
 
     double phi = x[2]; 
 
-    for (int j = 0; j < lm_cols; j++) {
-        z[j*2 + 0] = sqrt( pow(dx[j],2) + pow(dy[j],2) );
-        z[j*2 + 1] = atan2( dy[j], dx[j] ) - phi;	
+    for (int i = 0; i < lm_rows; i++) {
+        z[i*2 + 0] = sqrt( pow(dx[i],2) + pow(dy[i],2) );
+        z[i*2 + 1] = atan2( dy[i], dx[i] ) - phi;	
     }
 
     free(dx); free(dy);

@@ -15,14 +15,14 @@ int main() {
             const double rmax = 30; 
             const double x[3] = {0.674090417131751, -0.030904471130924017, -0.0073589032333721818};
             double z[4] = { };
-            size_t lm_cols = 35, nidf = 35;
+            size_t lm_rows = 35, nidf = 35;
 
             FILE* fp = fopen("inputfiles_test/lm.txt", "r"); 
             expect(fp != 0);
 
-            double *lm = (double*) malloc( 2*lm_cols * sizeof(double) ); 
-            for (size_t i = 0; i < lm_cols; i++) {
-                fscanf(fp, "%lf\t%lf\n", &lm[0*lm_cols+i], &lm[1*lm_cols+i]);
+            double *lm = (double*) malloc( 2*lm_rows * sizeof(double) ); 
+            for (size_t i = 0; i < lm_rows; i++) {
+                fscanf(fp, "%lf\t%lf\n", &lm[i*2+0], &lm[i*2+1]);
             }
 
             int *idf = (int*) malloc( nidf * sizeof(int) );
@@ -32,7 +32,7 @@ int main() {
 
             when("I call get_observations()") = [&] {
 
-                get_observations(x, rmax, lm, lm_cols, &idf, &nidf, z);
+                get_observations(x, rmax, lm, lm_rows, &idf, &nidf, z);
 
                 then("This is equal with the actual result") = [&] {
                     const double actual_z[4] = {25.77444969441645,
