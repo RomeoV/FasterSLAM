@@ -100,19 +100,19 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 
             //Compute (known) data associations
             int Nf = particles[0].Nfa;
-            vector<int> idf;
-            vector<Vector2d> zf;
-            vector<Vector2d> zn;            
+            int* idf;   // vector<int> 
+            double* zf; // vector<Vector2d>, use some counter for size ( zf.empty() )
+            double* zn; // vector<Vector2d>, use some counter for size ( zn.empty() )
 
             bool testflag = false;
-            data_associate_known(z, ftag_visible, da_table, Nf, zf, idf, zn);
+            data_associate_known(z, ftag_visible, da_table, Nf, zf, idf, zn); // TODO Rewrite/fix bugs + create test for this functions
 
             // perform update
             for (int i = 0; i < NPARTICLES; i++) {
                 if ( !zf.empty() ) { //observe map features
                     double w = compute_weight(&particles[i], zf, idf, *R);
-                    w = (*particles[i].w)*w;
-                    *particles[i].w = w;
+                    w *= particles[i].w[0];
+                    particles[i].w[0] = w;
                     feature_update(&particles[i], zf, idf, *R);
                 }
                 if ( !zn.empty() ) {
