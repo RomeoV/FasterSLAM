@@ -1,20 +1,13 @@
-#ifndef FASTSLAM2_SIM_H
-#define FASTSLAM2_SIM_H
-
+#pragma once
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <stdlib.h>
-#include <vector>
-#include <Eigen/Dense>
 
-#include "core/configfile.h"
-#include "core/compute_steering.h"
-#include "core/predict_true.h"
-#include "core/particle.h"
-
-using namespace std;
-using namespace Eigen;
+#include "configfile.h" // don't have it yet
+#include "compute_steering.h"
+#include "predict_true.h"
+#include "particle.h"
 
 /*!
     Calculates the particles and their positions. Mostly calls other functions.
@@ -31,6 +24,4 @@ vector<Particle> fastslam1_sim(MatrixXd lm, MatrixXd wp);
     @param[in]  rb        measurements
     @param[in]  xv        robot pose
  */
-MatrixXd make_laser_lines(vector<Vector2d> rb, Vector3d xv);
-
-#endif //FASTSLAM2_SIM_H
+// MatrixXd make_laser_lines(vector<Vector2d> rb, Vector3d xv);
