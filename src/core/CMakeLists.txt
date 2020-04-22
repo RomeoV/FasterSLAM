@@ -15,6 +15,7 @@ add_library(FasterSlamCore
   pi_to_pi.cpp
   predict.cpp
   predict_true.cpp
+  read_input_file.cpp
   resample_particles.cpp
   stratified_random.cpp
   stratified_resample.cpp
