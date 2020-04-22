@@ -1,10 +1,12 @@
 add_library(FasterSlamCore
   KF_cholesky_update.cpp
+  add_control_noise.cpp
   add_feature.cpp
   add_observation_noise.cpp
   compute_jacobians.cpp
   compute_steering.cpp
   compute_weight.cpp
+  data_associate_known.cpp
   example.cpp
   feature_update.cpp
   get_observations.cpp
@@ -15,10 +17,9 @@ add_library(FasterSlamCore
   predict.cpp
   predict_true.cpp
   resample_particles.cpp
+  read_input_file.cpp
   stratified_random.cpp
   stratified_resample.cpp
-  add_control_noise.cpp
-  data_associate_known.cpp
   transform_to_global.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
