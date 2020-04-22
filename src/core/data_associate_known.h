@@ -1,6 +1,4 @@
-#ifndef DATA_ASSOCIATE_KNOWN_H
-#define DATA_ASSOCIATE_KNOWN_H
-
+#pragma once
 #include "typedefs.h"
 
 /*!
@@ -19,7 +17,5 @@
 // z is vector<Vector2d>
 // idz is vector<int>
 // &table is VectorXd
-void data_associate_known(double* z, int* idz, double* table, int Nf, \
-						  double* zf, int* idf, double* zn); 
-
-#endif //DATA_ASSOCIATE_KNOWN_H
+void data_associate_known(double* z, int* idz, double* table, int Nf, 
+                          double* zf, int* idf, double* zn);

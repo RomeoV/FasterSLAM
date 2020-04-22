@@ -2,8 +2,8 @@
 
 // z is range and bearing of visible landmarks
 // todo <change table to int? seems there are no doubles>
-void data_associate_known(double* z, int* idz, double* table, int Nf, \
-						  double* zf, int* idf, double* zn)
+void data_associate_known(double* z, int* idz, double* table, int Nf, 
+                          double* zf, int* idf, double* zn)
 {
 	// we assume that Nf == number of known landmarks
 	// idf.clear();
