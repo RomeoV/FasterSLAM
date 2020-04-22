@@ -1,6 +1,7 @@
 #include "read_input_file.h"
 #include <fstream>
 #include <iostream>
+#include <sstream>
 
 void read_input_file(const string s, double *lm, double *wp) 
 {
@@ -14,10 +15,10 @@ void read_input_file(const string s, double *lm, double *wp)
 	ifstream in(s.c_str());
     
 	int lineno = 0;
-	int lm_rows =0;
-	int lm_cols =0;
-	int wp_rows =0;
-	int wp_cols =0;
+	//int lm_rows = 0;
+	//int lm_cols = 0;
+	//int wp_rows = 0;
+	//int wp_cols = 0;
     
 	while(in) {
 		lineno++;
@@ -43,11 +44,11 @@ void read_input_file(const string s, double *lm, double *wp)
 				std::cerr<<"line:"<<str<<std::endl;
 				exit(EXIT_FAILURE);
 			}		
-			lm_rows = strtof(tokens[1].c_str(),NULL);	
-			lm_cols = strtof(tokens[2].c_str(),NULL);
-            
-			lm->resize(lm_rows,lm_cols);	
-			for (int c =0; c<lm_cols; c++) {
+			// our matrix is num_elements (rows) * num_coordinates (columns)
+			int num_lm_coordinates = strtof(tokens[1].c_str(),NULL);
+			int num_lm_elements = strtof(tokens[2].c_str(),NULL);
+
+			for (int c =0; c<num_lm_elements; c++) {
 				lineno++;
 				if (!in) {
 					std::cerr<<"EOF after reading" << std::endl;
@@ -59,15 +60,15 @@ void read_input_file(const string s, double *lm, double *wp)
 				copy(istream_iterator<string>(line), 
                      istream_iterator<string>(), 
                      back_inserter<vector<string> > (tokens));
-				if(tokens.size() < lm_rows) {
+				if(tokens.size() < num_lm_coordinates) {
 					std::cerr<<"invalid line for lm coordinate!"<<std::endl;
 					std::cerr<<"Error occured on line "<<lineno<<std::endl;
 					std::cerr<<"line: "<<str<<std::endl;
 					exit(EXIT_FAILURE);
 				}
 				
-				for (unsigned r=0; r< lm_rows; r++) {
-					(*lm)(r,c) = strtof(tokens[r].c_str(),NULL);				
+				for (unsigned r=0; r < num_lm_coordinates; r++) {
+					lm[r*num_lm_coordinates+c] = strtof(tokens[r].c_str(),NULL);				
 				}				
 			}
 		}
@@ -78,10 +79,10 @@ void read_input_file(const string s, double *lm, double *wp)
 				std::cerr<<"line:"<<str<<std::endl;
 				exit(EXIT_FAILURE);
 			}
-			wp_rows = strtof(tokens[1].c_str(),NULL);	
-			wp_cols = strtof(tokens[2].c_str(),NULL);
-			wp->resize(wp_rows, wp_cols);	
-			for (int c =0; c<wp_cols; c++) {
+			int num_wp_coordinates = strtof(tokens[1].c_str(),NULL);	
+			int num_wp_elements = strtof(tokens[2].c_str(),NULL);
+
+			for (int c =0; c<num_wp_elements; c++) {
 				lineno++;
 				if (!in) {
 					std::cerr<<"EOF after reading" << std::endl;
@@ -93,15 +94,15 @@ void read_input_file(const string s, double *lm, double *wp)
 				copy(istream_iterator<string>(line), 
                      istream_iterator<string>(), 
                      back_inserter<std::vector<string> > (tokens));
-				if(tokens.size() < wp_rows) {
+				if(tokens.size() < num_wp_elements) {
 					std::cerr<<"invalid line for wp coordinate!"<<std::endl;
 					std::cerr<<"Error occured on line "<<lineno<<std::endl;
 					std::cerr<<"line: "<<str<<std::endl;
 					exit(EXIT_FAILURE);
 				}
                 
-				for (int r=0; r< lm_rows; r++) {
-					(*wp)(r,c) = strtof(tokens[r].c_str(),NULL);				
+				for (int r=0; r < num_wp_elements; r++) {
+					wp[r*num_wp_coordinates+c] = strtof(tokens[r].c_str(),NULL);				
 				}				
 			}
 		}
