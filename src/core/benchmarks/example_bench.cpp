@@ -15,7 +15,6 @@ void rands(double * m, size_t row, size_t col)
 void build(double **a, int m, int n)
 {
     *a = static_cast<double *>(aligned_alloc(32, m * n * sizeof(double))); //TODO: align this to 32
-    rands(*a, m, n);
 }
 
 void destroy(double * m)
@@ -53,6 +52,12 @@ void kernel_fast(double* A, double *x, double *y) {
 }
 
 
+void fill (double* A, double *x, double *y) {
+    rands(A,NR,NR);
+    rands(x,1,NR);
+    rands(y,1,NR);
+}
+
 int main() {
     // Initialize Input
     double *A, *x, *y;
@@ -65,17 +70,20 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&kernel_base)> bench("Example Benchmark");
 
+    // Set function to reload data for each benchmarked function
+    bench.data_loader = &fill;
+
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&kernel_base, "Kernel base", 3*NR*NR+NR);
     bench.add_function(&kernel_fast, "Kernel fast", 3*NR*NR+NR);
 
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(A,x,y);
 
     // Output is given when bench is destroyed (to change this behaviour, set bench.destructor_output=false). Optionally you can call bench.summary() to get it.
 
-    //If you want the summary to be written to a file, set bench.fout with your preferred ostream. (Default std::cout)
+    // If you want the summary to be written to a file, set bench.fout with your preferred ostream. (Default std::cout)
 
     // Free memory
     destroy(A);

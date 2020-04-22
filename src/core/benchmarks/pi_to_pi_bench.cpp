@@ -61,23 +61,33 @@ int main() {
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(angles[0]);
 
-
-    // Initialize the benchmark struct by declaring the type of the function you want to benchmark
+    
     Benchmark<decltype(lambda_pi_to_pi)> bench_lambda("pi_to_pi on array Benchmark");
 
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
+    // Add lambda functions to aggregate over range of inputs.
     bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", N*6);
     bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", N*6);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench_lambda.run_benchmark(angles);
 
-    // Output is given when bench is destroyed (to change this behaviour, set bench.destructor_output=false). Optionally you can call bench.summary() to get it.
+    
+    /*
+    // Alternative (much slower here, but nicer to look at. Generally useful if you want to average over a few inputs). Yields averages over all runs.
+    
+    Benchmark<decltype(&pi_to_pi)> multi_bench("pi_to_pi Benchmark");
 
-    //If you want the summary to be written to a file, set bench.fout with your preferred ostream. (Default std::cout)
+    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
+    // First function should always be the base case you want to benchmark against!
+    multi_bench.add_function(&pi_to_pi, "pi_to_pi", 6);
+    multi_bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 6);
 
-    // Free memory if necessary
+    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    for (int i = 0; i<N; i++) {
+        // You could set the data_loader function here to generate new input. multi_bench.data_loader =&my_load_func_i...
+        multi_bench.run_benchmark(angles[i]);
+    }
+    */
 
     return 0;
 }

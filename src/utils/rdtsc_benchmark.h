@@ -19,6 +19,7 @@
 //Macros (overwrite them in the benchmark if necessary)
 #define CYCLES_REQUIRED 1e8
 #define REP 50
+#define NUM_RUNS 100
 
 //headers
 template<typename comp_func,
@@ -33,13 +34,20 @@ template <typename comp_func>
 struct Benchmark {
     std::string name = "";
 
+    // Optional function that takes the same input as comp_func, and resets the data.
+    // Malloc should be done outside this function, here we only set values (fill arrays).
+    // We do this for comparability of benchmarks where funcs overwrite the input.
+    comp_func data_loader = nullptr;
+
     std::vector<comp_func> userFuncs;
     std::vector<std::string> funcNames;
 
     std::vector<int> funcFlops; //Work W
-    std::vector<double> cycles; //Runtime T
+    std::vector<double> cycles; // Sum of runtimes over all runs T
     std::vector<double> speedups; //Speedup S
     std::vector<double> performances; //Performance P
+
+    int num_runs = 0;
 
     bool desctructor_output = true;
 
@@ -57,47 +65,59 @@ struct Benchmark {
 
     template <typename ... Args>
     void run_benchmark(Args&&... args) {
-
-        if (!performances.empty()) {
-            performances.clear();
-            cycles.clear();
-            speedups.clear();
+        
+        
+        num_runs++;
+        if (performances.empty()) {
+            performances.resize(numFuncs, 0.0);
+            cycles.resize(numFuncs, 0.0);
+            speedups.resize(numFuncs, 0.0);
+            speedups[0] = 1.0 ; //Reference function at index 0
         }
 
+        
         for (int i = 0; i < numFuncs; i++)
         {
-            double T = measure_cycles(userFuncs[i],std::forward<Args>(args)...);
+            if (data_loader) {
+                data_loader(std::forward<Args>(args)...);
+            }
+            double T =cycles[i] + measure_cycles(userFuncs[i],std::forward<Args>(args)...);
 
-            performances.push_back(funcFlops[i]/T);
-            cycles.push_back(T);
+            cycles[i] = T;
+            
+            performances[i] = funcFlops[i] * double(num_runs) / T ;
 
-            if (i== 0) {
-                speedups.push_back(1.0);
-            } else {
-                speedups.push_back(cycles[0]/T);
+            if (i > 0) {
+                speedups[i] = cycles[0]/T;
             }
         }
     }
 
     void run_benchmark() {
-
-        if (!performances.empty()) {
-            performances.clear();
-            cycles.clear();
-            speedups.clear();
-        }
         
+        num_runs++;
+        std::cerr<<num_runs<<std::endl;
+        if (performances.empty()) {
+            performances.resize(numFuncs, 0.0);
+            cycles.resize(numFuncs, 0.0);
+            speedups.resize(numFuncs, 0.0);
+            speedups[0] = 1.0 ; //Reference function at index 0
+        }
+
         for (int i = 0; i < numFuncs; i++)
         {
-            double T = measure_cycles(userFuncs[i]);
+            if (data_loader) {
+                data_loader();
+            }
 
-            performances.push_back(funcFlops[i]/T);
-            cycles.push_back(T);
+            double T = cycles[i] + measure_cycles(userFuncs[i]);
 
-            if (i== 0) {
-                speedups.push_back(1.0);
-            } else {
-                speedups.push_back(cycles[0]/T);
+            cycles[i] = T;
+            
+            performances[i] = funcFlops[i] * double(num_runs) / T ;
+
+            if (i > 0) {
+                speedups[i] = cycles[0]/T;
             }
         }
     }
@@ -105,7 +125,7 @@ struct Benchmark {
     void summary(){
         assert(!performances.empty());
 
-        fout<<name<<":"<<std::endl;
+        fout<<name<<" ("<<num_runs<<" runs, avg):"<<std::endl;
         const int cell_width = 17;
         const char* separator = " | ";
         const char* underline = "\033[4m";
@@ -122,7 +142,7 @@ struct Benchmark {
             fout<<no_underline<<separator<<prd(i, 0,2)
                                     <<separator<<left(funcNames[i],30)
                                     <<separator<<prd(funcFlops[i], 0, cell_width)
-                                    <<separator<<prd(cycles[i], 4, cell_width) 
+                                    <<separator<<prd(cycles[i] / num_runs, 4, cell_width) 
                                     <<separator<<prd(performances[i], 4, cell_width) 
                                     <<separator<<prd(speedups[i], 4, cell_width) 
                                     <<separator<<std::endl;
@@ -143,7 +163,7 @@ template<typename comp_func,
          typename ... Args>
 double measure_cycles(comp_func f, Args&&... args) {
     double cycles = 0.;
-    long num_runs = 100;
+    long num_runs = NUM_RUNS;
     double multiplier = 1;
     myInt64 start, end;
 
@@ -191,7 +211,7 @@ double measure_cycles(comp_func f, Args&&... args) {
 template<typename comp_func>
 double measure_cycles(comp_func f) {
     double cycles = 0.;
-    long num_runs = 100;
+    long num_runs = NUM_RUNS;
     double multiplier = 1;
     myInt64 start, end;
 
