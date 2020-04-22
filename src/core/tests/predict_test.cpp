@@ -1,6 +1,7 @@
 #include "predict.h"  // import file to test
 #include <math.h>
 #include <random>
+#include "configfile.h"
 
 #include "ut.hpp"
 using namespace boost::ut;
@@ -9,6 +10,7 @@ using namespace boost::ut::bdd;
 int main() {
     "predict"_test = [] {
         given("I have a particle at position (x=1,y=1,theta=pi/2)") = [] {
+            SWITCH_PREDICT_NOISE = 0;
             double initial_pos[3] = {1, 1, M_PI/2};
             Particle p{.xv = {1, 1, M_PI/2}};
 

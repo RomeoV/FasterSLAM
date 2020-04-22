@@ -1,5 +1,7 @@
+#include "configfile.h"
 #include "predict.h"
 #include "pi_to_pi.h"
+#include "multivariate_gauss.h"
 #include <cmath>
 
 /*****************************************************************************
@@ -21,6 +23,13 @@
 void predict(Particle &particle, double V, double G, Matrix2d Q, double dt) {
     // Turn first, move forwards after
     // \todo Noise on input (Maybe the noise should be added at anothere place in the code?)
+	if (SWITCH_PREDICT_NOISE == 1) {
+		Vector2d mu = {0, 0};
+		Vector2d noise;
+		multivariate_gauss(mu,Q,noise);	
+		V += noise[0];
+		G += noise[1];
+	}	
     
     double& theta = particle.xv[2];
     theta = pi_to_pi(theta + G);

@@ -22,14 +22,14 @@
 double pi_to_pi(double ang) 
 {
     int n;
-    if ((ang < (-M_PI)) || (ang > (M_PI))) {
+    if ((ang <= (-M_PI)) || (ang > (M_PI))) {
         n=floor(ang/(2*M_PI));
         ang = ang-n*(2*M_PI);    
  
         if (ang > M_PI) {
             ang = ang - (2*M_PI);
         }
-        if (ang < -M_PI) {
+        if (ang <= -M_PI) {
             ang = ang + (2*M_PI);
         }
     }
@@ -53,6 +53,6 @@ double pi_to_pi_fmod(double ang) {
      * https://stackoverflow.com/questions/13683563/whats-the-difference-between-mod-and-remainder
      */
     double tmp = fmod(ang+M_PI, 2*M_PI);
-    if (tmp < 0) tmp += 2*M_PI;
+    if (tmp <= 0) tmp += 2*M_PI;
     return tmp - M_PI;
 }

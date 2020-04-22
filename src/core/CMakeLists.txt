@@ -5,6 +5,7 @@ add_library(FasterSlamCore
   compute_jacobians.cpp
   compute_steering.cpp
   compute_weight.cpp
+  configfile.cpp
   example.cpp
   feature_update.cpp
   get_observations.cpp
@@ -14,9 +15,13 @@ add_library(FasterSlamCore
   pi_to_pi.cpp
   predict.cpp
   predict_true.cpp
+  read_input_file.cpp
   resample_particles.cpp
   stratified_random.cpp
   stratified_resample.cpp
+  add_control_noise.cpp
+  data_associate_known.cpp
+  transform_to_global.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

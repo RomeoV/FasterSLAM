@@ -6,4 +6,5 @@ build
 *.out
 *.gch
 doc
+.DS_Store
 *-checkpoint.ipynb

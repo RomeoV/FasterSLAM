@@ -18,6 +18,7 @@ int main() {
             size_t lm_cols = 35, nidf = 35;
 
             FILE* fp = fopen("inputfiles_test/lm.txt", "r"); 
+            expect(fp != 0);
 
             double *lm = (double*) malloc( 2*lm_cols * sizeof(double) ); 
             for (size_t i = 0; i < lm_cols; i++) {
