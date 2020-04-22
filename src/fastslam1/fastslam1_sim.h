@@ -4,7 +4,7 @@
 #include <sstream>
 #include <stdlib.h>
 
-#include "configfile.h" // don't have it yet
+#include "configfile.h"
 #include "compute_steering.h"
 #include "predict_true.h"
 #include "particle.h"

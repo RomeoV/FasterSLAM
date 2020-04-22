@@ -1,4 +1,5 @@
 add_library(FasterSlamLib
+  fastslam1_utils.cpp
   fastslam1_sim.cpp
 )
 target_include_directories(FasterSlamLib PUBLIC
