@@ -22,14 +22,13 @@ void setup_initial_Q_R() {
 }
 
 void setup_initial_vehicle(Vehicle* v) {
-    Vector3d xtrue_initial = {0.0, 0.0, 0.0};
-    copy(v->xtrue, 3, xtrue_initial);
+    cVector3d xtrue_initial = {0.0, 0.0, 0.0};
+    copy(xtrue_initial, 3, v->xtrue);
 
-    double veh_initial[2][3] = { {0,-WHEELBASE,-WHEELBASE}, {0,-1,1} };
-    copy(*(v->veh), 2*3, *veh_initial);
+    const double veh_initial[2][3] = { {0,-WHEELBASE,-WHEELBASE}, {0,-1,1} };
+    copy(*veh_initial, 2*3, *(v->veh));
 
-    v->V = 0; // \todo
-    v->alpha = 0.0;  // along global coordinate x axis
+    v->V = V; // from config
 }
 
 void setup_initial_particles(Particle **p_, double **w_, const size_t N_features) {

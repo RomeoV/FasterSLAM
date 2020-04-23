@@ -29,7 +29,7 @@ void compute_jacobians(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-  Vector3d& xv = particle->xv;
+  // Vector3d& xv = particle->xv;
 
   // vector<Vector2d> xf;
   // vector<Matrix2d> Pf;
@@ -46,8 +46,8 @@ void compute_jacobians(Particle* particle,
   double dx, dy, d2, d;
 
   for (size_t i = 0; i < N_z; i++) {
-    dx = xf[i][0] - xv[0];
-    dy = xf[i][1] - xv[1];
+    dx = xf[i][0] - particle->xv[0];
+    dy = xf[i][1] - particle->xv[1];
     d2 = pow(dx, 2) + pow(dy, 2);
     d = sqrt(d2);
 
@@ -55,7 +55,7 @@ void compute_jacobians(Particle* particle,
 
     // predicted observation
     zp_vec[0] = d;
-    zp_vec[1] = atan2(dy, dx) - xv[2];
+    zp_vec[1] = atan2(dy, dx) - particle->xv[2];
     zp_vec[1] = pi_to_pi(zp_vec[1]);
     copy(zp_vec, 2, zp[i]);
 

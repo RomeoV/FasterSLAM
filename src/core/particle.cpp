@@ -20,6 +20,8 @@
  ****************************************************************************/
 
 void initParticle(Particle* p, const size_t Nf) {
+	Vector3d xv_initial = {0., 0., 0.};
+	copy(xv_initial, 3, p->xv);
 
 	p->xf = (double*) malloc (2* Nf * sizeof (double));
     if (p->xf == NULL) {
