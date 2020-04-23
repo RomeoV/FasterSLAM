@@ -13,7 +13,6 @@
 #include "predict.h"
 #include "resample_particles.h"
 #include "fastslam1_utils.h"
-// #include "line_plot_conversion.h" //don't need this?
 
 int counter = 0;
 
@@ -69,25 +68,23 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
         predict_true(vehicle_gt.V, vehicle_gt.alpha, WHEELBASE, dt, xv);
 
         // add process noise
-        double* VnGn = new double[2];        
+        double VnGn[2];
         add_control_noise(vehicle_gt.V, vehicle_gt.alpha, *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
-        double Vn = VnGn[0];
-        double Gn = VnGn[1];
 
         // Predict step	
-        for (unsigned int i = 0; i < NPARTICLES; i++) {
-            predict(&particles[i], Vn, Gn, *Q, dt);
+        for (size_t i = 0; i < NPARTICLES; i++) {
+            predict(&particles[i], VnGn[0], VnGn[1], *Q, dt);
         }
 
 //////////////////////////////////////////////////////////////////////////
         //Observe step
-        dtsum = dtsum+dt;
-        if (dtsum >= DT_OBSERVE) {
-            dtsum=0;
+        dtsum = dtsum + dt;
+        if ( dtsum >= DT_OBSERVE ) {
+            dtsum = 0;
 ///////////////////////////////////////////////////////////////////////////////////
 // observe()
 //////////////////////////////////////////////////////////////////////////
-            //Compute true data, then add noise
+            // Compute true data, then add noise
             // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
             memcpy(ftag_visible, ftag, N_features*sizeof(int));
 
@@ -96,24 +93,14 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             get_observations(vehicle_gt.xtrue, MAX_RANGE, lm, N_features, &ftag_visible, &N_measurements, z); // N_measurements = number of visible features
             add_observation_noise(z, N_measurements, *R, SWITCH_SENSOR_NOISE);
 
-//            if (!z.empty()){
-//                plines = make_laser_lines(z,xtrue);
-//            }
-
             //Compute (known) data associations
-            int Nf_known = particles[0].Nfa; // >= N_measurements
-//            int* idf = NULL;   // vector<int> 
-//            double* zf = NULL; // vector<Vector2d>, use some counter for size ( zf.empty() )
-//            double* zn = NULL; // vector<Vector2d>, use some counter for size ( zn.empty() )
-
-            bool testflag = false;
-            // N_measurements -> idz_size
+            const int Nf_known = particles[0].Nfa; // >= N_measurements -> idz_size
             size_t count_zf = 0;
             size_t count_zn = 0;
             data_associate_known(z, ftag_visible, N_measurements, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
 
             // perform update
-            for (int i = 0; i < NPARTICLES; i++) {
+            for (size_t i = 0; i < NPARTICLES; i++) {
                 if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
                     double w = compute_weight(&particles[i], zf, N_measurements, idf, *R);
                     w *= *( particles[i].w );
@@ -125,12 +112,8 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
                 }
             }
 
-            // resample_particles(particles,NEFFECTIVE); \todo what's with NEFFECTIVE?
             resample_particles(particles, NPARTICLES, weights);
 
-            if (VnGn) { 
-                delete[] VnGn;
-            }
 ///////////////////////////////////////////////////////////////////////////////////
         }
     }
