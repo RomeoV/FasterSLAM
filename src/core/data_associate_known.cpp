@@ -10,8 +10,8 @@
 // vector<Vector2d> &zf
 // vector<int> &idf
 // vector<Vector2d> &zn
-void data_associate_known(const double* z, const int* idz, const size_t idz_size, 
-        double* table, const int Nf_known, double *zf, int *idf, size_t *count_zf, double *zn, size_t *count_zn) 
+void data_associate_known(cVector2d z[], const int* idz, const size_t idz_size, 
+        double* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn) 
 {
     // zn and zf are always allocated but considered empty in this step
     // idf.clear(); // dealloc or just set to zero 
@@ -24,8 +24,8 @@ void data_associate_known(const double* z, const int* idz, const size_t idz_size
         ii = idz[i];
         if ( table[ii] == -1 ) { // new feature
             // zn.push_back(z[i]); // z[i] is vector2d
-            zn[2*(*count_zn)+0] = z[i*2+0];
-            zn[2*(*count_zn)+1] = z[i*2+1];
+            zn[2*(*count_zn)+0] = z[i][0]; // \todo ???
+            zn[2*(*count_zn)+1] = z[i][1];
             // idn.push_back(ii);				
             idn[*count_zn] = ii;
             (*count_zn)++;

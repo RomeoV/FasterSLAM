@@ -18,7 +18,7 @@
  * Status: TBD
  ****************************************************************************/
 
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, double *z)
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, Vector2d (*z))
 {
     double *lm_new;
     get_visible_landmarks(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
@@ -69,7 +69,7 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
 }
 
 // Just fills z which has size lm_rows x 2 and is allocated in the caller of this function
-void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, double *z) 
+void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, Vector2d (*z)) 
 {
     double *dx = (double*) malloc( lm_rows * sizeof(double) ); 
     double *dy = (double*) malloc( lm_rows * sizeof(double) ); 
@@ -82,8 +82,8 @@ void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, 
     double phi = x[2]; 
 
     for (int i = 0; i < lm_rows; i++) {
-        z[i*2 + 0] = sqrt( pow(dx[i],2) + pow(dy[i],2) );
-        z[i*2 + 1] = atan2( dy[i], dx[i] ) - phi;	
+        z[i][0] = sqrt( pow(dx[i],2) + pow(dy[i],2) );
+        z[i][1] = atan2( dy[i], dx[i] ) - phi;	
     }
 
     free(dx); free(dy);

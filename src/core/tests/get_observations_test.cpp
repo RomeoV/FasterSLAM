@@ -14,7 +14,7 @@ int main() {
         given("I have some arguments") = [] {
             const double rmax = 30; 
             const double x[3] = {0.674090417131751, -0.030904471130924017, -0.0073589032333721818};
-            double z[4] = { };
+            Vector2d z[2];
             size_t lm_rows = 35, nidf = 35;
 
             FILE* fp = fopen("inputfiles_test/lm.txt", "r"); 
@@ -40,7 +40,7 @@ int main() {
                                                 25.276107769232738,
                                                 0.13836675004531551};
                     for (int i = 0; i < 4; i++) {    
-                        expect(fabs(z[i] - actual_z[i]) < 1e-06) << std::setprecision(12) << z[i] << " != " << actual_z[i];
+                        expect(fabs(z[i/2][i%2] - actual_z[i]) < 1e-06) << std::setprecision(12) << z[i] << " != " << actual_z[i];
                     }
                 };
             };

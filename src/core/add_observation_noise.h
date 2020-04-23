@@ -7,4 +7,4 @@
   @param[in]  R        	Covariance matrix of observation (diagonal).
   @param[in]  addnoise	Flag if obersvation noise should be added.
   */
-void add_observation_noise(double *z, const int zlen, cMatrix2d R, const int addnoise);
+void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise);

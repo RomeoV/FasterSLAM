@@ -13,11 +13,11 @@ int main() {
     "data_associate_known"_test = [] {
         given("I have some arguments") = [] {
 
-            const double z[4] = {25.783699379426974, -1.4642259491817695,
-                                 25.286434348683521, 0.14502450890426782};
+            cVector2d z[2] = {{25.783699379426974, -1.4642259491817695}, 
+                               {25.286434348683521, 0.14502450890426782}};
             const int idz[2] = {0, 21};
-            double zf[70] = {}; // will be modified in func
-            double zn[70] = {}; // will be modified in func
+            Vector2d zf[35]; // will be modified in func
+            Vector2d zn[35]; // will be modified in func
             int idf[35] = {};   // will be modified in func
             size_t count_zf = 0;
             size_t count_zn = 0;

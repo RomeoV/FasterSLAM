@@ -35,9 +35,12 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     double *da_table;
     setup_landmarks(&ftag, &da_table, N_features);
 
-    double *z, *zf, *zn; // range and bearings of visible landmarks ( vector<Vector2d> )
+    double *z_, *zf_, *zn_; // range and bearings of visible landmarks ( vector<Vector2d> )
+    Vector2d (*z);  // This is a dynamic array of Vector2d - see https://stackoverflow.com/a/13597383/5616591
+    Vector2d (*zf);
+    Vector2d (*zn);
     int *idf, *ftag_visible;
-    setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
+    setup_measurements(&(z), &(zf), &(zn), &idf, &ftag_visible, N_features);
 
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
@@ -112,13 +115,13 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             // perform update
             for (int i = 0; i < NPARTICLES; i++) {
                 if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-                    double w = compute_weight(&particles[i], zf, idf, *R);
+                    double w = compute_weight(&particles[i], zf, N_measurements, idf, *R);
                     w *= particles[i].w[0];
                     particles[i].w[0] = w;
-                    feature_update(&particles[i], zf, idf, *R);
+                    feature_update(&particles[i], zf, N_measurements, idf, *R);
                 }
                 if ( count_zn != 0 ) { // !zn.empty() 
-                    add_feature(&particles[i], zn, *R);
+                    add_feature(&particles[i], zn, N_measurements, *R);
                 }
             }
 
