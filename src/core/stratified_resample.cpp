@@ -1,5 +1,6 @@
 #include "stratified_resample.h"
 #include "stratified_random.h"
+#include "linalg.h"
 
 #include <math.h>
 #include <stdio.h>
@@ -20,7 +21,11 @@
  * Status: TBD
  ****************************************************************************/
 
-void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep) {
+void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    // create local copy
+    double *w = (double *) malloc( N_w * sizeof(double) ); 
+    copy(w_, N_w, w);
+
     double wsum = 0.0;
     double wsqrd_sum = 0.0;
 
@@ -51,7 +56,7 @@ void stratified_resample(double* w, const size_t N_w, double* Neff, size_t* keep
     
 
     free(select);
-    
+    free(w);    
 }
 
 /*****************************************************************************

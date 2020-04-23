@@ -1,4 +1,5 @@
 #include "stratified_resample.h"
+#include <iostream>
 #include <cassert>
 #include <cmath>
 #include "resample_particles.h"
@@ -50,7 +51,7 @@ void resample_particles(Particle* particles, size_t N, double* weights)
     // Note that particles that kopy itself (i.e. `keep_indices[i] == i`) will stay in the
     // DAG forever and will thus not be copied --- but luckily they already contain exactly
     // what they should contain!
-    size_t keep_indices[N];  // can be seen as dependencies
+    size_t keep_indices[N] = { };  // can be seen as dependencies   
     stratified_resample(weights, N, &Neff, keep_indices);
 
     int count[N];
