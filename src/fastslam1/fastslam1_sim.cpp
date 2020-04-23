@@ -51,6 +51,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     double dt        = DT_CONTROLS; // change in time btw predicts
     double dtsum     = 0;           // change in time since last observation
     int iwp          = 0;           // index to first waypoint
+    double G         = 0;           // initialize steering angle
 
     // Main loop
     while ( iwp != -1 ) {
