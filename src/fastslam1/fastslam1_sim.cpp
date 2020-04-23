@@ -85,11 +85,19 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 //////////////////////////////////////////////////////////////////////////
             // Compute true data, then add noise
             // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
-            memcpy(ftag_visible, ftag, N_features*sizeof(int));
+            // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+            for (size_t i = 0; i < N_features; i++) {
+                ftag_visible[i] = ftag[i];
+            }
 
             //z is the range and bearing of the observed landmark
             size_t N_measurements;
-            get_observations(vehicle_gt.xtrue, MAX_RANGE, lm, N_features, &ftag_visible, &N_measurements, z); // N_measurements = number of visible features
+            get_observations(vehicle_gt.xtrue, MAX_RANGE, lm, N_features, ftag_visible, &N_measurements, z); // N_measurements = number of visible features
+            
+            if ( N_measurements == 0 ) {
+                continue;
+            }
+            
             add_observation_noise(z, N_measurements, *R, SWITCH_SENSOR_NOISE);
 
             //Compute (known) data associations

@@ -18,17 +18,19 @@
  * Status: TBD
  ****************************************************************************/
 
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, Vector2d z[])
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
 {
-    double *lm_new;
+    double *lm_new = NULL;
     get_visible_landmarks(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
-    compute_range_bearing(x, lm_new, *nidf, z);	
-    free(lm_new);
+    if ( lm_new != NULL ) {
+        compute_range_bearing(x, lm_new, *nidf, z);	
+        free(lm_new);
+    }
 }
 
 
 // lm is a double matrix of dimension nlm x 2
-void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int **idf, size_t *nidf)
+void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
 {
     //select set of landmarks that are visible within vehicle's 
     //semi-circular field of view
@@ -51,21 +53,31 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
 
     free(dx); free(dy);
 
-    *lm_new = (double*) malloc( 2*ii_size * sizeof(double) ); // size: 2 x ii_size
-    for(size_t i = 0; i < ii_size; i++){
-        // lm_new(i,j) = lm(ii[i],j);
-        (*lm_new)[ i*2 + 0 ] = lm[ ii[i]*2 + 0 ]; 
-        (*lm_new)[ i*2 + 1 ] = lm[ ii[i]*2 + 1 ]; 
+    if ( ii_size != 0 ) {
+
+        *lm_new = (double*) malloc( 2*ii_size * sizeof(double) ); // size: 2 x ii_size
+        
+        for(size_t i = 0; i < ii_size; i++){
+            // lm_new(i,j) = lm(ii[i],j);
+            (*lm_new)[ i*2 + 0 ] = lm[ ii[i]*2 + 0 ]; 
+            (*lm_new)[ i*2 + 1 ] = lm[ ii[i]*2 + 1 ]; 
+        }
+    
+        // use buffer for reordering + copy 
+        int *idf_buff = (int*) malloc( ii_size * sizeof(int) );
+        // store reordering to buffer
+        for(int i = 0; i < ii_size; i++) {
+            idf_buff[i] = idf[ ii[i] ];
+        }
+        // copy back to idf
+        for (int i = 0; i < ii_size; i++) {
+            idf[i] = idf_buff[i];
+        }
+        // dealloc buffer 
+        free( idf_buff );
     }
- 
-    int *idf_buff = (int*) malloc( ii_size * sizeof(int) );
 
-    for(int i = 0; i < ii_size; i++) {
-        idf_buff[i] = (*idf)[ ii[i] ];
-    }
-
-    free(*idf); *idf = idf_buff; idf_buff = NULL; *nidf = ii_size;
-
+    *nidf = ii_size;
     free(ii);
 }
 

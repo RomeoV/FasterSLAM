@@ -32,7 +32,7 @@ int main() {
 
             when("I call get_observations()") = [&] {
 
-                get_observations(x, rmax, lm, lm_rows, &idf, &nidf, z);
+                get_observations(x, rmax, lm, lm_rows, idf, &nidf, z);
 
                 then("This is equal with the actual result") = [&] {
                     const double actual_z[4] = {25.77444969441645,
