@@ -46,7 +46,7 @@ double compute_weight(Particle* particle,
   double w = 1.0;
 
   double den, num;
-  // this can probbaly be done alot faster without this loop.....
+  // this can probably be done alot faster without this loop.....
   for (size_t i = 0; i < N_z; i++) {
 
     // Eq. 61 in Thrun03g
@@ -57,8 +57,8 @@ double compute_weight(Particle* particle,
 
     Vector2d S_inv_v;
     double vT_S_inv_v;
-    mul(S_inv, v[i], 3, 3, 1, S_inv_v);
-    mul(v[i], S_inv_v, 1, 3, 1, &vT_S_inv_v);
+    mul(S_inv, v[i], 2, 2, 1, S_inv_v);
+    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v);
 
     den = 2 * M_PI * sqrt(determinant_2x2(S));
     num = exp(-0.5 * vT_S_inv_v);
