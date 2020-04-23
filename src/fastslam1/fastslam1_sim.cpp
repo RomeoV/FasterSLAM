@@ -12,7 +12,6 @@
 #include "linalg.h"
 #include "predict.h"
 #include "resample_particles.h"
-#include "transform_to_global.h"
 #include "fastslam1_utils.h"
 // #include "line_plot_conversion.h" //don't need this?
 
@@ -36,9 +35,9 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     double *da_table;
     setup_landmarks(&ftag, &da_table, N_features);
 
-    double *z; // range and bearings of visible landmarks ( vector<Vector2d> )
-    int *ftag_visible;
-    setup_measurements(&z, &ftag_visible, N_features);
+    double *z, *zf, *zn; // range and bearings of visible landmarks ( vector<Vector2d> )
+    int *idf, *ftag_visible;
+    setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
 
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
@@ -91,31 +90,34 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 
             //z is the range and bearing of the observed landmark
             size_t N_measurements;
-            get_observations(vehicle_gt.xtrue, MAX_RANGE, lm, N_features, &ftag_visible, &N_measurements, z);
-            add_observation_noise(z, N_measurements, *R,SWITCH_SENSOR_NOISE);
+            get_observations(vehicle_gt.xtrue, MAX_RANGE, lm, N_features, &ftag_visible, &N_measurements, z); // N_measurements = number of visible features
+            add_observation_noise(z, N_measurements, *R, SWITCH_SENSOR_NOISE);
 
 //            if (!z.empty()){
 //                plines = make_laser_lines(z,xtrue);
 //            }
 
             //Compute (known) data associations
-            int Nf = particles[0].Nfa;
-            int* idf;   // vector<int> 
-            double* zf; // vector<Vector2d>, use some counter for size ( zf.empty() )
-            double* zn; // vector<Vector2d>, use some counter for size ( zn.empty() )
+            int Nf_known = particles[0].Nfa; // >= N_measurements
+//            int* idf = NULL;   // vector<int> 
+//            double* zf = NULL; // vector<Vector2d>, use some counter for size ( zf.empty() )
+//            double* zn = NULL; // vector<Vector2d>, use some counter for size ( zn.empty() )
 
             bool testflag = false;
-            data_associate_known(z, ftag_visible, da_table, Nf, zf, idf, zn); // TODO Rewrite/fix bugs + create test for this functions
+            // N_measurements -> idz_size
+            size_t count_zf = 0;
+            size_t count_zn = 0;
+            data_associate_known(z, ftag_visible, N_measurements, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
 
             // perform update
             for (int i = 0; i < NPARTICLES; i++) {
-                if ( !zf.empty() ) { //observe map features
+                if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
                     double w = compute_weight(&particles[i], zf, idf, *R);
                     w *= particles[i].w[0];
                     particles[i].w[0] = w;
                     feature_update(&particles[i], zf, idf, *R);
                 }
-                if ( !zn.empty() ) {
+                if ( count_zn != 0 ) { // !zn.empty() 
                     add_feature(&particles[i], zn, *R);
                 }
             }

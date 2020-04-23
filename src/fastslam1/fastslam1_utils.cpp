@@ -71,12 +71,19 @@ void cleanup_landmarks(int **ftag_, double **da_table_) {
 }
 
 // Measurements
-void setup_measurements(double **z, int **ftag_visible, const size_t N_features) {
+void setup_measurements(double **z, double **zf, double **zn, int **idf, 
+        int **ftag_visible, const size_t N_features) {
     *z = (double*) malloc( 2 * N_features * sizeof(double) );
+    *zf = (double*) malloc( 2 * N_features * sizeof(double) );
+    *zn = (double*) malloc( 2 * N_features * sizeof(double) );
+    *idf = (int*) malloc( N_features * sizeof(int) );
     *ftag_visible = (int*) malloc( N_features * sizeof(int) );
 }
 
-void cleanup_measurements(double **z, size_t **ftag_visible) {
+void cleanup_measurements(double **z, double **zf, double **zn, int **idf, int **ftag_visible) {
     free(*z);
+    free(*zf);
+    free(*zn);
+    free(*idf);
     free(*ftag_visible);
 }
