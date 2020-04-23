@@ -17,7 +17,7 @@
  */
 void fastslam1_sim(double* lm, const size_t lm_rows, const size_t lm_cols, 
                    double* wp, const size_t wp_rows, const size_t wp_cols, 
-                   Particle *particle);
+                   Particle **particle);
 /*!
     Makes laser lines (calculate but not used in fastslam1_sim).
     It generates a plot with line_plot_conversion.
