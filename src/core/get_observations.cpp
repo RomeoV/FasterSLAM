@@ -18,13 +18,14 @@
  * Status: TBD
  ****************************************************************************/
 
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, Vector2d (*z))
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int **idf, size_t *nidf, Vector2d z[])
 {
     double *lm_new;
     get_visible_landmarks(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
     compute_range_bearing(x, lm_new, *nidf, z);	
     free(lm_new);
 }
+
 
 // lm is a double matrix of dimension nlm x 2
 void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int **idf, size_t *nidf)
@@ -69,7 +70,7 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
 }
 
 // Just fills z which has size lm_rows x 2 and is allocated in the caller of this function
-void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, Vector2d (*z)) 
+void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
 {
     double *dx = (double*) malloc( lm_rows * sizeof(double) ); 
     double *dy = (double*) malloc( lm_rows * sizeof(double) ); 

@@ -24,16 +24,16 @@ void data_associate_known(cVector2d z[], const int* idz, const size_t idz_size,
         ii = idz[i];
         if ( table[ii] == -1 ) { // new feature
             // zn.push_back(z[i]); // z[i] is vector2d
-            zn[2*(*count_zn)+0] = z[i][0]; // \todo ???
-            zn[2*(*count_zn)+1] = z[i][1];
+            zn[*count_zn][0] = z[i][0];
+            zn[*count_zn][1] = z[i][1];
             // idn.push_back(ii);				
             idn[*count_zn] = ii;
             (*count_zn)++;
         }
         else {
             // zf.push_back(z[i]); // z[i] is vector2d
-            zf[2*(*count_zf)+0] = z[i*2+0];
-            zf[2*(*count_zf)+1] = z[i*2+1];
+            zf[*count_zf][0] = z[i][0];
+            zf[*count_zf][1] = z[i][1];
             // idf.push_back( table[ii] );
             idf[*count_zf] = table[ii];
             (*count_zf)++;

@@ -23,10 +23,11 @@ int main() {
                 add_observation_noise(z, zlen, R, addnoise);
 
                 then("This is equal with the actual result") = [&] {
-                    const double actual_z[4] = {25.791968854179345, -1.4749004792119464, 25.206177150152218, 0.14779058881507551};
+                    Vector2d actual_z[2] = {{25.791968854179345, -1.4749004792119464},
+                                            {25.206177150152218, 0.14779058881507551}};
                     for (int i = 0; i < zlen; i++) {    
-                        expect(fabs(z[i/2][i%2] - actual_z[i*2+0]) < 1e-10);
-                        expect(fabs(z[i/2][i%2] - actual_z[i*2+1]) < 1e-10);
+                        expect(fabs(z[i][0] - actual_z[i][0]) < 1e-10);
+                        expect(fabs(z[i][1] - actual_z[i][1]) < 1e-10);
                     }
                 };
             };
