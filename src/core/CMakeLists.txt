@@ -21,7 +21,6 @@ add_library(FasterSlamCore
   stratified_resample.cpp
   add_control_noise.cpp
   data_associate_known.cpp
-  transform_to_global.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

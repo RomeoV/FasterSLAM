@@ -15,7 +15,7 @@ void data_associate_known(const double* z, const int* idz, const size_t idz_size
 {
     // zn and zf are always allocated but considered empty in this step
 	// idf.clear(); // dealloc or just set to zero 
-	int *idn = (int*) malloc(*count_zn * sizeof(int));
+	int *idn = (int*) malloc(idz_size * sizeof(int));
 
     int i = 0, ii = 0;
     *count_zn = 0;
