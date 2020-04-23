@@ -58,17 +58,19 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 // ground_truth_update()
 //////////////////////////////////////////////////////////////////////////
         
-        compute_steering(vehicle_gt.xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, &iwp, &vehicle_gt.alpha);
+        double steering_angle;
+        compute_steering(vehicle_gt.xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, &iwp, &steering_angle);
         if ( iwp == -1 && NUMBER_LOOPS > 1 ) {
             iwp = 0;
             NUMBER_LOOPS--;
         }
         Vector2d xv;
-        predict_true(vehicle_gt.V, vehicle_gt.alpha, WHEELBASE, dt, xv);
+        // predict_true(vehicle_gt.V, vehicle_gt.alpha, WHEELBASE, dt, xv);
+        predict_true(&vehicle_gt, steering_angle, dt, &vehicle_gt.xtrue);
 
         // add process noise
         double VnGn[2];
-        add_control_noise(vehicle_gt.V, vehicle_gt.alpha, *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+        add_control_noise(vehicle_gt.V, vehicle_gt.xtrue[2], *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
 
         // Predict step	
         for (size_t i = 0; i < NPARTICLES; i++) {
@@ -101,13 +103,13 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             // perform update
             for (size_t i = 0; i < NPARTICLES; i++) {
                 if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-                    double w = compute_weight(&particles[i], zf, N_measurements, idf, *R);
+                    double w = compute_weight(&particles[i], zf, count_zf, idf, *R);
                     w *= *( particles[i].w );
                     *( particles[i].w ) = w;
                     feature_update(&particles[i], zf, idf, count_zf, *R);
                 }
                 if ( count_zn != 0 ) { // !zn.empty() 
-                    add_feature(&particles[i], zn, N_measurements, *R);
+                    add_feature(&particles[i], zn, count_zn, *R);
                 }
             }
 
