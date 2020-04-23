@@ -12,8 +12,8 @@ int main() {
             Vector3d zeros = {0,0,0};
             Particle particles[3];
             particles[0].w = &weights[0]; std::copy(particles[0].xv, particles[0].xv+3, zeros); particles[0].Nf = Nf; particles[0].index = 0;
-            particles[1].w = &weights[1]; std::copy(particles[0].xv, particles[0].xv+3, zeros); particles[1].Nf = Nf; particles[1].index = 1;
-            particles[2].w = &weights[2]; std::copy(particles[0].xv, particles[0].xv+3, zeros); particles[2].Nf = Nf; particles[2].index = 2;
+            particles[1].w = &weights[1]; std::copy(particles[1].xv, particles[1].xv+3, zeros); particles[1].Nf = Nf; particles[1].index = 1;
+            particles[2].w = &weights[2]; std::copy(particles[2].xv, particles[2].xv+3, zeros); particles[2].Nf = Nf; particles[2].index = 2;
             
             
             for (size_t i = 0; i < 3; i++) {
