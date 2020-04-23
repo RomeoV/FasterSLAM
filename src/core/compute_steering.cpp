@@ -24,8 +24,8 @@ void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double m
                       int* iwp, double* G) {
     //determine if current waypoint reached
     double cwp[2];
-    cwp[0] = wp[*iwp];   
-    cwp[1] = wp[N_wp+ *iwp];
+    cwp[0] = wp[2*(*iwp)+0];
+    cwp[1] = wp[2*(*iwp)+1];
 
     double d2 = pow((cwp[0] - x[0]),2) + pow((cwp[1]-x[1]),2);  
 
@@ -36,8 +36,8 @@ void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double m
                     return;	
             }
 
-            cwp[0] = wp[*iwp];   
-            cwp[1] = wp[N_wp + *iwp];
+            cwp[0] = wp[2*(*iwp)+0];   
+            cwp[1] = wp[2*(*iwp)+1];
     }
 
 
