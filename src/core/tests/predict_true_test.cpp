@@ -17,7 +17,7 @@ int main() {
 
             when("I call predict_true(V, G, WB, dt, xv)") = [&] {
                 
-                predict_true(V, G, WB, dt, &xv);
+                predict_true(V, G, WB, dt, xv);
 
                 then("I get the updated values of xv I want") = [=] {
 

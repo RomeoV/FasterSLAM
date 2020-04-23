@@ -11,6 +11,6 @@
  */
 
 void predict_true(const double V,const double G,const double WB,
-                const double dt, Vector3d* xv);
+                const double dt, Vector3d xv);
     
 
