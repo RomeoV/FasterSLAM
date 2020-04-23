@@ -1,5 +1,6 @@
 #pragma once
 #include "typedefs.h"
+#include "vehicle.h"
 
 /*!
     Clips all angles in angle to range [-pi,pi]. [Simple to optimize]
@@ -10,7 +11,6 @@
     @param[out] xv  State vector (x,y,angle).
  */
 
-void predict_true(const double V,const double G,const double WB,
-                const double dt, Vector3d xv);
+void predict_true(const Vehicle* vehicle, const double steering_angle, const double dt, Vector3d* xv);
     
 
