@@ -116,8 +116,8 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             for (int i = 0; i < NPARTICLES; i++) {
                 if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
                     double w = compute_weight(&particles[i], zf, N_measurements, idf, *R);
-                    w *= particles[i].w[0];
-                    particles[i].w[0] = w;
+                    w *= *( particles[i].w );
+                    *( particles[i].w ) = w;
                     feature_update(&particles[i], zf, N_measurements, idf, *R);
                 }
                 if ( count_zn != 0 ) { // !zn.empty() 
