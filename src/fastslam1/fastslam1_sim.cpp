@@ -64,9 +64,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             iwp = 0;
             NUMBER_LOOPS--;
         }
-        Vector2d xv;
-        // predict_true(vehicle_gt.V, vehicle_gt.alpha, WHEELBASE, dt, xv);
-        predict_true(&vehicle_gt, steering_angle, dt, &vehicle_gt.xtrue);
+        predict_true(vehicle_gt.V, vehicle_gt.alpha, WHEELBASE, dt, &vehicle_gt.xtrue);
 
         // add process noise
         double VnGn[2];
