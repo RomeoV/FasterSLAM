@@ -3,8 +3,14 @@
 #include "particle.h"
 
 
-/*!
- *  Computes the jacobians given a particle state and predict observations. [Compute-Intensive, Switch to mask]
+/*! Thrun03 Eq. 38, 39 and 60
+ *
+ *  Note that the sensor model is defined as follows:
+ *  $ g(\theta, s_t) = \begin{bmatrix} \sqrt{(x_{\theta} - x_v)^2 + (y_{\theta} - y_v)^2}  \\
+ *                                     \arctan(\frac{y_{\theta} - y_v}{x_{\theta} - x_v}) \end{bmatrix} $
+ * 
+ *  First computes all predicted observations in relative coordinates to the vehicle.
+ *  Then computes the jacobians given a particle state and predict observations. [Compute-Intensive, Switch to mask]
  *  @param[in]   Particle   Particle for which the jacobian should be computed.
  *  @param[in]   idf        Feature indices.
  *  @param[in]   R          Covariance matrix of observation (diagonal).
