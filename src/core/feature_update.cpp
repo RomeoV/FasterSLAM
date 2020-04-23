@@ -23,7 +23,6 @@
 // Matrix2d R)
 void feature_update(Particle* particle,
                     Vector2d z[],
-                    size_t N_z,
                     int idf[],
                     size_t N_idf,
                     Matrix2d R) {
@@ -31,10 +30,10 @@ void feature_update(Particle* particle,
   // assumed perfect and each feature update maybe computed independently and
   // without pose uncertainty
 
-  // double* xf = (double*)malloc(2 * N_z * sizeof(double));
-  // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
-  Vector2d xf[N_z];
-  Matrix2d Pf[N_z];
+  // double* xf = (double*)malloc(2 * N_idf * sizeof(double));
+  // double* Pf = (double*)malloc(4 * N_idf * sizeof(double));
+  Vector2d xf[N_idf];
+  Matrix2d Pf[N_idf];
 
   for (size_t i = 0; i < N_idf; i++) {
     copy(particle->xf + (2 * idf[i]), 2, xf[i]);  // means
@@ -49,11 +48,11 @@ void feature_update(Particle* particle,
   Matrix2d Sf[N_idf];
   
 
-  compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+  compute_jacobians(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
-  Vector2d feat_diff[N_z];  // difference btw feature prediciton and
+  Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
                             // measurement (used to update mean)
-  for (int i = 0; i < N_z; i++) {
+  for (int i = 0; i < N_idf; i++) {
     sub(z[2 * i], zp[2 * i], 2, feat_diff[i]);
     feat_diff[i][1] = pi_to_pi(feat_diff[i][1]);
   }
