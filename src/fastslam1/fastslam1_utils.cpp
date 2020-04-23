@@ -70,7 +70,7 @@ void cleanup_landmarks(int **ftag_, double **da_table_) {
 }
 
 // Measurements
-void setup_measurements(Vector2d (**z), Vector2d (**zf), Vector2d (**zn), int **idf, 
+void setup_measurements(Vector2d **z, Vector2d **zf, Vector2d **zn, int **idf, 
                         int **ftag_visible, const size_t N_features) 
 {
     *z = (Vector2d*) malloc( N_features * sizeof(Vector2d) );
@@ -80,7 +80,7 @@ void setup_measurements(Vector2d (**z), Vector2d (**zf), Vector2d (**zn), int **
     *ftag_visible = (int*) malloc( N_features * sizeof(int) );
 }
 
-void cleanup_measurements(double **z, double **zf, double **zn, int **idf, int **ftag_visible) {
+void cleanup_measurements(Vector2d **z, Vector2d **zf, Vector2d **zn, int **idf, int **ftag_visible) {
     free(*z);
     free(*zf);
     free(*zn);

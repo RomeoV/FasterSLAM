@@ -18,7 +18,7 @@ int counter = 0;
 
 void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols, 
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
-                    Particle **particle ) 
+                    Particle **particles_, double** weights_) 
 {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
@@ -116,5 +116,9 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 ///////////////////////////////////////////////////////////////////////////////////
         }
     }
-    *particle = particles;
+    *particles_ = particles;
+    *weights_ = weights;
+
+    cleanup_landmarks(&ftag, &da_table);
+    cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
 }

@@ -1,6 +1,7 @@
 #include "fastslam1_sim.h"
 #include "read_input_file.h"
 #include "particle.h"
+#include "fastslam1_utils.h"
 
 int main (int argc, char *argv[])
 {
@@ -21,8 +22,9 @@ int main (int argc, char *argv[])
 //    for (int i = 0; i < wp_rows; i++) {
 //        std::cout << wp[i*2+0] << " " << wp[i*2+1] << std::endl;
 //    }
-    Particle *data;
-    fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &data); // TODO: Return data
+    Particle *particles;
+	double *weights;
+    fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
 /*
 	for (int i = 0; i < data.size(); i++) {
 		std::cout << "particle i=" << i << std::endl;
@@ -53,4 +55,5 @@ int main (int argc, char *argv[])
 */
 //	Timer.Stop();
 //	Timer.Print("fastslam 1.0 ");
+    cleanup_particles(&particles, &weights);
 }
