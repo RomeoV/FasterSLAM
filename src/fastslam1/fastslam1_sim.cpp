@@ -58,9 +58,8 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 //////////////////////////////////////////////////////////////////////////
 // ground_truth_update()
 //////////////////////////////////////////////////////////////////////////
-        
-        double steering_angle;
-        compute_steering(vehicle_gt.xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, &iwp, &steering_angle);
+
+        compute_steering(vehicle_gt.xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, &iwp, &G);
         if ( iwp == -1 && NUMBER_LOOPS > 1 ) {
             iwp = 0;
             NUMBER_LOOPS--;

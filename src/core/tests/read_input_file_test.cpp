@@ -1,16 +1,16 @@
 #include "read_input_file.h"  // import file to test
 
 #include "ut.hpp"
-#include <filesystem>
+#include <string>
 #include <cmath>
 using namespace boost::ut;
 using namespace boost::ut::bdd;
 
 int main() {
-    using std::filesystem::path;
+    //using std::filesystem::path;
     "read input file"_test = [] {
         when("I open and parse an input file with specific features") = [] {
-            path input_file_path = "inputfiles_test/test_webmap.mat";
+            std::string input_file_path = "inputfiles_test/test_webmap.mat";
 
             double *lm, *wp;
             size_t N_lm, N_wp;

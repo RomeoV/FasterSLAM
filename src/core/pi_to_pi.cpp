@@ -21,9 +21,8 @@
 
 double pi_to_pi(double ang) 
 {
-    int n;
     if ((ang <= (-M_PI)) || (ang > (M_PI))) {
-        n=floor(ang/(2*M_PI));
+        int n=floor(ang/(2*M_PI));
         ang = ang-n*(2*M_PI);    
  
         if (ang > M_PI) {
