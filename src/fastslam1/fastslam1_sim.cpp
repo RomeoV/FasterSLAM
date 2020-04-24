@@ -64,15 +64,15 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             iwp = 0;
             NUMBER_LOOPS--;
         }
-        predict_true(vehicle_gt.V, vehicle_gt.xtrue[2], WHEELBASE, dt, vehicle_gt.xtrue);
+        predict_true(vehicle_gt.V, G, WHEELBASE, dt, vehicle_gt.xtrue);
 
         // add process noise
         double VnGn[2];
-        add_control_noise(vehicle_gt.V, vehicle_gt.xtrue[2], *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+        add_control_noise(vehicle_gt.V, G, *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
 
         // Predict step	
         for (size_t i = 0; i < NPARTICLES; i++) {
-            predict(&particles[i], VnGn[0], VnGn[1], *Q, dt);
+            predict(&particles[i], VnGn[0], VnGn[1], *Q, WHEELBASE, dt);
         }
 
 //////////////////////////////////////////////////////////////////////////
