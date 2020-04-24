@@ -54,7 +54,12 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     double G         = 0;           // initialize steering angle
 
     // Main loop
+    int ctr = 0;
     while ( iwp != -1 ) {
+        ctr++;
+        if (ctr == 2000){
+            break;
+        }
 //////////////////////////////////////////////////////////////////////////
 // ground_truth_update()
 //////////////////////////////////////////////////////////////////////////
@@ -69,7 +74,6 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
         // add process noise
         double VnGn[2];
         add_control_noise(vehicle_gt.V, G, *Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
-
         // Predict step	
         for (size_t i = 0; i < NPARTICLES; i++) {
             predict(&particles[i], VnGn[0], VnGn[1], *Q, WHEELBASE, dt);
@@ -110,8 +114,8 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             for (size_t i = 0; i < NPARTICLES; i++) {
                 if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
                     double w = compute_weight(&particles[i], zf, count_zf, idf, *R);
-                    w *= *( particles[i].w );
-                    *( particles[i].w ) = w;
+                    w *= weights[i];
+                    weights[i] = w;
                     feature_update(&particles[i], zf, idf, count_zf, *R);
                 }
                 if ( count_zn != 0 ) { // !zn.empty() 
@@ -124,9 +128,12 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
 ///////////////////////////////////////////////////////////////////////////////////
         }
     }
-    *particles_ = particles;
-    *weights_ = weights;
+    print(particles[0].xv,3,1,std::cerr);
+    print(particles[0].xf,4,1,std::cerr);
+    print(particles[0].Pf,4,2,std::cerr);
 
     cleanup_landmarks(&ftag, &da_table);
     cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
+    *particles_ = particles;
+    *weights_ = weights;
 }

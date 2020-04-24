@@ -12,7 +12,10 @@ int main() {
         given("I have a particle at position (x=1,y=1,theta=pi/2)") = [] {
             SWITCH_PREDICT_NOISE = 0;
             double initial_pos[3] = {1, 1, M_PI/2};
-            Particle p{.xv = {1, 1, M_PI/2}};
+            Particle p;
+            p.xv[0] = 1; 
+            p.xv[1]=1;
+            p.xv[2]= M_PI/2;
 
             when("I give control inputs for a rectangle") = [=]() mutable {
                 double Q[4] = {0, 0, 0, 0};
