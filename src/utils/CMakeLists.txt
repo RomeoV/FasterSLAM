@@ -1,10 +1,10 @@
 add_library(rdtsc
   INTERFACE
 )
+
 target_include_directories(rdtsc
-  INTERFACE
-  tsc_x86.h
-  rdtsc_benchmark.h
+  INTERFACE 
+  ./benchmarklib
 )
 
 add_library(FasterSlamUtils
