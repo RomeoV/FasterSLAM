@@ -13,6 +13,8 @@
  */
 void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep);
 
+void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, size_t* keep);
+
 /*!
     Returns an array where all weights leq its index are summed up. 
     w_out(i) = sum_j=0->j=i-1(w_in(j))
@@ -20,3 +22,5 @@ void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_
     @param[in]  N_w   Length of array.
  */
 void cumsum(double* w, const size_t N_w);
+
+void cumsum_base(double* w, const size_t N_w);

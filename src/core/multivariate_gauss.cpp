@@ -16,8 +16,10 @@
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
-
-void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result)
+void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result) {
+    multivariate_gauss_base(x, P, result);
+}
+void multivariate_gauss_base(cVector2d x, cMatrix2d P, Vector2d result)
 {
     double S[4]; //! 2x2 matrix, lower triangular cholesky factor
     llt_2x2(P, S); //! P = S * S^T

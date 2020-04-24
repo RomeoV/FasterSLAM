@@ -20,8 +20,11 @@
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
-
 void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    stratified_resample_base(w_, N_w, Neff, keep);
+}
+
+void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     // create local copy
     double *w = (double *) malloc( N_w * sizeof(double) ); 
     copy(w_, N_w, w);
@@ -44,7 +47,7 @@ void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_
 
     stratified_random(N_w,select); 
 
-    cumsum(w, N_w); 
+    cumsum_base(w, N_w); 
 
     int ctr=0;
     for (int i=0; i<N_w; i++) {
@@ -77,6 +80,10 @@ void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_
  ****************************************************************************/
 
 void cumsum(double* w, const size_t N_w) {
+    cumsum_base(w, N_w);
+}
+
+void cumsum_base(double* w, const size_t N_w) {
     for (int i = 1; i<N_w; i++) {
         w[i]+=w[i-1];
     }

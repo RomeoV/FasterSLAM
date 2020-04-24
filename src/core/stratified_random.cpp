@@ -19,7 +19,10 @@
  * Status: TBD
  ****************************************************************************/
 
-void stratified_random(const size_t N, double* di)
+void stratified_random(const size_t N, double* di) {
+    stratified_random_base(N, di);
+}
+void stratified_random_base(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
     //deterministic intervals

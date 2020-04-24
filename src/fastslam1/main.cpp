@@ -21,4 +21,7 @@ int main (int argc, char *argv[])
 
     cleanup_particles(&particles, &weights);
 
+	free(lm);
+	free(wp);
+
 }

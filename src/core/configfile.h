@@ -4,7 +4,7 @@
 // Global Variables
 //******************
 
-extern double V;
+extern double V_;
 extern double MAXG;
 extern double RATEG;
 extern double WHEELBASE;

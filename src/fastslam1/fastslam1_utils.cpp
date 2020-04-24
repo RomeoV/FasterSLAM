@@ -20,21 +20,11 @@ void setup_initial_Q_R() {
     }
 }
 
-void setup_initial_vehicle(Vehicle* v) {
-    cVector3d xtrue_initial = {0.0, 0.0, 0.0};
-    copy(xtrue_initial, 3, v->xtrue);
-
-    const double veh_initial[2][3] = { {0,-WHEELBASE,-WHEELBASE}, {0,-1,1} };
-    copy(*veh_initial, 2*3, *(v->veh));
-
-    v->V = V; // from config
-}
-
-void setup_initial_particles(Particle **p_, double **w_, const size_t N_features) {
+void setup_initial_particles(Particle **p_, double **w_, const size_t N_features, const Vector3d xv_initial) {
     *p_ = (Particle *) malloc( NPARTICLES * sizeof(Particle) );
     Particle *p = *p_;
     for (size_t i = 0; i < NPARTICLES; i++) {
-        initParticle(&p[i], N_features);
+        initParticle(&p[i], N_features, xv_initial);
     }
     const double uniform_w = 1.0 / NPARTICLES; 
     *w_ = (double *) malloc( NPARTICLES * sizeof(double) );
@@ -54,16 +44,16 @@ void cleanup_particles(Particle** p_, double** w_) {
     free(*w_);
 }
 
-void setup_landmarks(int **ftag_, double **da_table_, const size_t N_features) {
+void setup_landmarks(int **ftag_, int **da_table_, const size_t N_features) {
     *ftag_ = (int*) malloc( N_features * sizeof(int) ); // identifier for each lm
-    *da_table_ = (double *) malloc( N_features * sizeof(double) ); // data association table
+    *da_table_ = (int *) malloc( N_features * sizeof(int) ); // data association table
     for (size_t i = 0; i < N_features; i++) {
         (*ftag_)[i] = i; 
         (*da_table_)[i] = -1;
     }
 }
 
-void cleanup_landmarks(int **ftag_, double **da_table_) {
+void cleanup_landmarks(int **ftag_, int **da_table_) {
     free(*ftag_);
     free(*da_table_);
 }

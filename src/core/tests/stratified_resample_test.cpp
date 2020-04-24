@@ -21,10 +21,10 @@ int main() {
 
                 then("I get the the outputs w, Neff and keep I want") = [=] {
                     double exact_Neff = 4.090909090909;
-                    double cumsum_w[N_w] = {2.0/30,6.0/30,12.0/30,20.0/30,1.0};
+                    double target_w[N_w] =  {2,4,6,8,10};
                     size_t exact_keep[N_w] = {1,2,3,4,4};
                     for (int i = 0; i < N_w; i++) {
-                        double error_w = fabs(w[i]-cumsum_w[i]);
+                        double error_w = fabs(w[i]-target_w[i]);
                         expect(that % error_w < 1e-12) << i;
                         expect(that % keep[i] == exact_keep[i]) << i;
                     }

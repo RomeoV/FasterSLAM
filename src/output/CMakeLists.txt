@@ -1,6 +1,7 @@
 add_library(FasterSlamOutput
   estimate_json.cpp
   ground_truth_json.cpp
+  converters.h
 )
 
 target_include_directories(FasterSlamOutput PUBLIC
@@ -18,3 +19,13 @@ target_include_directories(FasterSlamOutput PUBLIC
 )
 
 add_subdirectory(tests)
+
+add_executable(FasterSlamVisualize
+  visualize.cpp
+)
+target_link_libraries(FasterSlamVisualize PUBLIC
+  FasterSlamCore
+  FasterSlamLib
+  nlohmann_json
+  FasterSlamOutput
+)

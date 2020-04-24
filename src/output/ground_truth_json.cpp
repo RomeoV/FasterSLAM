@@ -2,10 +2,9 @@
 #include "ground_truth_json.h" 
 #include <iostream>
 
-/*
+#include "converters.h"
 
-nlohmann::json ground_truth_step_json(Eigen::Vector3d xtrue, double time, int id, int iwp, double G) {
-
+nlohmann::json ground_truth_step_json(Vector3d xtrue, double time, int id, int iwp, double G) {
     return {
         {"id", id},
         {"timestamp",time},
@@ -17,17 +16,19 @@ nlohmann::json ground_truth_step_json(Eigen::Vector3d xtrue, double time, int id
 
 
 
-nlohmann::json ground_truth_keypoints_json(Eigen::MatrixXd& waypoints, Eigen::MatrixXd& landmarks) {
+nlohmann::json ground_truth_keypoints_json(double* waypoints, double* landmarks, size_t N_w, size_t N_f) {
     std::vector<std::array<double,2>> landmark_poses;
     std::vector<std::array<double,2>> waypoint_poses;
 
-    for (int i = 0; i<waypoints.cols();i++) {
-        waypoint_poses.push_back(Vector2dToStdVec(waypoints.col(i)));
+
+
+    for (int i = 0; i<N_w;i++) {
+        waypoint_poses.push_back(Vector2dToStdVec(waypoints+2*i));
     }
 
 
-    for (int i = 0; i<landmarks.cols();i++) {
-        landmark_poses.push_back(Vector2dToStdVec(landmarks.col(i)));
+    for (int i = 0; i<N_f;i++) {
+        landmark_poses.push_back(Vector2dToStdVec(landmarks+2*i));
     }
 
     return {
@@ -36,5 +37,3 @@ nlohmann::json ground_truth_keypoints_json(Eigen::MatrixXd& waypoints, Eigen::Ma
     };
 
 }
-
-*/

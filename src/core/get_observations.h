@@ -18,6 +18,8 @@
   */
 void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);
 
+void get_observations_base(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);
+
 /*!
   Computes which landmarks are visible by comparing the distance x<->lm(:,i) to rmax.
   Only returns visible landmarks in lm and idf.
@@ -28,6 +30,7 @@ void get_observations(cVector3d x, const double rmax, const double *lm, const si
   */
 void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
 
+void get_visible_landmarks_base(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
 /*!
   Computes distance and bearing between x and all landmarks in lm.
   @param[in] 	x 	    State vector (x,y,angle).
@@ -36,6 +39,8 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
   @return Vector  of 2d vectors (distance, angle) between x and each landmark in lm. 
   */
 void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]);
+
+void compute_range_bearing_base(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]);
 
 /*!
   Finds all visible landmarks given current state.
@@ -49,5 +54,8 @@ void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, 
   */
 //! index should be preallocated with size equal to size
 void find2(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size);
+
+void find2_base(const double *dx, const double *dy, const size_t size, 
         const double phi, const double rmax, size_t *index, size_t *index_size);
 

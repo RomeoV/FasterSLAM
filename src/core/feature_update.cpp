@@ -18,10 +18,17 @@
  * Status: TBD
  ****************************************************************************/
 
+void feature_update(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R) {
+    feature_update(particle, z, idf, N_idf, R);
+}
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,
 // Matrix2d R)
-void feature_update(Particle* particle,
+void feature_update_base(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
@@ -48,13 +55,13 @@ void feature_update(Particle* particle,
   Matrix2d Sf[N_idf];
   
 
-  compute_jacobians(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
+  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
   Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
                             // measurement (used to update mean)
   for (int i = 0; i < N_idf; i++) {
     sub(z[i], zp[i], 2, feat_diff[i]);
-    feat_diff[i][1] = pi_to_pi(feat_diff[i][1]);
+    feat_diff[i][1] = pi_to_pi_base(feat_diff[i][1]);
   }
 
   // Vector2d vi;
@@ -68,7 +75,7 @@ void feature_update(Particle* particle,
     // Pfi = Pf[i];
     // xfi = xf[i];
     // KF_cholesky_update(xfi, Pfi, vi, R, Hfi);
-    KF_cholesky_update(xf[i], Pf[i], 
+    KF_cholesky_update_base(xf[i], Pf[i], 
                        feat_diff[i], R, 
                        Hf[i]);
     // xf[i] = xfi;
@@ -76,8 +83,8 @@ void feature_update(Particle* particle,
   }
 
   for (size_t i = 0; i < N_idf; i++) {
-    particle->set_xfi(particle, xf[i], idf[i]);
-    particle->set_Pfi(particle, Pf[i], idf[i]);
+    set_xfi(particle, xf[i], idf[i]);
+    set_Pfi(particle, Pf[i], idf[i]);
   }
 
   // free(feat_diff);
