@@ -15,23 +15,30 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
  */
 
 int main() {
-  "example test"_test = [] {
-    expect(true) << "with more information!";
-  };
+  "compute_weight_simple"_test = [] {
+    given("I have a particle, map features/indices and observation noises") = [] {
+      Particle* particle = newParticle(5);
+      Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
+      Vector2d xf[5] = {{0,0},{0,0},{0,0},{0,0},{0,0}}; //! 2d means of EKF in cartesian world coordinates
+      Matrix2d Pf[5] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; //! covariance matrices for EKF in polar robot coordinates
+      particle->set_xv(particle, xv); // todo: should this be a static method or not include particle again as parameter
+      for(int i=0; i<5; i++){
+        particle->set_xfi(particle, xf[i], i);
+      }
+      for(int i=0; i<5; i++){
+        particle->set_Pfi(particle, Pf[i], i);
+      }
 
-  "vector add"_test = [] {
-    given("I have two arrays") = [] {
-      const size_t N = 5;
-      double lhs[N] = {1,2,3,4,5};
-      double rhs[N] = {1,2,3,4,5};
+      Vector2d z[3] = {{0,0}, {0,0}, {0,0}};  // vector of map features
+      size_t N_z = 3; // number of features.
+      int idf[3] = {0,0,0};  // vector of map indices
+      Matrix2d R = {1,0,0,1};   // matrix of observation noises
 
       when("I add them") = [&] {
-        double res[N];
-
-        then("I get the elementwise sum") = [=] {
-          "elementwise equal"_test = [res](size_t i) {
-            expect(res[i-1] == 2*i);
-          } | std::vector{1,2,3,4,5};
+        compute_weight(particle, z, N_z, idf, R);
+        then("I get the right particle weight") = [=] {
+          double* weight = particle->w; // todo: why is w a pointer?
+          expect(weight[0] == 0);
         };
       };
     };

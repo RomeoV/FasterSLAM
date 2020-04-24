@@ -27,10 +27,10 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 int main() {
   "jabobian_simple"_test = [] {
     given("I have a particle, features and a covariance matrix of observation") = [] {
-      Particle* particle = newParticle(2);
+      Particle* particle = newParticle(5);
       Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
-      Vector2d xf[5] = {{0,0},{0,0},{0,0},{0,0},{0,0}};
-      Matrix2d Pf[5] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}};
+      Vector2d xf[5] = {{0,0},{0,0},{0,0},{0,0},{0,0}}; //! 2d means of EKF in cartesian world coordinates
+      Matrix2d Pf[5] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; //! covariance matrices for EKF in polar robot coordinates
       particle->set_xv(particle, xv); // todo: should this be a static method or not include particle again as parameter
       for(int i=0; i<5; i++){
         particle->set_xfi(particle, xf[i], i);

@@ -7,6 +7,7 @@
     Uses compute_jacobians.
     @param[out] particle Particle whose weight is calculated
     @param[in]  z        vector of map features, calculated by data_associate_known
+    @param[in]  N_z      Number of features.
     @param[in]  idf      vector of map indices, calculated by data_associate_known, used for jacobians 
     @param[in]  R        matrix of observation noises, metres and radians
  */
