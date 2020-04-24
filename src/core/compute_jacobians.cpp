@@ -38,8 +38,8 @@ void compute_jacobians(Particle* particle,
 
   int r;
   for (size_t i = 0; i < N_z; i++) {
-    copy(particle->xf + (idf[i]), 2, xf[i]);
-    copy(particle->Pf + (idf[i]), 4, Pf[i]);  // particle.Pf is a array of
+    copy(particle->xf + idf[i], 2, xf[i]);
+    copy(particle->Pf + idf[i], 4, Pf[i]);  // particle.Pf is a array of
                                               // matrices
   }
 
@@ -65,8 +65,8 @@ void compute_jacobians(Particle* particle,
     // Jacobian wrt feature states
     Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
 
-    copy(HvMat, 4, Hv[4*i]);
-    copy(HfMat, 4, Hf[4*i]);
+    copy(HvMat, 6, Hv[i]);
+    copy(HfMat, 4, Hf[i]);
 
     // innovation covariance of feature observation given the vehicle'
     // Eq. 60 in Thrun03g
