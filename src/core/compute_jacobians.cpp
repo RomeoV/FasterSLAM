@@ -65,8 +65,8 @@ void compute_jacobians(Particle* particle,
     // Jacobian wrt feature states
     Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
 
-    copy(HvMat, 4, Hv[4*i]);
-    copy(HfMat, 4, Hf[4*i]);
+    copy(HvMat, 4, Hv[i]);
+    copy(HfMat, 4, Hf[i]);
 
     // innovation covariance of feature observation given the vehicle'
     // Eq. 60 in Thrun03g
