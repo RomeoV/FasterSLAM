@@ -11,4 +11,4 @@
     @param[in]  dt        seconds, time interval between control signals, float. In configfile.cpp
     @param[in]  addrandom        0/1, if sampling from predict noise, for fs1 usually true/1
  */
-void predict(Particle *particle, double V, double G, Matrix2d Q, double dt);
+void predict(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt);

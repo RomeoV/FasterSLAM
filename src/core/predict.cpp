@@ -20,20 +20,19 @@
  * Status: TBD
  ****************************************************************************/
 
-void predict(Particle *particle, double V, double G, Matrix2d Q, double dt) {
+void predict(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
     // Turn first, move forwards after
     // \todo Noise on input (Maybe the noise should be added at anothere place in the code?)
 	if (SWITCH_PREDICT_NOISE == 1) {
-		Vector2d mu = {0, 0};
+		Vector2d mu = {V, G};
 		Vector2d noise;
 		multivariate_gauss(mu,Q,noise);	
-		V += noise[0];
-		G += noise[1];
+		V = noise[0];
+		G = noise[1];
 	}	
     
-    double theta = particle->xv[2];
-    theta = pi_to_pi(theta + G);
-    particle->xv[0] += V*dt*cos(theta);
-    particle->xv[1] += V*dt*sin(theta);
-    particle->xv[2] = theta;
+    double xv2 = particle->xv[2];
+    particle->xv[0] += V*dt*cos(G + xv2);
+    particle->xv[1] += V*dt*sin(G + xv2); 
+    particle->xv[2] = pi_to_pi(xv2 + V*dt*sin(G)/WB);
 }
