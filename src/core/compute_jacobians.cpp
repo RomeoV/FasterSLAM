@@ -29,7 +29,7 @@ void compute_jacobians(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-  Vector3d& xv = particle->xv;
+  // Vector3d& xv = particle->xv;
 
   // vector<Vector2d> xf;
   // vector<Matrix2d> Pf;
@@ -46,8 +46,8 @@ void compute_jacobians(Particle* particle,
   double dx, dy, d2, d;
 
   for (size_t i = 0; i < N_z; i++) {
-    dx = xf[i][0] - xv[0];
-    dy = xf[i][1] - xv[1];
+    dx = xf[i][0] - particle->xv[0];
+    dy = xf[i][1] - particle->xv[1];
     d2 = pow(dx, 2) + pow(dy, 2);
     d = sqrt(d2);
 
@@ -55,8 +55,7 @@ void compute_jacobians(Particle* particle,
 
     // predicted observation
     zp_vec[0] = d;
-    zp_vec[1] = atan2(dy, dx) - xv[2];
-    zp_vec[1] = pi_to_pi(zp_vec[1]);
+    zp_vec[1] = pi_to_pi(atan2(dy, dx) - particle->xv[2]);
     copy(zp_vec, 2, zp[i]);
 
     // Jacobian wrt vehicle states
@@ -65,8 +64,8 @@ void compute_jacobians(Particle* particle,
     // Jacobian wrt feature states
     Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
 
-    copy(HvMat, 4, Hv[4*i]);
-    copy(HfMat, 4, Hf[4*i]);
+    copy(HvMat, 4, Hv[i]);
+    copy(HfMat, 4, Hf[i]);
 
     // innovation covariance of feature observation given the vehicle'
     // Eq. 60 in Thrun03g

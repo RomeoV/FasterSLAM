@@ -19,6 +19,16 @@ endforeach()
 
 file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test)
 configure_file(
+    test_webmap_short.mat
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/test_webmap_short.mat
+    COPYONLY
+)
+configure_file(
+    test_webmap_long.mat
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/test_webmap_long.mat
+    COPYONLY
+)
+configure_file(
     lm.txt
     ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/lm.txt
     COPYONLY

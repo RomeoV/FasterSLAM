@@ -6,6 +6,7 @@ add_library(FasterSlamCore
   compute_jacobians.cpp
   compute_steering.cpp
   compute_weight.cpp
+  configfile.cpp
   data_associate_known.cpp
   example.cpp
   feature_update.cpp
@@ -16,6 +17,7 @@ add_library(FasterSlamCore
   pi_to_pi.cpp
   predict.cpp
   predict_true.cpp
+  read_input_file.cpp
   resample_particles.cpp
   read_input_file.cpp
   stratified_random.cpp
