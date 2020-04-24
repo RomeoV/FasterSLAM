@@ -53,7 +53,7 @@ void feature_update(Particle* particle,
   Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
                             // measurement (used to update mean)
   for (int i = 0; i < N_idf; i++) {
-    sub(z[2 * i], zp[2 * i], 2, feat_diff[i]);
+    sub(z[i], zp[i], 2, feat_diff[i]);
     feat_diff[i][1] = pi_to_pi(feat_diff[i][1]);
   }
 
@@ -68,9 +68,9 @@ void feature_update(Particle* particle,
     // Pfi = Pf[i];
     // xfi = xf[i];
     // KF_cholesky_update(xfi, Pfi, vi, R, Hfi);
-    KF_cholesky_update(xf[2 * i], Pf[4 * i], 
-                       feat_diff[2 * i], R, 
-                       Hf[4 * i]);
+    KF_cholesky_update(xf[i], Pf[i], 
+                       feat_diff[i], R, 
+                       Hf[i]);
     // xf[i] = xfi;
     // Pf[i] = Pfi;
   }

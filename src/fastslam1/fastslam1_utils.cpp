@@ -2,7 +2,6 @@
 #include "configfile.h"
 #include "linalg.h"
 #include <math.h>
-
 void setup_initial_Q_R() {
     // Matrix2d Q, R are declared in configfile.h
     Q[0][0] = pow(sigmaV, 2);
@@ -47,12 +46,12 @@ void setup_initial_particles(Particle **p_, double **w_, const size_t N_features
 }
 
 void cleanup_particles(Particle** p_, double** w_) {
-    Particle* p = *p_;
+    Particle* particles = *p_;
     for (size_t i = 0; i < NPARTICLES; i++) {
-        delParticleMembers(&p[i]);
+        delParticleMembers(particles+i);
     }
-    free(p_);
-    free(w_);
+    free(particles);
+    free(*w_);
 }
 
 void setup_landmarks(int **ftag_, double **da_table_, const size_t N_features) {

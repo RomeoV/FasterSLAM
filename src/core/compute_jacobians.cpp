@@ -29,23 +29,22 @@ void compute_jacobians(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-  // Vector3d& xv = particle->xv;
 
-  // vector<Vector2d> xf;
-  // vector<Matrix2d> Pf;
   Vector2d xf[N_z];
   Matrix2d Pf[N_z];
 
   int r;
   for (size_t i = 0; i < N_z; i++) {
-    copy(particle->xf + idf[i], 2, xf[i]);
-    copy(particle->Pf + idf[i], 4, Pf[i]);  // particle.Pf is a array of
+    copy(particle->xf + 2*idf[i], 2, xf[i]);
+    copy(particle->Pf + 4*idf[i], 4, Pf[i]);  // particle.Pf is a array of
                                               // matrices
   }
 
   double dx, dy, d2, d;
 
+  
   for (size_t i = 0; i < N_z; i++) {
+
     dx = xf[i][0] - particle->xv[0];
     dy = xf[i][1] - particle->xv[1];
     d2 = pow(dx, 2) + pow(dy, 2);
