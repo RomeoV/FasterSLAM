@@ -19,3 +19,9 @@ void feature_update(Particle* particle,
                     int idf[],
                     size_t N_idf,
                     Matrix2d R);
+
+void feature_update_base(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R);

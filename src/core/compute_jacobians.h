@@ -13,7 +13,12 @@
  *  @param[out]  Hf         Jacobian of h wrt feature states
  *  @param[out]  Sf         Measurement covariance of feature observation given the vehicle.
  */
-void compute_jacobians(Particle* particle, 
+
+void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
+                       Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
+                       Matrix2d Sf[]);
+
+void compute_jacobians_base(Particle* particle, 
         int idf[], 
         size_t N_z,
         Matrix2d R, 

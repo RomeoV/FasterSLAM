@@ -9,26 +9,13 @@ typedef struct Particle {
   double* w;    //! importance weight
   Vector3d xv;  //! robot pose: x,y,theta (heading dir)
   Matrix3d Pv;  //! control inputs, i.e. velocities
-  size_t Nf;    //! Max Number of features (you should hardly ever need this)
-  size_t Nfa;   //! Actual number of known features (you should hardly ever need
+  int Nf;    //! Max Number of features (you should hardly ever need this)
+  int Nfa;   //! Actual number of known features (you should hardly ever need
                 //! this)
   double* xf;   //! 2d means of EKF in cartesian world coordinates
   double* Pf;   //! covariance matrices for EKF in polar robot coordinates
-  void (*delMembers)(Particle* p);
-  void (*delMembersAndFreePtr)(Particle* p);
-  void (*set_xv)(Particle* p, Vector3d xv);
-  void (*set_Pv)(Particle* p, Matrix3d Pv);
-  void (*set_xfi)(Particle* p, Vector3d xf, int index);
-  void (*set_Pfi)(Particle* p, Matrix3d Pf, int index);
-  int index;
 } Particle;
 
-/*!
-    Initialize existing particle.
-    @param[out] p   Pointer to a particle.
-        @param[in]  Nf  	Maximum number of expected features.
- */
-void initParticle(Particle* p, const size_t Nf);
 
 /*! Deep copy contents of one particle into the other */
 void copyParticle(const Particle* p_ref, Particle* p_target);
@@ -36,25 +23,18 @@ void copyParticle(const Particle* p_ref, Particle* p_target);
 /*!
     Initialize existing particle with particle_index.
     @param[out] p   Pointer to a particle.
-        @param[in]  Nf  	Maximum number of expected features.
-        @param[in]  index  	Index for the constructed particle.
+        @param[in]  Nf  	        Maximum number of expected features.
+        @param[in]  xv_initial      Array[3] of initial state vector.
  */
-void initParticle(Particle* p, const size_t Nf, int particle_index);
-
-/*!
-    Constructor for an empty particle.
-    @param[in]  Nf  Maximum number of expected features.
-        @return 	p	Constructed particle.
- */
-Particle* newParticle(const size_t Nf);
+void initParticle(Particle* p, const int Nf, const double* xv_initial);
 
 /*!
     Constructor for an empty particle with index.
-    @param[in]  Nf  	Maximum number of expected features.
-        @param[in]  index  	Index for the constructed particle.
-        @return 	p	Constructed particle.
+    @param[out] p   Pointer to a particle.
+        @param[in]  Nf  	        Maximum number of expected features.
+        @param[in]  xv_initial      Array[3] of initial state vector.
  */
-Particle* newParticle(const size_t Nf, int particle_index);
+Particle* newParticle(const int Nf, const double* xv_initial);
 
 /*!
     Free particle.

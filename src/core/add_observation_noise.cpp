@@ -21,7 +21,11 @@
 
 //! Adds random measurement noise. We assume R is diagnoal matrix.
 //! TOCHECK: vector<Vector2d> z -> Storage choice for z, ROW-WISE for now
-void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise)
+
+void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
+    add_observation_noise_base(z, zlen, R, addnoise);
+}
+void add_observation_noise_base(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise)
 {
     if ( addnoise == 1 && zlen > 0 ){
         double *randM1 = (double*)malloc(zlen*sizeof(double));

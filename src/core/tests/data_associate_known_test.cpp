@@ -22,13 +22,13 @@ int main() {
             size_t count_zf = 0;
             size_t count_zn = 0;
 
-            double table[35]; // initilize here, will be modified in func
+            int table[35]; // initilize here, will be modified in func
             for (size_t i = 0; i < 35; i++) {
                 table[i] = -1;
             }
 
             when("I call data_associate_known()") = [&] {
-                double table_target[35];
+                int table_target[35];
                 for (size_t  i = 0; i < 35; i++) {
                     table_target[i] = -1;
                 }

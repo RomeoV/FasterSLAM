@@ -7,6 +7,14 @@
 //! ---------- Linear Algebra Utility Functions ----------- //
 //! ------------------------------------------------------- //
 
+
+/////////////////////////////////////////////////////////////
+//! I did not change these functions to base since this would
+//! overcomplify the project. Do not edit any functions here, 
+//! rather add new ones if necessary, or do it in place!!!
+/////////////////////////////////////////////////////////////
+
+
 //! Prints an array
 void print(const double *x, size_t rows, size_t cols, std::ostream& stream) {
     assert( x != NULL );

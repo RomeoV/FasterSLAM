@@ -21,7 +21,14 @@
  * Status: TBD
  ****************************************************************************/
 
-void compute_jacobians(Particle* particle,
+void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
+                       Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
+                       Matrix2d Sf[]) {
+
+    compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+
+}
+void compute_jacobians_base(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -55,7 +62,7 @@ void compute_jacobians(Particle* particle,
     // predicted observation
     zp_vec[0] = d;
     zp_vec[1] = atan2(dy, dx) - particle->xv[2];
-    zp_vec[1] = pi_to_pi(zp_vec[1]);
+    zp_vec[1] = pi_to_pi_base(zp_vec[1]);
     copy(zp_vec, 2, zp[i]);
 
     // Jacobian wrt vehicle states

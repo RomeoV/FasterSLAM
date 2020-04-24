@@ -19,26 +19,34 @@
  * Status: TBD
  ****************************************************************************/
 
-double pi_to_pi(double ang) 
+double pi_to_pi(double ang) {
+    return pi_to_pi_base(ang);
+}
+
+double pi_to_pi_base(double ang) 
 {
-    if ((ang <= (-M_PI)) || (ang > (M_PI))) {
+    if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
         int n=floor(ang/(2*M_PI));
         ang = ang-n*(2*M_PI);    
- 
-        if (ang > M_PI) {
-            ang = ang - (2*M_PI);
-        }
-        if (ang <= -M_PI) {
-            ang = ang + (2*M_PI);
-        }
+    }
+    if (ang > M_PI) {
+        ang = ang - (2*M_PI);
+    }
+    if (ang <= -M_PI) {
+        ang = ang + (2*M_PI);
     }
     return ang;
 }
 
 void pi_to_pi_arr(double* angles,const size_t n) 
 {
+    pi_to_pi_arr_base(angles, n);
+}
+
+void pi_to_pi_arr_base(double* angles,const size_t n) 
+{
     for (int i=0; i<n; i++) {
-        angles[i] = pi_to_pi(angles[i]);
+        angles[i] = pi_to_pi_base(angles[i]);
     }
 }
 

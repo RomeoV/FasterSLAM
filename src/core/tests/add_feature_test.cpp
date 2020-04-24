@@ -23,7 +23,8 @@ int main() {
        *  ------------------------x
        */
       Particle p;
-      initParticle(&p, 10);
+      double xv_initial[3] =  {0,0,0};
+      initParticle(&p, 10, xv_initial);
       Vector3d pos = {1., 1., acos(4. / 5.)};
       copy(pos, 3, p.xv);
       p.Nfa = 3;

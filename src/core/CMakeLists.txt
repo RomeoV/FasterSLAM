@@ -27,6 +27,7 @@ target_include_directories(FasterSlamCore PUBLIC
 )
 
 add_subdirectory(tests)
+add_subdirectory(benchmarks)
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamCore PRIVATE

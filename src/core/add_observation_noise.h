@@ -8,3 +8,5 @@
   @param[in]  addnoise	Flag if obersvation noise should be added.
   */
 void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise);
+
+void add_observation_noise_base(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise);

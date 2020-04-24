@@ -24,4 +24,7 @@
   @param[out] 	zn	 	New landmarks.
   */
 void data_associate_known(cVector2d z[], const int* idz, const size_t idz_size, 
-        double* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn); 
+        int* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn); 
+
+void data_associate_known_base(cVector2d z[], const int* idz, const size_t idz_size, 
+        int* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn);

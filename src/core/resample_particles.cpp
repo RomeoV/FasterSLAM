@@ -3,6 +3,7 @@
 #include <cassert>
 #include <cmath>
 #include "resample_particles.h"
+#include "linalg.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -25,11 +26,15 @@ int find_particle_without_dependency(int* count, size_t N);
 void fill_int(int *x, size_t size, int val);
 void count_occurences(const size_t* indices, size_t N, int* count);
 
-void resample_particles(Particle* particles, size_t N, double* weights)
+
+void resample_particles(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
+    resample_particles_base(particles, N, weights, Nmin, doresample);
+}
+void resample_particles_base(Particle* particles, size_t N, double* weights,int Nmin, int doresample)
 { 
     normalize_weights(weights, N);
 
-    double Neff;  // discard this?
+    double Neff;  // discard this? NO!
 
     // What is happening here:
     // Basically, we want to prevent deleting and reallocating memory,
@@ -52,23 +57,40 @@ void resample_particles(Particle* particles, size_t N, double* weights)
     // DAG forever and will thus not be copied --- but luckily they already contain exactly
     // what they should contain!
     size_t keep_indices[N];  // can be seen as dependencies   
-    stratified_resample(weights, N, &Neff, keep_indices);
+    stratified_resample_base(weights, N, &Neff, keep_indices);
 
-    int count[N];
-    count_occurences(keep_indices, N, count);
-
-    int i = find_particle_without_dependency(count, N);
-    while (i != -1) {  // O(N^2)
-        count[i] = -1;  // was 0 before
-        copyParticle(&particles[keep_indices[i]], &particles[i]);
-        count[keep_indices[i]]--;  // should make at least one particle have no dependency, so we can change it's memory
-
-        i = find_particle_without_dependency(count, N);  // O(N)
+    int ref_idx[N];
+    for (int i = 0; i<N;i++) {
+        ref_idx[i] = i;
     }
 
-    /* in the end, only count[i] == 1 where keep_indices[i] = i */
+    if ((Neff < Nmin) && (doresample == 1)) {  
+        
+        for (int i = 0; i<N; i++) {
+            int ref = ref_idx[keep_indices[i]];
+            copyParticle(&particles[keep_indices[i]], &particles[i]);
+            weights[i] = 1.0f/N;
+            particles[i].w = &weights[i];
+            ref_idx[keep_indices[i]]=i;
+        } 
+        // Wrong and inefficient
+        /*
+        int i = find_particle_without_dependency(count, N);
+        while (i != -1) {  // O(N^2)
+            count[i] = -1;  // was 0 before
+            copyParticle(&particles[keep_indices[i]], &particles[i]);
+            count[keep_indices[i]]--;  // should make at least one particle have no dependency, so we can change it's memory
 
-    normalize_weights(weights, N);
+            i = find_particle_without_dependency(count, N);  // O(N)
+        }
+        */
+        
+        
+
+        /* in the end, only count[i] == 1 where keep_indices[i] = i */
+
+        //normalize_weights(weights, N);
+    }
 }
 
 /* Basically finds a 0 */

@@ -12,5 +12,8 @@
 
 void predict_true(const double V,const double G,const double WB,
                 const double dt, Vector3d xv);
+
+void predict_true_base(const double V,const double G,const double WB,
+                const double dt, Vector3d xv);
     
 

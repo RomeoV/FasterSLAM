@@ -19,10 +19,16 @@
  * Status: TBD
  ****************************************************************************/
 
-void initParticle(Particle* p, const size_t Nf) {
-	Vector3d xv_initial = {0., 0., 0.};
-	copy(xv_initial, 3, p->xv);
+//////////////////////////////////////////////////////////////////////////////
+//! Also particle stays unaffected from base, we consider this as an immutable
+//! for now.
+//////////////////////////////////////////////////////////////////////////////
 
+void initParticle(Particle* p, const int Nf, const double* xv_initial) {
+	copy(xv_initial, 3, p->xv);
+	for (int i = 0; i<9;i++) {
+		p->Pv[i] = 0.0;
+	}
 	p->xf = (double*) malloc (2* Nf * sizeof (double));
     if (p->xf == NULL) {
         free (p);  // \todo is this correct? What if particle is statically allocated...
@@ -39,22 +45,11 @@ void initParticle(Particle* p, const size_t Nf) {
 
 	p->Nfa = 0;
 	p->Nf = Nf;
-	p->delMembers = delParticleMembers;
-	p->delMembersAndFreePtr = delParticleMembersAndFreePtr;
-	p->set_xv = set_xv;
-	p->set_Pv = set_Pv;
-	p->set_xfi = set_xfi;
-	p->set_Pfi = set_Pfi;	
-}
-
-void initParticle(Particle* p, const size_t Nf, int particle_index) {
-	initParticle(p,Nf);
-	p->index = particle_index;
 }
 
 /* This method assumes that all particle have allocated the same amount of memory for xf and Pf, namely 2*Nf and 4*Nf respectively. */
 void copyParticle(const Particle* p_ref, Particle* p_target) {
-    *(p_target->w) = *(p_ref->w);
+    //*(p_target->w) = *(p_ref->w);
     copy(p_ref->xv, 3, p_target->xv);
     copy(p_ref->Pv, 9, p_target->Pv);
     p_target->Nf = p_ref->Nf;
@@ -64,22 +59,15 @@ void copyParticle(const Particle* p_ref, Particle* p_target) {
     copy(p_ref->Pf, 4*p_ref->Nfa, p_target->Pf);
 }
 
-Particle* newParticle(const size_t Nf) {
+Particle* newParticle(const int Nf, const double* xv_initial) {
 	// Try to allocate particle structure.
 	Particle* p = (Particle*) malloc(sizeof(Particle));
-
 	if (p == NULL) {
         return NULL;
 	}
 
-	initParticle(p,Nf);
+	initParticle(p,Nf, xv_initial);
 	
-	return p;
-}
-
-Particle* newParticle(const size_t Nf, int particle_index) {
-	Particle* p = newParticle(Nf);
-	p->index = particle_index;
 	return p;
 }
 

@@ -7,6 +7,7 @@
     @param[out] angle   angle in radiants.
  */
 double pi_to_pi(double ang);
+double pi_to_pi_base(double ang);
 
 
 /*!
@@ -15,6 +16,7 @@ double pi_to_pi(double ang);
     @param[in]  n       Length of angles array. [NEW]
  */
 void pi_to_pi_arr(double* angles, const size_t n);
+void pi_to_pi_arr_base(double* angles, const size_t n);
 
 /*! This is supposed to be a faster version of pi_to_pi using fmod */
 double pi_to_pi_fmod(double ang);

@@ -9,3 +9,5 @@
  */
 
 void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result);
+
+void multivariate_gauss_base(cVector2d x, cMatrix2d P, Vector2d result);

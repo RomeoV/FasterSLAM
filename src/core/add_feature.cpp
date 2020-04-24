@@ -20,8 +20,11 @@
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
-
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
+    add_feature_base(particle,z, N_z, R);
+}
+
+void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   // double* xf = (double*)malloc(2 * N_z * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
   Vector2d xf[N_z];
@@ -59,8 +62,8 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   particle->Nfa += N_z;
 
   for (size_t i = 0; i < N_z; i++) {
-    particle->set_xfi(particle, xf[i], i + N_x);
-    particle->set_Pfi(particle, Pf[i], i + N_x);
+    set_xfi(particle, xf[i], i + N_x);
+    set_Pfi(particle, Pf[i], i + N_x);
   }
 
   // free(xf);

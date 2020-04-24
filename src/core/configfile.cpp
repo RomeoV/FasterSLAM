@@ -1,13 +1,14 @@
 #include "configfile.h"
+#include <math.h>
 
-#define pi 3.14159265
+#define pi M_PI
 
 // Configuration file
 //Permits various adjustments to parameters of the FastSLAM algorithm.
 // See fastslam_sim.h for more information
 
 // control parameters
-double V = 3.0; // m/s
+double V_ = 3.0; // m/s
 double MAXG = 30*pi / 180; // radians, maximum steering angle (-MAXG < g < MAXG)
 double RATEG = 20*pi / 180; // rad/s, maximum rate of change in steer angle
 double WHEELBASE = 4.; // metres, vehicle wheel-base
@@ -24,7 +25,7 @@ double Q[2][2]= {
 
 // observation parameters
 double MAX_RANGE = 30.0; // metres
-double DT_OBSERVE = 8 * 0.025; //DT_CONTROLS; // seconds, time interval between observations
+double DT_OBSERVE = 8 * DT_CONTROLS; // seconds, time interval between observations
 
 // observation noises
 double sigmaR = 0.1; // metres
@@ -41,7 +42,7 @@ int NUMBER_LOOPS = 2; // number of loops through the waypoint list
 
 // resampling
 unsigned int NPARTICLES = 100; 
-double NEFFECTIVE = 0.75* 100; //NPARTICLES; // minimum number of effective particles before resampling
+double NEFFECTIVE = 0.75* NPARTICLES; // minimum number of effective particles before resampling
 
 // switches
 int SWITCH_CONTROL_NOISE = 1;

@@ -34,4 +34,6 @@
 void add_control_noise(double V, double G, double* Q, int addnoise, double* VnGn);
 
 
+void add_control_noise_base(double V, double G, double* Q, int addnoise, double* VnGn);
+
 #endif //ADD_CONTROL_NOISE

@@ -12,6 +12,8 @@ add_subdirectory(core)
 add_subdirectory(fastslam1)
 add_subdirectory(external)
 add_subdirectory(microbenchmarks)
+add_subdirectory(output)
+add_subdirectory(utils)
 
 if(TEST_COVERAGE)
   include(TestCoverage)
