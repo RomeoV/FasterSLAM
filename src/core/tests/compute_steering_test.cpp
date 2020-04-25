@@ -11,7 +11,7 @@ int main() {
 
             double x[3] = {0,0,0};
             const int N_wp = 3;
-            double wp[2*N_wp] = {0,1,2,0,1,2};
+            double wp[2*N_wp] = {0,0,1,1,2,2};
             double minD = 0.1;
             double rateG = 0.1;
             double maxG = 1.5;
@@ -34,7 +34,7 @@ int main() {
 
             double x[3] = {0,0,0};
             const int N_wp = 3;
-            double wp[2*N_wp] = {0,1,2,0,1,2};
+            double wp[2*N_wp] = {0,0,1,1,2,2};
             double minD = 0.1;
             double rateG = 1.0;
             double maxG = 1.5;
@@ -57,7 +57,7 @@ int main() {
 
             double x[3] = {0,0,0};
             const int N_wp = 3;
-            double wp[2*N_wp] = {0,1,2,0,1,2};
+            double wp[2*N_wp] = {0,0,1,1,2,2};
             double minD = 0.1;
             double rateG = 1.0;
             double maxG = 0.5;
@@ -80,7 +80,7 @@ int main() {
 
             double x[3] = {0,0,0};
             const int N_wp = 3;
-            double wp[2*N_wp] = {0,1,2,0,1,2};
+            double wp[2*N_wp] = {0,0,1,1,2,2};
             double minD = 2.5;
             double rateG = 1.0;
             double maxG = 0.5;
