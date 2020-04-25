@@ -59,37 +59,23 @@ void resample_particles_base(Particle* particles, size_t N, double* weights,int 
     size_t keep_indices[N];  // can be seen as dependencies   
     stratified_resample_base(weights, N, &Neff, keep_indices);
 
-    int ref_idx[N];
-    for (int i = 0; i<N;i++) {
-        ref_idx[i] = i;
-    }
+    
 
-    if ((Neff < Nmin) && (doresample == 1)) {  
-        
-        for (int i = 0; i<N; i++) {
-            int ref = ref_idx[keep_indices[i]];
-            copyParticle(&particles[keep_indices[i]], &particles[i]);
-            weights[i] = 1.0f/N;
-            particles[i].w = &weights[i];
-            ref_idx[keep_indices[i]]=i;
-        } 
-        // Wrong and inefficient
-        /*
+    if ((Neff < Nmin) && (doresample == 1)) {
+        int count[N];
+        count_occurences(keep_indices,N,count);
         int i = find_particle_without_dependency(count, N);
         while (i != -1) {  // O(N^2)
             count[i] = -1;  // was 0 before
-            copyParticle(&particles[keep_indices[i]], &particles[i]);
+            copyParticle(particles+(keep_indices[i]), particles+i);
             count[keep_indices[i]]--;  // should make at least one particle have no dependency, so we can change it's memory
 
             i = find_particle_without_dependency(count, N);  // O(N)
         }
-        */
-        
-        
-
-        /* in the end, only count[i] == 1 where keep_indices[i] = i */
-
-        //normalize_weights(weights, N);
+        for (int i = 0; i<N; i++) {
+            weights[i] = 1.0f/N;
+            particles[i].w = weights+i;
+        }
     }
 }
 
