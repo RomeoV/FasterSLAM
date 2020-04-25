@@ -49,7 +49,7 @@ int main (int argc, char *argv[])
     int *da_table;
     setup_landmarks(&ftag, &da_table, N_features);
 
-    Vector2d *z;  // This is a dynamic array of Vector2d - see https://stackoverflow.com/a/13597383/5616591
+    Vector2d *z; 
     Vector2d *zf;
     Vector2d *zn;
     int *idf, *ftag_visible;
@@ -66,34 +66,30 @@ int main (int argc, char *argv[])
     double G         = 0;           // initialize steering angle
     double V         = V_; 
     size_t Nf_visible = 0;
-    
-    int ctr = 0;
-
 
     // Simulation parameters
     bool observe=true;
 	int id=0;
-    int observe_idx =0;
+    int observe_id =0;
     nlohmann::json particle_trace = {{"timesteps", nlohmann::json::array()}};
 	nlohmann::json ground_truth = {{"timesteps", nlohmann::json::array()}};
 	ground_truth.update(ground_truth_keypoints_json(wp, lm, N_waypoints, N_features));
 
     // Main loop
     while ( iwp != -1 ) {
-        std::cout<<"Counter: "<<ctr<<std::endl;
-        ctr++;
 
         //Optional
-        if (ctr == 60000){
+        if (id == 60000){
             break;
         }
 
 
         //JSON
         if (observe) {
-            particle_trace["timesteps"] += estimate_step_json(particles, weights, NPARTICLES, T, ftag_visible, Nf_visible, da_table, N_features, id) ;
+            particle_trace["timesteps"] += estimate_step_json(particles, weights, NPARTICLES, T, 
+            ftag_visible, Nf_visible, da_table, N_features, id) ;
             observe=false;
-            observe_idx++;
+            observe_id++;
         }
 
         ground_truth["timesteps"]+= ground_truth_step_json(xtrue, T, id, iwp, G);
@@ -115,7 +111,6 @@ int main (int argc, char *argv[])
         if ( dtsum >= DT_OBSERVE ) {
             dtsum = 0;
             observe=true;
-            //print(xtrue,3,1,std::cout);
             
             //////////////////////////////////////////////////////////////
             // Observation
@@ -136,12 +131,6 @@ int main (int argc, char *argv[])
 
 	std::ofstream of_gt(ground_truth_filename);
     of_gt << ground_truth;
-    std::cerr<<"N iterations: "<<id<<", "<<observe_idx<<std::endl;
-    print(xtrue,3,1,std::cerr);
-    std::cout<<weights[0]<<std::endl;
-    print(particles[0].xv,3,1,std::cerr);
-    print(particles[0].xf,4,1,std::cerr);
-    print(particles[0].Pf,4,2,std::cerr);
 
     cleanup_landmarks(&ftag, &da_table);
     cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
