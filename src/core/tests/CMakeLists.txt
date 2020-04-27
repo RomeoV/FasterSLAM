@@ -11,6 +11,7 @@ foreach(file ${testfiles})
   target_link_libraries(core_${name}_exe
     boost_ut
     FasterSlamCore
+    FasterSlamUtils
   )
   add_test(core_${name}
     core_${name}_exe
