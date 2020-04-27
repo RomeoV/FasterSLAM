@@ -9,6 +9,7 @@ target_include_directories(FasterSlamLib PUBLIC
 )
 target_link_libraries(FasterSlamLib PUBLIC
   FasterSlamCore
+  FasterSlamUtils
 )
 
 add_executable(FasterSlamExe

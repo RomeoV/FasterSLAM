@@ -28,4 +28,5 @@ target_link_libraries(FasterSlamVisualize PUBLIC
   FasterSlamLib
   nlohmann_json
   FasterSlamOutput
+  FasterSlamUtils
 )
