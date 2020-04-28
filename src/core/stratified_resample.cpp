@@ -13,10 +13,11 @@
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
+ * Work, best: (4*N +1) str.ran. + 3N adds + N mults + N divs + N fl.comp
+ * Work, worst: (4*N +1) str.ran. + 3N adds + N mults + N divs + N^2 fl.comp
+ * Memory moved: 2*N doubles + N ints + 2*N doubles
+ * Cycles: 100 * N (9*n <-> 11*N)
+ * Performance: 0.08
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
@@ -71,8 +72,8 @@ void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, 
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
+ * Work: N adds
+ * Memory moved: 2*N
  * Cycles: Not measured.
  * Performance: Not measured.
  * Optimal: Not measured.
