@@ -9,6 +9,7 @@ target_include_directories(rdtsc
 
 add_library(FasterSlamUtils
   string_format.cpp
+  read_input_file.cpp
 )
 
 target_include_directories(FasterSlamUtils PUBLIC
