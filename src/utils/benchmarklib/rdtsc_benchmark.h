@@ -39,17 +39,21 @@ struct Benchmark {
     // We do this for comparability of benchmarks where funcs overwrite the input.
     comp_func data_loader = nullptr;
 
+    // comp_func work_compute = nullptr; //returns a vector that overwrites funcFlops, WIP
+
     std::vector<comp_func> userFuncs;
     std::vector<std::string> funcNames;
 
     std::vector<int> funcFlops; //Work W
     std::vector<double> cycles; // Sum of runtimes over all runs T
+    std::vector<double> min_cycles; // Minimum t over all runs
+    std::vector<double> max_cycles; // Maximum t over all runs
     std::vector<double> speedups; //Speedup S
     std::vector<double> performances; //Performance P
 
     int num_runs = 0;
 
-    bool desctructor_output = true;
+    bool destructor_output = true;
 
     std::ostream & fout = std::cout;
     int numFuncs = 0;
@@ -71,6 +75,8 @@ struct Benchmark {
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
+            min_cycles.resize(numFuncs, MAXFLOAT);
+            max_cycles.resize(numFuncs, -MAXFLOAT);
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -81,7 +87,13 @@ struct Benchmark {
             if (data_loader) {
                 data_loader(std::forward<Args>(args)...);
             }
-            double T =cycles[i] + measure_cycles(userFuncs[i],std::forward<Args>(args)...);
+            
+            double t = measure_cycles(userFuncs[i],std::forward<Args>(args)...);
+
+            double T = cycles[i] + t;
+
+            min_cycles[i] = std::min(min_cycles[i],t);
+            max_cycles[i] = std::max(max_cycles[i],t);
 
             cycles[i] = T;
             
@@ -94,23 +106,29 @@ struct Benchmark {
     }
 
     void run_benchmark() {
-        
         num_runs++;
-        std::cerr<<num_runs<<std::endl;
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
+            min_cycles.resize(numFuncs, MAXFLOAT);
+            max_cycles.resize(numFuncs, -MAXFLOAT);
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
 
+        
         for (int i = 0; i < numFuncs; i++)
         {
             if (data_loader) {
                 data_loader();
             }
+            
+            double t = measure_cycles(userFuncs[i]);
 
-            double T = cycles[i] + measure_cycles(userFuncs[i]);
+            double T = cycles[i] + t;
+
+            min_cycles[i] = std::min(min_cycles[i],t);
+            max_cycles[i] = std::max(max_cycles[i],t);
 
             cycles[i] = T;
             
@@ -143,6 +161,37 @@ struct Benchmark {
                                     <<separator<<left(funcNames[i],30)
                                     <<separator<<prd(funcFlops[i], 0, cell_width)
                                     <<separator<<prd(cycles[i] / num_runs, 4, cell_width) 
+                                    <<separator<<prd(performances[i], 4, cell_width) 
+                                    <<separator<<prd(speedups[i], 4, cell_width) 
+                                    <<separator<<std::endl;
+        }
+    }
+
+    void summary_long(){
+        assert(!performances.empty());
+
+        fout<<name<<" ("<<num_runs<<" runs, avg):"<<std::endl;
+        const int cell_width = 17;
+        const char* separator = " | ";
+        const char* underline = "\033[4m";
+        const char* no_underline = "\033[0m";
+        fout<<underline<<separator<<right("i",2)
+                            <<separator<<left("Name",30)
+                            <<separator<<right("Work [flops]",cell_width) 
+                            <<separator<<right("Time [cyc]",cell_width) 
+                            <<separator<<right("min. t [cyc]",cell_width)
+                            <<separator<<right("max. t [cyc]",cell_width)
+                            <<separator<<right("Perf. [flops/cyc]",cell_width) 
+                            <<separator<<right("Speedup [-]",cell_width) 
+                            <<separator<<std::endl;
+        
+        for (int i = 0; i<numFuncs;i++){
+            fout<<no_underline<<separator<<prd(i, 0,2)
+                                    <<separator<<left(funcNames[i],30)
+                                    <<separator<<prd(funcFlops[i], 0, cell_width)
+                                    <<separator<<prd(cycles[i] / num_runs, 4, cell_width)
+                                    <<separator<<prd(min_cycles[i], 4, cell_width) 
+                                    <<separator<<prd(max_cycles[i], 4, cell_width)  
                                     <<separator<<prd(performances[i], 4, cell_width) 
                                     <<separator<<prd(speedups[i], 4, cell_width) 
                                     <<separator<<std::endl;
