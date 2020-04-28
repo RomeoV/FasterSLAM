@@ -199,7 +199,7 @@ struct Benchmark {
     }
 
     ~Benchmark() {
-        if (desctructor_output) {
+        if (destructor_output) {
             summary();
         }
     }
