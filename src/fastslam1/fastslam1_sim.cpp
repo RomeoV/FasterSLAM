@@ -86,10 +86,6 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
             //////////////////////////////////////////////////////////////
         }
     }
-    print(xtrue,3,1,std::cerr);
-    print(particles[0].xv,3,1,std::cerr);
-    print(particles[0].xf,4,1,std::cerr);
-    print(particles[0].Pf,4,2,std::cerr);
 
     cleanup_landmarks(&ftag, &da_table);
     cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
