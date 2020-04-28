@@ -9,6 +9,8 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sstream>
+
 /* Convert double to string with specified number of places after the decimal
    and left padding. */
 std::string prd(const double x, const int decDigits, const int width) {
