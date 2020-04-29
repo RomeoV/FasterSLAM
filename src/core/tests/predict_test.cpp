@@ -59,13 +59,68 @@ using namespace boost::ut::bdd;
 int main() {
     "predict"_test = [] {
         given("I have a particle at position (x=1,y=1,theta=pi/2)") = [] {
-            SWITCH_PREDICT_NOISE = 0;
-            double initial_pos[3] = {1, 1, M_PI/2};
-            Particle p;
-            p.xv[0] = 1; 
-            p.xv[1]=1;
-            p.xv[2]= M_PI/2;
+            auto is_close = [](double lhs, double rhs) {
+                return  fabs(lhs - rhs) < 1e-4;
+            };
 
+            auto is_approx = [](double lhs, double rhs) {
+                return  fabs(lhs - rhs) < 2*1e-1;
+            };
+
+            SWITCH_PREDICT_NOISE = 0;
+            Vector3d initial_pos = {1, 1, M_PI/2};
+            Particle p;
+            initParticle(&p, 10, initial_pos);
+
+            when("I give a constant control (steering angle) and calculate the time it takes to drive half a circle") = [&] {
+                double Q[4] = {0, 0, 0, 0};
+
+                const double V = 1; //random()*1.0/RAND_MAX;
+                const double G = M_PI/4.;
+
+                auto time_per_half_circle = [V] (double G) {  // note that static variables don't need to be captured
+                    return 1 * (M_PI * WHEELBASE)/(V * sin(G));
+                };
+
+                double T = time_per_half_circle(G);
+                int k_per_half_circle = int( T * V / 0.01);
+                const double dt = T / k_per_half_circle;  // make sure T is divisable by dt, and one timestep make about 1cm progress
+
+                then("Before moving, it's in the starting position") = [&] {
+                    expect(that % is_close(p.xv[0],  initial_pos[0]) == true) << "p.xv[0] = " << p.xv[0];
+                    expect(that % is_close(p.xv[1],  initial_pos[1]) == true) << "p.xv[1] = " << p.xv[1];
+                    expect(that % is_close(p.xv[2], initial_pos[2]) == true) << "p.xv[2] = " << p.xv[2];
+                };
+
+                for (size_t i = 0; i < k_per_half_circle; i++) {
+                    predict(&p, V, G, Q, WHEELBASE, dt);
+                }
+                then("After half a circle, the angle is opposite and the y values is the same again (but not he x value)!") = [&] {
+                    expect(that % is_close(p.xv[0],  initial_pos[0]) == false) << "p.xv[0] = " << p.xv[0];
+                    expect(that % is_approx(p.xv[1],  initial_pos[1]) == true ) << "p.xv[1] = " << p.xv[1];
+                    expect(that % is_close(p.xv[2], -initial_pos[2]) == true ) << "p.xv[2] = " << p.xv[2];
+                };
+
+                for (size_t i = 0; i < k_per_half_circle; i++) {
+                    predict(&p, V, G, Q, WHEELBASE, dt);
+                }
+                then("After another half a circle, x, y and the angle is the same as initial position") = [&] {
+                    expect(that % is_close(p.xv[0], initial_pos[0]) == true);
+                    expect(that % is_close(p.xv[1], initial_pos[1]) == true) << "p.xv[1] = " << p.xv[1];
+                    expect(that % is_close(p.xv[2], initial_pos[2]) == true) << "p.xv[2] = " << p.xv[2];
+                };
+
+                for (size_t i = 0; i < k_per_half_circle; i++) {
+                    predict(&p, V, G, Q, WHEELBASE, dt);
+                }
+                then("After one and a half circle, it's in the same pos as during the first test") = [&] {
+                    expect(that % is_close(p.xv[0],  initial_pos[0]) == false) << "p.xv[0] = " << p.xv[0];
+                    expect(that % is_approx(p.xv[1], initial_pos[1]) == true) << "p.xv[1] = " << p.xv[1];
+                    expect(that % is_close(p.xv[2], -initial_pos[2]) == true) << "p.xv[2] = " << p.xv[2];
+                };
+            };
+
+/*
             when("I give control inputs for a rectangle") = [=]() mutable {
                 double Q[4] = {0, 0, 0, 0};
 
@@ -112,6 +167,7 @@ int main() {
                     } | std::vector{0,1,2};
                 };
             };
+    */
         };
     };
 }
