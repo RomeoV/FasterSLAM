@@ -61,7 +61,7 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&pi_to_pi)> bench("pi_to_pi Benchmark");
 
-    double work = 5.0; // best-case in flops
+    double work = 6.0; // best-case in flops
 
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!

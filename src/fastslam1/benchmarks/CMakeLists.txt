@@ -8,26 +8,16 @@ foreach(file ${benchfiles})
   add_executable(core_${name}_exe
     ${file}
   )
+
 target_link_libraries(core_${name}_exe
   boost_ut
   FasterSlamUtils
   FasterSlamCore
+  FasterSlamLib
 )
 
 # add_test(core_${name}
-# core_${name}_exe
+# fastslam1_${name}_exe
 # )
-
-file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test)
-configure_file(
-    test_webmap.mat
-    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/test_webmap.mat
-    COPYONLY
-)
-configure_file(
-    lm.txt
-    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/lm.txt
-    COPYONLY
-)
 
 endforeach()

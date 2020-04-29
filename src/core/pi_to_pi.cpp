@@ -15,8 +15,8 @@ double pi_to_pi(double ang) {
 
 /*****************************************************************************
  * PERFORMANCE STATUS BASE
- * Work, best: 1 negate + 3 mult + 1 add = 5 flops
- * Work, worst: 2 negate + 6 mult + 1 div + 1 floor + 2 fl-comp + 2 add=14 fl
+ * Work, best: 1 negate + 2 mult + 4 fl-comp = 6 flops
+ * Work, worst: 2 negate + 6 mult + 1 div + 1 floor + 3 fl-comp + 2 add=15 fl
  * Memory moved: 0 (register)
  * Cycles: 42 cyc
  * Performance: 0.33 flops / cyc
