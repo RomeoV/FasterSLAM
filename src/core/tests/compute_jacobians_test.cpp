@@ -77,6 +77,8 @@ int main() {
                     expect(is_close(Sf[j][i], target_Sf[j][i]));
                 }
             }
+            //! Delete Particle
+            delParticleMembersAndFreePtr(particle);
         };
       };
     };

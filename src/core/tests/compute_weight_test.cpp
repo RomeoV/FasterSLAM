@@ -41,6 +41,9 @@ int main() {
           expect(is_close(weight, 0.000745473));
         };
       };
+      
+      //! Delete Particle
+      delParticleMembersAndFreePtr(particle);
     };
   };
 
