@@ -9,7 +9,7 @@
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work: TBD
+ * Work: 2 neg + 60 adds + 54 muls + 2 divs + 2 sqrts = 120 flops
  * Memory moved: TBD
  * Cycles: TBD
  * Performance: TBD

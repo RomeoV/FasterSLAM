@@ -46,7 +46,7 @@ int main() {
     }
 
     Benchmark<decltype(&KF_cholesky_update)> bench("KF_cholesky_update benchmark");
-    double work = 0; // TODO Count work
+    double work = 120;
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
