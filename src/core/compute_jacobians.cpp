@@ -70,7 +70,6 @@ void compute_jacobians_base(Particle* particle,
       std::cout << zp_vec[1] << std::endl;
       copy(zp_vec, 2, zp[i]);
 
-      std::cout << "step 3" << std::endl;
       // Jacobian wrt vehicle states
       Matrix23d HvMat = {-dx / d, -dy / d, 0, dy / d2, -dx / d2, -1};
 
@@ -79,7 +78,6 @@ void compute_jacobians_base(Particle* particle,
 
       copy(HvMat, 6, Hv[i]);
       copy(HfMat, 4, Hf[i]);
-      std::cout << "step 4" << std::endl;
       // innovation covariance of feature observation given the vehicle'
       // Eq. 60 in Thrun03g
       Matrix2d HfMat_T;
@@ -90,11 +88,9 @@ void compute_jacobians_base(Particle* particle,
       mul(HfMat, Pf[i], 2, 2, 2, Hf_Pf);
       mul(Hf_Pf, HfMat_T, 2, 2, 2, Hf_Pf_HfT);
 
-      std::cout << "step 5" << std::endl;
       add(Hf_Pf_HfT, R, 2 * 2, Hf_Pf_HfT_R);
       copy(Hf_Pf_HfT_R, 2 * 2, Sf[i]);
       // ........ I hate this madness
   };
 
-  std::cout << "step 6" << std::endl;
 }
