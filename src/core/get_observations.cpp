@@ -7,20 +7,23 @@
  * ToDo: Start optimizing
  ****************************************************************************/
 
+
+
+void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]) {
+    get_observations_base(x, rmax, lm, lm_rows, idf, nidf, z);
+}
+
+
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work: TBD
+ * Work best: 15*lm_rows flops (get_visible_landmarks)
+ * Work worst: 15*lm_rows flops (get_visible_landmarks) + 8*lm_rows flops (range_bearing) = 23 lm_rows
  * Memory moved: TBD
  * Cycles: TBD
  * Performance: TBD
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
-
-void get_observations(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]) {
-    get_observations_base(x, rmax, lm, lm_rows, idf, nidf, z);
-}
-
 void get_observations_base(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
 {
     double *lm_new = NULL;
@@ -37,6 +40,17 @@ void get_visible_landmarks(cVector3d x, const double rmax, const double *lm, con
     get_visible_landmarks_base(x, rmax, lm, lm_rows, lm_new, idf, nidf);
 }
 
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work, best: 13*lm_rows flops (find2) + 2*lm_rows adds = 15*lm_rows flops
+ * Work, worst: 13*lm_rows flops (find2) + 2*lm_rows adds = 15*lm_rows flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void get_visible_landmarks_base(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
 {
     //select set of landmarks that are visible within vehicle's 
@@ -92,6 +106,17 @@ void get_visible_landmarks_base(cVector3d x, const double rmax, const double *lm
 void compute_range_bearing(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) {
     compute_range_bearing_base(x, lm, lm_rows, z);
 }
+
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 4*lm_rows adds + lm_rows sqrt + lm_rows atan2 + 2*lm_rows pow = 8 flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 // Just fills z which has size lm_rows x 2 and is allocated in the caller of this function
 void compute_range_bearing_base(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
 {
@@ -117,6 +142,17 @@ void find2(const double *dx, const double *dy, const size_t size,
         const double phi, const double rmax, size_t *index, size_t *index_size) {
     find2_base(dx,dy,size,phi, rmax, index, index_size);
 }
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work, best: 4*size fl-comp + 2*size fabs + 2*size sin + 3*size pow + size adds + 2*size mults = 13 *size flops 
+ * Work, worst: 4*size fl-comp + 2*size fabs + 2*size sin + 3*size pow + size adds + 2*size mults = 13 *size flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 //! index should be preallocated with size equal to size
 void find2_base(const double *dx, const double *dy, const size_t size, 
         const double phi, const double rmax, size_t *index, size_t *index_size)

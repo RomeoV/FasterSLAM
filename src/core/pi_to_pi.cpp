@@ -5,23 +5,24 @@
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
- * Done: Base Implementation, unit test
+ * Done: Base Implementation, unit test, Benchmark added
  * ToDo: Start optimizing
- ****************************************************************************/
-
-/*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
- * Optimal: TBD
- * Status: TBD
  ****************************************************************************/
 
 double pi_to_pi(double ang) {
     return pi_to_pi_base(ang);
 }
+
+/*****************************************************************************
+ * PERFORMANCE STATUS BASE
+ * Work, best: 1 negate + 2 mult + 4 fl-comp = 6 flops
+ * Work, worst: 2 negate + 6 mult + 1 div + 1 floor + 3 fl-comp + 2 add=15 fl
+ * Memory moved: 0 (register)
+ * Cycles: 42 cyc
+ * Performance: 0.33 flops / cyc
+ * Optimal: TBD
+ * Status: Baseline
+ ****************************************************************************/
 
 double pi_to_pi_base(double ang) 
 {

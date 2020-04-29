@@ -9,15 +9,7 @@
  * ToDo: Start optimizing
  *****************************************************************************/
 
-/*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
- * Optimal: TBD
- * Status: TBD
- *****************************************************************************/
+
 
 //! Adds random measurement noise. We assume R is diagnoal matrix.
 //! TOCHECK: vector<Vector2d> z -> Storage choice for z, ROW-WISE for now
@@ -25,6 +17,17 @@
 void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
     add_observation_noise_base(z, zlen, R, addnoise);
 }
+
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 2*zlen rand + 2 sqrt + 2*zlen adds + 2*zlen mults = 6*zlen + 2
+ * Memory moved: TBD
+ * Cycles: 350
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ *****************************************************************************/
 void add_observation_noise_base(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise)
 {
     if ( addnoise == 1 && zlen > 0 ){
