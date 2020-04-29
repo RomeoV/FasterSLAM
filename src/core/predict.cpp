@@ -12,8 +12,11 @@
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work, best: 19 (predict_true) = 19 flop
- * Work, worst: 28 (predict_true) + 17 (multivar) = 45 flop
+ * Work, best: 20 (predict_true) = 20 flop
+ * Work, worst: 29 (predict_true) + 17 (multivar) = 46 flop
+ * 
+ * #work best, det: 3 sin/cos + 9 mults + 3 adds + 1 neg + 4 fl-comp +1 div = 20 flops
+ * #work, worst, det: 3 neg + 17 mults + 4 div + 1 floor + 4 fl-comp + 3 sin + 12 adds + 2 sqrt = 46 flops
  * Memory moved: 5 doubles
  * Cycles: 230
  * Performance: 0.07

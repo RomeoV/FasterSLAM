@@ -15,8 +15,13 @@ void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double 
 
 /*****************************************************************************
  * PERFORMANCE STATUS (N=NPARTICLES)
- * Work, best: 19 (pred_true) + 22(com_steer.) + N*19 (predict) = 41 + N*19 flops
- * Work, worst: 28 (pred_true) +17 (con_noise) + 36(com_steer.) + N*45 (predict) = 81 + N*45 flops
+ * Work, best: 20 (pred_true) + 22(com_steer.) + N*20 (predict) = 42 + N*20 flops
+ * Work, worst: 29 (pred_true) +17 (con_noise) + 37(com_steer.) + N*46 (predict) = 83 + N*46 flops
+ * 
+ * 
+ * #work best, det: 1 atan2 + 2 pow_2 + 3*N+3 sin/cos + 9*N+9+3 mults + 3*N+3+8 adds + 1*N+1+1 neg + 4*N+4+7 fl-comp + 1*N+1 div  
+ * #work, worst, det: 1 atan2 + 2 pow_2 + 3*N+3+2 neg + 17*N+12+9 mults + 4*N+2+1 div + 1*N+1+1 floor + 4*N+4+11 fl-comp + 3*N+3 sin + 12*N+5+10 adds + 2*N sqrt 
+ * #Work best, detailed: 
  * Memory moved: TBD
  * Cycles: 48000 with N = 100
  * Performance: 0.04

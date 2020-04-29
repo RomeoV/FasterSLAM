@@ -16,8 +16,8 @@ void predict_true(const double V,const double G,const double WB,
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work, best: 3 sin/cos + 6 mults + 3 adds + 6 pi_to_pi (est.) +1 div = 19 flops
- * Work, worst: 3 sin/cos + 6 mults + 3 adds + 15 pi_to_pi (est.) +1 div = 28 flops
+ * Work, best: 3 sin/cos + 9 mults + 3 adds + 1 neg + 4 fl-comp +1 div = 20 flops
+ * Work, worst: 3 sin/cos + 12 mults + 5 adds + 2 neg + 4 fl-comp  +2 div +1 floor = 29 flops
  * Memory moved: 3 doubles
  * Cycles: ~ 400 cyc [170-800]
  * Performance: 0.05
