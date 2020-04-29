@@ -25,6 +25,7 @@ if(TEST_COVERAGE)
               --filter="${PROJECT_SOURCE_DIR}/core/"
               --filter="${PROJECT_SOURCE_DIR}/fastslam1/"
               --exclude=".+_test.cpp"
+              --exclude=".+_bench.cpp"
               --print-summary
 
       COMMAND ${GCOVR}
@@ -33,6 +34,7 @@ if(TEST_COVERAGE)
               --filter="${PROJECT_SOURCE_DIR}/core/"
               --filter="${PROJECT_SOURCE_DIR}/fastslam1/"
               --exclude=".+_test.cpp"
+              --exclude=".+_bench.cpp"
               --html-details=${HTML_DIR}/coverage.html
       COMMENT "Find coverage html output at `${HTML_DIR}`"
       WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
