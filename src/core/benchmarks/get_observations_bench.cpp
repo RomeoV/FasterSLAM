@@ -51,7 +51,7 @@ int main() {
     }
 
     Benchmark<decltype(&get_observations)> bench("get_observations benchmark");
-    double work = 0; // TODO Count work
+    double work = 15*lm_rows; // TODO Count work //best-case
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
