@@ -58,8 +58,6 @@ int main() {
     data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue_exact, &iwp_exact, &G_exact, particles_exact);
     predict_update_base(wp, N_waypoints, V, *Q, dt, N, xtrue_exact, &iwp_exact, &G_exact, particles_exact);
     
-    
-    
 
     expect(that % fabs(G - G_exact) < 1.0e-10) << "G";
     expect(that % (iwp - iwp_exact) == 0 ) << "iwp";
@@ -77,7 +75,7 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&predict_update_base)> bench("predict_update Benchmark");
 
-    double work = 58 + N*19; // best
+    double work = 41 + N*19; // best
 
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
