@@ -12,8 +12,8 @@
  ****************************************************************************/
 
 /*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
+ * PERFORMANCE STATUS (N_z = nb of not before seen features)
+ * Work: N_z*(4 adds + 2 muls + 2 sin/cos + 2 matmul 2x2x2 = 2*(8 muls + 4 adds))      + 2*N_z + 1 integer adds
  * Memory moved: TBD
  * Cycles: TBD
  * Performance: TBD
