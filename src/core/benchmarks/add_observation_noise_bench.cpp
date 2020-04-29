@@ -17,6 +17,8 @@ auto data_loader(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnois
     //std::copy(z_init[0], z_init[0]+2, z[0]);
     //std::copy(z_init[1], z_init[1]+2, z[1]);
     std::copy(&z_init[0][0], &z_init[0][0]+4, &z[0][0]);
+    // reset seed
+    srand(1994);
 }
 
 int main() {
@@ -27,11 +29,9 @@ int main() {
     cMatrix2d R = {0.010000000000000002, 0, 0, 0.00030461741909055634};
     const int addnoise = 1;
 
-    srand(1994);
     data_loader(exact_z, zlen, R, addnoise);
     add_observation_noise_base(exact_z, zlen, R, addnoise);
     
-    srand(1994);
     data_loader(z, zlen, R, addnoise);
     add_observation_noise(z, zlen, R, addnoise);
     
