@@ -52,11 +52,6 @@ void compute_jacobians_base(Particle* particle,
 
       dx = xf[i][0] - particle->xv[0];
       dy = xf[i][1] - particle->xv[1];
-      std::cout << particle->xv[0] << std::endl;
-      std::cout << particle->xv[1] << std::endl;
-      std::cout << dx << std::endl;
-      std::cout << dy << std::endl;
-
       d2 = pow(dx, 2) + pow(dy, 2);
       d = sqrt(d2);
 
@@ -66,8 +61,6 @@ void compute_jacobians_base(Particle* particle,
       zp_vec[0] = d;
       zp_vec[1] = atan2(dy, dx) - particle->xv[2];
       zp_vec[1] = pi_to_pi_base(zp_vec[1]);
-      std::cout << zp_vec[0] << std::endl;
-      std::cout << zp_vec[1] << std::endl;
       copy(zp_vec, 2, zp[i]);
 
       // Jacobian wrt vehicle states

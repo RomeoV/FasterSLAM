@@ -5,15 +5,6 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
-/*! Thrun03 Eq. 61
-    Compute particle weight for sampling.
-    Uses compute_jacobians.
-    @param[out] particle Particle whose weight is calculated
-    @param[in]  z        vector of map features, calculated by data_associate_known
-    @param[in]  idf      vector of map indices, calculated by data_associate_known, used for jacobians 
-    @param[in]  R        matrix of observation noises, metres and radians
- */
-
 int main() {
   "compute_weight_simple"_test = [] {
     given("I have a particle, map features/indices and observation noises") = [] {
@@ -47,8 +38,4 @@ int main() {
     };
   };
 
-  "memory leak"_test = [] {
-    // double* foo = (double*)malloc(4*sizeof(double));
-    // We don't want this anymore because of the CI pipeline
-  };
 };

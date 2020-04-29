@@ -5,25 +5,6 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
-/*! Thrun03 Eq. 38, 39 and 60
- *  http://robots.stanford.edu/papers/Thrun03g.pdf
- * 
- *  Note that the sensor model is defined as follows:
- *  $ g(\theta, s_t) = \begin{bmatrix} \sqrt{(x_{\theta} - x_v)^2 + (y_{\theta} - y_v)^2}  \\
- *                                     \arctan(\frac{y_{\theta} - y_v}{x_{\theta} - x_v}) \end{bmatrix} $
- * 
- *  First computes all predicted observations in relative coordinates to the vehicle.
- *  Then computes the jacobians given a particle state and predict observations. [Compute-Intensive, Switch to mask]
- *  @param[in]   Particle   Particle for which the jacobian should be computed.
- *  @param[in]   idf        Feature indices.
- *  @param[in]   N_z        Number of features.
- *  @param[in]   R          Covariance matrix of observation (diagonal).
- *  @param[out]  zp         vector of predicted observation (given the new vehicle state)
- *  @param[out]  Hv         Jacobian of h wrt vehicle states
- *  @param[out]  Hf         Jacobian of h wrt feature states
- *  @param[out]  Sf         Measurement covariance of feature observation given the vehicle.
- */
-
 int main() {
   "jabobian_simple"_test = [] {
     given("I have a particle, features and a covariance matrix of observation") = [] {
@@ -84,8 +65,4 @@ int main() {
     };
   };
 
-  "memory leak"_test = [] {
-    // double* foo = (double*)malloc(4*sizeof(double));
-    // We don't want this anymore because of the CI pipeline
-  };
 };
