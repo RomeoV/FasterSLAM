@@ -62,7 +62,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
         // Prediction
         //////////////////////////////////////////////////////////////////
 
-        predict_update(wp, N_waypoints, V, *Q, dt, xtrue, &iwp, &G,particles);
+        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 

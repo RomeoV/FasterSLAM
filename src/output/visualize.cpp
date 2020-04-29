@@ -98,7 +98,7 @@ int main (int argc, char *argv[])
         // Prediction
         //////////////////////////////////////////////////////////////////
 
-        predict_update(wp, N_waypoints, V, *Q, dt, xtrue, &iwp, &G,particles);
+        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 
