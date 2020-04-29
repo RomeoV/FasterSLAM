@@ -18,4 +18,16 @@ target_link_libraries(core_${name}_exe
 # core_${name}_exe
 # )
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test)
+configure_file(
+    test_webmap.mat
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/test_webmap.mat
+    COPYONLY
+)
+configure_file(
+    lm.txt
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/lm.txt
+    COPYONLY
+)
+
 endforeach()
