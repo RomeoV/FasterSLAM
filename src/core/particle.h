@@ -13,7 +13,7 @@ typedef struct Particle {
   int Nfa;   //! Actual number of known features (you should hardly ever need
                 //! this)
   double* xf;   //! 2d means of EKF in cartesian world coordinates
-  double* Pf;   //! covariance matrices for EKF in polar robot coordinates
+  double* Pf;   //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
 } Particle;
 
 

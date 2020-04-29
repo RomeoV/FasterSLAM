@@ -17,11 +17,15 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 int main() {
   "compute_weight_simple"_test = [] {
     given("I have a particle, map features/indices and observation noises") = [] {
+      // prepare particle
       Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
       Particle* particle = newParticle(5, xv);
-      Vector2d xf[5] = {{0,0},{0,0},{0,0},{0,0},{0,0}}; //! 2d means of EKF in cartesian world coordinates
-      Matrix2d Pf[5] = {{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0},{0,0,0,0}}; //! covariance matrices for EKF in polar robot coordinates
-      for(int i=0; i<5; i++){
+      Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
+      for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
+        set_xfi(particle, xf[i], i);
+      }
+      Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
+      for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
         set_Pfi(particle, Pf[i], i);
       }
 
@@ -31,10 +35,10 @@ int main() {
       Matrix2d R = {1,0,0,1};   // matrix of observation noises
 
       when("I add them") = [&] {
-        compute_weight(particle, z, N_z, idf, R);
+        double weight = compute_weight(particle, z, N_z, idf, R);
         then("I get the right particle weight") = [=] {
-          double* weight = particle->w; // todo: why is w a pointer?
-          expect(weight[0] == 0);
+          auto is_close = [](auto lhs, auto rhs) -> bool {return lhs - rhs < 1e-14 or rhs - lhs < 1e-14;};
+          expect(is_close(weight, 0.000745473));
         };
       };
     };
