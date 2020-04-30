@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <iomanip>
+#include <limits>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -75,8 +76,8 @@ struct Benchmark {
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
-            min_cycles.resize(numFuncs, MAXFLOAT);
-            max_cycles.resize(numFuncs, -MAXFLOAT);
+            min_cycles.resize(numFuncs, std::numeric_limits<float>::max());
+            max_cycles.resize(numFuncs, -std::numeric_limits<float>::max());
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -110,8 +111,8 @@ struct Benchmark {
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
-            min_cycles.resize(numFuncs, MAXFLOAT);
-            max_cycles.resize(numFuncs, -MAXFLOAT);
+            min_cycles.resize(numFuncs, std::numeric_limits<float>::max());
+            max_cycles.resize(numFuncs, -std::numeric_limits<float>::max());
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
