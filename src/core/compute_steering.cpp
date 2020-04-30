@@ -17,8 +17,11 @@ void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double m
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work, best: 6 p2p + 2 pow_2 + 8 add + 1 mult + 3 fl-comp + 1 atan =  22 flops
- * Work, worst: 15 p2p + 2 pow_2 + 8 add + 3 mult + 7 fl-comp + 1 atan = 36 flops 
+ * Work, best: 7 p2p + 2 pow_2 + 8 add + 1 mult + 3 fl-comp + 1 atan =  22 flops
+ * Work, worst: 16 p2p + 2 pow_2 + 8 add + 3 mult + 7 fl-comp + 1 atan = 37 flops 
+ * 
+ * #Work, best, det: 2 pow_2 + 8 add + 3 mult + 7 fl-comp + 1 atan +1 neg +1 floor =  22 flops
+ * #Work, worst, det: 2 pow_2 + 10 add + 9 mult + 11 fl-comp + 1 atan +2 neg + 1 div +1 floor = 37 flops 
  * Memory moved: (3 + 2*2  +2) doubles + x ints (not counted yet)
  * Cycles: 270
  * Performance: 0.08
