@@ -59,15 +59,15 @@ int main() {
     bench.run_benchmark(&p, landmarks, 2, R);
 
     
-    Benchmark<decltype(lambda)> bench_lambda("add_feature on array Benchmark");
+    // Benchmark<decltype(lambda)> bench_lambda("add_feature on array Benchmark");
 
-    // Add lambda functions to aggregate over range of inputs.
-    bench_lambda.add_function(lambda, "add_feature", work*N);
-    bench_lambda.add_function(lambda_base, "add_feature_base", work*N);
-    //bench_lambda.add_function(lambda_fmod, "add_feature_fmod", work*N);
+    // // Add lambda functions to aggregate over range of inputs.
+    // bench_lambda.add_function(lambda, "add_feature", work*N);
+    // bench_lambda.add_function(lambda_base, "add_feature_base", work*N);
+    // //bench_lambda.add_function(lambda_fmod, "add_feature_fmod", work*N);
 
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench_lambda.run_benchmark(&p, landmarks, 2, R);
+    // //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    // bench_lambda.run_benchmark(p, landmarks, 2, R);
 
 
     // Free memory
