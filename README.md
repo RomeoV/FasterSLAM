@@ -1,8 +1,8 @@
 # FasterSLAM
 > Fast Slam on steroids.
 
-[![pipeline status](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/pipeline.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
-[![coverage report](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/coverage.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
+[![pipeline status](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/merging_all_tests_together/pipeline.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/merging_all_tests_together)
+[![coverage report](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/merging_all_tests_together/coverage.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/merging_all_tests_together)
 
 #### References
 > Montemerlo, M., Thrun, S., Koller, D., & Wegbreit, B. (2002). FastSLAM: A factored solution to the simultaneous localization and mapping problem. Aaai/iaai, 593598.
