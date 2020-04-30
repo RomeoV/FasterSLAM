@@ -6,6 +6,7 @@
 #include <iostream>
 #include <random>
 #include <iomanip>
+#include <algorithm>
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,23 +17,43 @@
 #include "tsc_x86.h"
 #include <assert.h> 
 
-//Macros (overwrite them in the benchmark if necessary)
-#define CYCLES_REQUIRED 1e8
-#define REP 50
-#define NUM_RUNS 100
+//Macros 
+#define CYCLES_REQUIRED_ 1e8 // Cache warmup
+#define REP_ 50 // repetitions
+#define NUM_RUNS_ 100 //number of runs within each repetition (avg)
+
+typedef struct BenchControls {
+    long CYCLES_REQUIRED = CYCLES_REQUIRED_;
+    long REP = REP_;
+    long NUM_RUNS = NUM_RUNS_;
+} BenchControls;
 
 //headers
 template<typename comp_func,
          typename ... Args>
-double measure_cycles(comp_func f, Args&&... args);
+double measure_cycles(comp_func f, comp_func data_loader, BenchControls controls, Args&&... args);
+
+//headers
+template<typename comp_func,
+         typename ... Args>
+double measure_cycles(comp_func f, BenchControls controls, Args&&... args);
+
+template<typename comp_func>
+double measure_cycles(comp_func f, BenchControls controls);
 
 template<typename comp_func>
 double measure_cycles(comp_func f);
+
+template<typename comp_func,
+         typename ... Args>
+double measure_cycles(comp_func f, Args&&... args);
 
 //Main struct
 template <typename comp_func>
 struct Benchmark {
     std::string name = "";
+
+    BenchControls controls; // To control repeats in benchmark!
 
     // Optional function that takes the same input as comp_func, and resets the data.
     // Malloc should be done outside this function, here we only set values (fill arrays).
@@ -44,19 +65,26 @@ struct Benchmark {
     std::vector<comp_func> userFuncs;
     std::vector<std::string> funcNames;
 
+    int numFuncs = 0;
     std::vector<int> funcFlops; //Work W
+    std::vector<double> flops_sum; //Sum of Work W for each function over all runs
     std::vector<double> cycles; // Sum of runtimes over all runs T
     std::vector<double> min_cycles; // Minimum t over all runs
     std::vector<double> max_cycles; // Maximum t over all runs
     std::vector<double> speedups; //Speedup S
     std::vector<double> performances; //Performance P
+    
+    std::vector<std::string> run_names;
 
+    std::vector<std::vector<double>> cycles_capture;
+    std::vector<std::vector<double>> flops_capture;
+    
     int num_runs = 0;
-
+    std::string run_name = std::to_string(num_runs);
     bool destructor_output = true;
 
     std::ostream & fout = std::cout;
-    int numFuncs = 0;
+    
     Benchmark(std::string title) {
         name = title;
     }
@@ -70,13 +98,15 @@ struct Benchmark {
     template <typename ... Args>
     void run_benchmark(Args&&... args) {
         
+        run_names.push_back(run_name);
         
-        num_runs++;
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
-            min_cycles.resize(numFuncs, MAXFLOAT);
-            max_cycles.resize(numFuncs, -MAXFLOAT);
+            flops_sum.resize(numFuncs,0.0);
+            cycles_capture.resize(numFuncs,{});
+            flops_capture.resize(numFuncs,{});
+            std::vector<std::vector<double>> flops_capture;
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -84,34 +114,42 @@ struct Benchmark {
         
         for (int i = 0; i < numFuncs; i++)
         {
-            if (data_loader) {
-                data_loader(std::forward<Args>(args)...);
-            }
-            
-            double t = measure_cycles(userFuncs[i],std::forward<Args>(args)...);
+            double t = measure_cycles(userFuncs[i], data_loader, controls,
+                                                std::forward<Args>(args)...);
 
             double T = cycles[i] + t;
 
-            min_cycles[i] = std::min(min_cycles[i],t);
-            max_cycles[i] = std::max(max_cycles[i],t);
-
+            cycles_capture[i].push_back(t);
             cycles[i] = T;
+
+            flops_capture[i].push_back(funcFlops[i]);
+            flops_sum[i] += funcFlops[i];
             
-            performances[i] = funcFlops[i] * double(num_runs) / T ;
+            
+            
+
+            performances[i] = flops_sum[i] / T ;
 
             if (i > 0) {
                 speedups[i] = cycles[0]/T;
             }
         }
+        num_runs++;
+        run_name = std::to_string(num_runs);
+        
     }
 
     void run_benchmark() {
-        num_runs++;
+        
+        run_names.push_back(run_name);
+        
         if (performances.empty()) {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
-            min_cycles.resize(numFuncs, MAXFLOAT);
-            max_cycles.resize(numFuncs, -MAXFLOAT);
+            flops_sum.resize(numFuncs,0.0);
+            cycles_capture.resize(numFuncs,{});
+            flops_capture.resize(numFuncs,{});
+            std::vector<std::vector<double>> flops_capture;
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -122,26 +160,36 @@ struct Benchmark {
             if (data_loader) {
                 data_loader();
             }
-            
-            double t = measure_cycles(userFuncs[i]);
+
+            double t = measure_cycles(userFuncs[i], controls);
 
             double T = cycles[i] + t;
 
-            min_cycles[i] = std::min(min_cycles[i],t);
-            max_cycles[i] = std::max(max_cycles[i],t);
-
+            cycles_capture[i].push_back(t);
             cycles[i] = T;
+
+            flops_capture[i].push_back(funcFlops[i]);
+            flops_sum[i] += funcFlops[i];
             
-            performances[i] = funcFlops[i] * double(num_runs) / T ;
+            
+            
+
+            performances[i] = flops_sum[i] / T ;
 
             if (i > 0) {
                 speedups[i] = cycles[0]/T;
             }
         }
+        num_runs++;
+        run_name = std::to_string(num_runs);
+        
     }
 
+
+    // Summarized output
     void summary(){
         assert(!performances.empty());
+        
 
         fout<<name<<" ("<<num_runs<<" runs, avg):"<<std::endl;
         const int cell_width = 17;
@@ -159,7 +207,7 @@ struct Benchmark {
         for (int i = 0; i<numFuncs;i++){
             fout<<no_underline<<separator<<prd(i, 0,2)
                                     <<separator<<left(funcNames[i],30)
-                                    <<separator<<prd(funcFlops[i], 0, cell_width)
+                                    <<separator<<prd(flops_sum[i] / num_runs, 0, cell_width)
                                     <<separator<<prd(cycles[i] / num_runs, 4, cell_width) 
                                     <<separator<<prd(performances[i], 4, cell_width) 
                                     <<separator<<prd(speedups[i], 4, cell_width) 
@@ -167,6 +215,7 @@ struct Benchmark {
         }
     }
 
+    // Summarized output, but with some extra columns
     void summary_long(){
         assert(!performances.empty());
 
@@ -188,14 +237,58 @@ struct Benchmark {
         for (int i = 0; i<numFuncs;i++){
             fout<<no_underline<<separator<<prd(i, 0,2)
                                     <<separator<<left(funcNames[i],30)
-                                    <<separator<<prd(funcFlops[i], 0, cell_width)
+                                    <<separator<<prd(flops_sum[i] / num_runs, 0, cell_width)
                                     <<separator<<prd(cycles[i] / num_runs, 4, cell_width)
-                                    <<separator<<prd(min_cycles[i], 4, cell_width) 
-                                    <<separator<<prd(max_cycles[i], 4, cell_width)  
+                                    <<separator<<prd(*std::min_element(cycles_capture[i].begin(),
+                                                     cycles_capture[i].end()), 4, cell_width) 
+                                    <<separator<<prd(*std::max_element(cycles_capture[i].begin(),
+                                                     cycles_capture[i].end()), 4, cell_width)  
                                     <<separator<<prd(performances[i], 4, cell_width) 
                                     <<separator<<prd(speedups[i], 4, cell_width) 
                                     <<separator<<std::endl;
         }
+    }
+
+    // Outputs per func and run
+    void details() {
+        
+        assert(!performances.empty());
+        
+        int run_name_size = 3;
+        for (int j = 0; j<num_runs; j++) {
+            run_name_size = std::max((int)run_names[j].length(), run_name_size);
+        }
+        fout<<name<<" ("<<num_runs<<" runs, avg):"<<std::endl;
+        const int cell_width = 17;
+        const char* separator = " | ";
+        const char* underline = "\033[4m";
+        const char* no_underline = "\033[0m";
+        fout<<underline<<separator<<right("i",2)
+                            <<separator<<left("Name",30)
+                            <<separator<<right("Run",run_name_size)
+                            <<separator<<right("Work [flops]",cell_width) 
+                            <<separator<<right("Time [cyc]",cell_width) 
+                            <<separator<<right("Perf. [flops/cyc]",cell_width) 
+                            <<separator<<right("Gap [cyc/flop]",cell_width)  //Cheat
+                            <<separator<<right("Speedup [-]",cell_width) 
+                            <<separator<<std::endl;
+
+        for (int i = 0; i<numFuncs;i++){
+            for (int j = 0; j<num_runs; j++) {
+                double cyc = cycles_capture[i][j];
+                double flops = flops_capture[i][j];
+                fout<<no_underline<<separator<<((j==0) ? prd(i, 0,2) : "  ")
+                        <<separator<<left((j==0) ? funcNames[i] : "  ",30)
+                        <<separator<<right(run_names[j],run_name_size)
+                        <<separator<<prd(flops, 0, cell_width)
+                        <<separator<<prd(cyc, 4, cell_width) 
+                        <<separator<<prd(flops/cyc, 4, cell_width) 
+                        <<separator<<prd(cyc/flops, 4, cell_width) 
+                        <<separator<<prd(cycles_capture[0][j]/cyc, 4, cell_width) 
+                        <<separator<<std::endl;
+            }
+        }
+
     }
 
     ~Benchmark() {
@@ -210,12 +303,15 @@ struct Benchmark {
 
 template<typename comp_func,
          typename ... Args>
-double measure_cycles(comp_func f, Args&&... args) {
+double measure_cycles(comp_func f, comp_func data_loader, BenchControls controls, Args&&... args) {
     double cycles = 0.;
-    long num_runs = NUM_RUNS;
+    long num_runs = controls.NUM_RUNS;
     double multiplier = 1;
     myInt64 start, end;
 
+    if (data_loader) {
+        std::forward<comp_func>(data_loader)(std::forward<Args>(args)...);
+    }
     // Warm-up phase: we determine a number of executions that allows
     // the code to be executed for at least CYCLES_REQUIRED cycles.
     // This helps excluding timing overhead when measuring small runtimes.
@@ -228,7 +324,7 @@ double measure_cycles(comp_func f, Args&&... args) {
         end = stop_tsc(start);
 
         cycles = (double)end;
-        multiplier = (CYCLES_REQUIRED) / (cycles);
+        multiplier = (controls.CYCLES_REQUIRED) / (cycles);
         
     } while (multiplier > 2);
 
@@ -236,8 +332,15 @@ double measure_cycles(comp_func f, Args&&... args) {
 
     // Actual performance measurements repeated REP times.
     // We simply store all results and compute medians during post-processing.
+
+    
+
     double total_cycles = 0;
-    for (size_t j = 0; j < REP; j++) {
+    for (size_t j = 0; j < controls.REP; j++) {
+
+        if (data_loader) {
+            std::forward<comp_func>(data_loader)(std::forward<Args>(args)...);
+        }
 
         start = start_tsc();
         for (size_t i = 0; i < num_runs; ++i) {
@@ -250,17 +353,36 @@ double measure_cycles(comp_func f, Args&&... args) {
 
         cyclesList.push_back(cycles);
     }
-    total_cycles /= REP;
+    total_cycles /= controls.REP;
 
     cyclesList.sort();
     cycles = total_cycles;
     return  cycles;
 }
 
+template<typename comp_func,
+         typename ... Args>
+double measure_cycles(comp_func f, BenchControls controls, Args&&... args) {
+    return measure_cycles(f, nullptr, controls, std::forward<Args>(args)...);
+}
+
+template<typename comp_func,
+         typename ... Args>
+double measure_cycles(comp_func f, Args&&... args) {
+    BenchControls controls;
+    return measure_cycles(f, nullptr, controls, std::forward<Args>(args)...);
+}
+
 template<typename comp_func>
 double measure_cycles(comp_func f) {
+    BenchControls controls;
+    return measure_cycles(f, controls);
+}
+
+template<typename comp_func>
+double measure_cycles(comp_func f, BenchControls controls) {
     double cycles = 0.;
-    long num_runs = NUM_RUNS;
+    long num_runs = controls.NUM_RUNS;
     double multiplier = 1;
     myInt64 start, end;
 
@@ -276,7 +398,7 @@ double measure_cycles(comp_func f) {
         end = stop_tsc(start);
 
         cycles = (double)end;
-        multiplier = (CYCLES_REQUIRED) / (cycles);
+        multiplier = (controls.CYCLES_REQUIRED) / (cycles);
         
     } while (multiplier > 2);
 
@@ -285,7 +407,7 @@ double measure_cycles(comp_func f) {
     // Actual performance measurements repeated REP times.
     // We simply store all results and compute medians during post-processing.
     double total_cycles = 0;
-    for (size_t j = 0; j < REP; j++) {
+    for (size_t j = 0; j < controls.REP; j++) {
 
         start = start_tsc();
         for (size_t i = 0; i < num_runs; ++i) {
@@ -298,7 +420,7 @@ double measure_cycles(comp_func f) {
 
         cyclesList.push_back(cycles);
     }
-    total_cycles /= REP;
+    total_cycles /= controls.REP;
 
     cyclesList.sort();
     cycles = total_cycles;
