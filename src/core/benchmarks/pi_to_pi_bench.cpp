@@ -42,6 +42,14 @@ int main() {
         return sum;
     };
 
+    double(*lambda_pi_to_pi_base)(double* angles) = [](double* angles){
+        double sum=0;
+        for (int i = 0; i<N;i++) {
+            sum+=pi_to_pi_base(angles[i]);
+        }
+        return sum;
+    };
+
     double(*lambda_pi_to_pi_fmod)(double* angles) = [](double* angles){
         double sum = 0;
         for (int i = 0; i<N;i++) {
@@ -53,10 +61,13 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&pi_to_pi)> bench("pi_to_pi Benchmark");
 
+    double work = 6.0; // best-case in flops
+
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&pi_to_pi, "pi_to_pi", 6);
-    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 6);
+    bench.add_function(&pi_to_pi_base, "pi_to_pi_base", work);
+    bench.add_function(&pi_to_pi, "pi_to_pi", work);
+    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(angles[0]);
@@ -65,11 +76,14 @@ int main() {
     Benchmark<decltype(lambda_pi_to_pi)> bench_lambda("pi_to_pi on array Benchmark");
 
     // Add lambda functions to aggregate over range of inputs.
-    bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", N*6);
-    bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", N*6);
+    bench_lambda.add_function(lambda_pi_to_pi_base, "pi_to_pi_base", work*N);
+    bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", work);
+    bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", work*N);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench_lambda.run_benchmark(angles);
+
+    //bench_lambda.summary_long();
 
     
     /*

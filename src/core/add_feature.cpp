@@ -11,19 +11,19 @@
  * ToDo: Start optimizing
  ****************************************************************************/
 
+void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
+    add_feature_base(particle,z, N_z, R);
+}
+
 /*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
+ * PERFORMANCE STATUS (N_z = nb of not before seen features)
+ * Work: N_z*(4 adds + 2 muls + 2 sin/cos + 2 matmul 2x2x2 = 2*(8 muls + 4 adds))      + 2*N_z + 1 integer adds
  * Memory moved: TBD
  * Cycles: TBD
  * Performance: TBD
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
-void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
-    add_feature_base(particle,z, N_z, R);
-}
-
 void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   // double* xf = (double*)malloc(2 * N_z * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_z * sizeof(double));

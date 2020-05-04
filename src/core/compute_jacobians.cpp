@@ -11,16 +11,6 @@
  * ToDo: Unit tests, check if correct
  ****************************************************************************/
 
-/*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
- * Optimal: TBD
- * Status: TBD
- ****************************************************************************/
-
 void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
                        Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
                        Matrix2d Sf[]) {
@@ -28,6 +18,17 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
     compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
 }
+
+/*****************************************************************************
+ * PERFORMANCE STATUS (N_z = number of features considered)
+ * Work: N_z * (  1 add + 4 subs + 2 pow(_,2)  + 1 sqrt + 1 atan2 + 1 pi_to_pi_base \
+ *              + 2 matmul 2x2x2 = 2*(8 muls + 4 adds) + 1 matadd 2x2 = 4 adds)
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void compute_jacobians_base(Particle* particle,
                        int idf[],
                        size_t N_z,

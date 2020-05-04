@@ -12,10 +12,14 @@
 
 /*****************************************************************************
  * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
+ * Work, best: 20 (predict_true) = 20 flop
+ * Work, worst: 29 (predict_true) + 17 (multivar) = 46 flop
+ * 
+ * #work best, det: 3 sin/cos + 9 mults + 3 adds + 1 neg + 4 fl-comp +1 div = 20 flops
+ * #work, worst, det: 3 neg + 17 mults + 4 div + 1 floor + 4 fl-comp + 3 sin + 12 adds + 2 sqrt = 46 flops
+ * Memory moved: 5 doubles
+ * Cycles: 230
+ * Performance: 0.07
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
@@ -23,6 +27,7 @@
 void predict(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
 	predict_base(particle, V, G, Q, WB, dt);
 }
+
 void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
     // Turn first, move forwards after
     // \todo Noise on input (Maybe the noise should be added at anothere place in the code?)
@@ -37,5 +42,5 @@ void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB,
     double xv2 = particle->xv[2];
     particle->xv[0] += V*dt*cos(G + xv2);
     particle->xv[1] += V*dt*sin(G + xv2); 
-    particle->xv[2] = pi_to_pi(xv2 + V*dt*sin(G)/WB);
+    particle->xv[2] = pi_to_pi_base(xv2 + V*dt*sin(G)/WB);
 }

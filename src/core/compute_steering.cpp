@@ -8,22 +8,26 @@
  * Done: Base implementation, unit test
  * ToDo: Start optimizing
  ****************************************************************************/
-
-/*****************************************************************************
- * PERFORMANCE STATUS
- * Work: TBD
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
- * Optimal: TBD
- * Status: TBD
- ****************************************************************************/
-
 void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD, 
                       const double rateG, const double maxG, const double dt, 
                       int* iwp, double* G) {
     compute_steering_base(x,wp,N_wp,minD,rateG,maxG,dt,iwp,G);
 }
+
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work, best: 7 p2p + 2 pow_2 + 8 add + 1 mult + 3 fl-comp + 1 atan =  22 flops
+ * Work, worst: 16 p2p + 2 pow_2 + 8 add + 3 mult + 7 fl-comp + 1 atan = 37 flops 
+ * 
+ * #Work, best, det: 2 pow_2 + 8 add + 3 mult + 7 fl-comp + 1 atan +1 neg +1 floor =  22 flops
+ * #Work, worst, det: 2 pow_2 + 10 add + 9 mult + 11 fl-comp + 1 atan +2 neg + 1 div +1 floor = 37 flops 
+ * Memory moved: (3 + 2*2  +2) doubles + x ints (not counted yet)
+ * Cycles: 270
+ * Performance: 0.08
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const double minD, 
                       const double rateG, const double maxG, const double dt, 
                       int* iwp, double* G) {

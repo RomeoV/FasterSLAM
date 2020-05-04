@@ -15,6 +15,18 @@ void data_associate_known(cVector2d z[], const int* idz, const size_t idz_size,
         int* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn) {
     data_associate_known_base(z, idz, idz_size, table,Nf_known, zf, idf, count_zf, zn, count_zn);
 }
+
+
+
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 0 flops + count_zn int-adds = 0 flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void data_associate_known_base(cVector2d z[], const int* idz, const size_t idz_size, 
         int* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn) 
 {

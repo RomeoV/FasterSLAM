@@ -18,11 +18,11 @@
 void fastslam1_sim(double* lm, const size_t lm_rows, const size_t lm_cols, 
                    double* wp, const size_t wp_rows, const size_t wp_cols, 
                    Particle **particles_, double **weights_);
-/*!
-    Makes laser lines (calculate but not used in fastslam1_sim).
-    It generates a plot with line_plot_conversion.
-    @param[out] matrix of laser lines
-    @param[in]  rb        measurements
-    @param[in]  xv        robot pose
- */
-// MatrixXd make_laser_lines(vector<Vector2d> rb, Vector3d xv);
+
+void fastslam1_sim_active( double* lm, const size_t lm_rows, const size_t lm_cols, 
+                    double* wp, const size_t wp_rows, const size_t wp_cols, 
+                    Particle **particles_, double** weights_);
+
+void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols, 
+                    double* wp, const size_t wp_rows, const size_t wp_cols, 
+                    Particle **particles_, double** weights_);
