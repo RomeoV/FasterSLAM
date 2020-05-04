@@ -35,7 +35,7 @@ void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB,
 	}	
     
     double xv2 = particle->xv[2];
-    particle->xv[0] += V*dt*cos(xv2);
-    particle->xv[1] += V*dt*sin(xv2); 
+    particle->xv[0] += V*dt*cos(G + xv2);
+    particle->xv[1] += V*dt*sin(G + xv2); 
     particle->xv[2] = pi_to_pi(xv2 + V*dt*sin(G)/WB);
 }
