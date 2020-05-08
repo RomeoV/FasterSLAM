@@ -66,12 +66,21 @@ void calc_vectorized_dsines(double* alphas) {
   sum += results[NR-1];
 }
 
-void calc_vectorized_unrolled_dsines(double* alphas) {
+void calc_unrolled_dsines(double* alphas) {
   double normalized_alphas[NR];
   for (size_t i = 0; i < NR; i++) {
       normalized_alphas[i] = pi_to_pi_while(alphas[i]);
   }
-  tscheb_dsines(normalized_alphas, NR, results);
+  tscheb_dsines_unrolled(normalized_alphas, NR, results);
+  sum += results[NR-1];
+}
+
+void calc_avx_dsines(double* alphas) {
+  double normalized_alphas[NR];
+  for (size_t i = 0; i < NR; i++) {
+      normalized_alphas[i] = pi_to_pi_while(alphas[i]);
+  }
+  tscheb_dsines_avx(normalized_alphas, NR, results);
   sum += results[NR-1];
 }
 
@@ -94,7 +103,8 @@ int main() {
     bench.add_function(&calc_tscheb_fsines, "Tscheb. sines on floats", (18+10)*NR);  // the 10 is only approximate and should probably be performance counted
     bench.add_function(&calc_tscheb_dsines, "Tscheb. sines on doubles", (18+10)*NR);
     bench.add_function(&calc_vectorized_dsines, "Vect. tscheb. sines on doubles", 18*NR);
-    bench.add_function(&calc_vectorized_dsines, "Unrld. tscheb. sines on doubles", 18*NR);
+    bench.add_function(&calc_unrolled_dsines, "Unrld. tscheb. sines on doubles", 18*NR);
+    bench.add_function(&calc_avx_dsines, "AVX tscheb. sines on doubles", 18*NR);
 
     // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(alphas_d);

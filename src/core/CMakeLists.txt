@@ -25,6 +25,9 @@ add_library(FasterSlamCore
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
+target_compile_options(FasterSlamCore PUBLIC
+  -march=native
+)
 
 add_subdirectory(tests)
 add_subdirectory(benchmarks)
