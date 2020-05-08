@@ -7,6 +7,7 @@ add_library(FasterSlamCore
   compute_weight.cpp
   configfile.cpp
   example.cpp
+  tscheb_sine.cpp
   feature_update.cpp
   get_observations.cpp
   linalg.cpp
