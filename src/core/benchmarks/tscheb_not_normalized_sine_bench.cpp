@@ -3,10 +3,12 @@
 #include <cmath>
 #include <functional>
 #include "tscheb_sine.h"
+#include "pi_to_pi.h"
 
 #define NR 256
 
 double sum = 0;
+double* results;
 
 template <typename FT>  // float type
 void rand_angles(FT * m)
@@ -22,12 +24,14 @@ template <typename FT>
 void build(FT **a, size_t N)
 {
     *a = static_cast<FT *>(aligned_alloc(32, N * sizeof(FT)));
+    results = static_cast<double*>(aligned_alloc(32, N*sizeof(double)));
 }
 
 template <typename FT>
 void destroy(FT * m)
 {
     free(m);
+    free(results);
 }
 
 template <typename FT>
@@ -36,24 +40,39 @@ void fill (FT* alphas) {
 }
 
 void calc_csines(double* alphas) {
-  double result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += sin(alphas[i]);
   }
 }
 
 void calc_tscheb_fsines(double* alphas) {
-  float result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += tscheb_fsine(alphas[i], false);
   }
 }
 
 void calc_tscheb_dsines(double* alphas) {
-  double result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += tscheb_dsine(alphas[i], false);
   }
+}
+
+void calc_vectorized_dsines(double* alphas) {
+  double normalized_alphas[NR];
+  for (size_t i = 0; i < NR; i++) {
+      normalized_alphas[i] = pi_to_pi_while(alphas[i]);
+  }
+  tscheb_dsines(normalized_alphas, NR, results);
+  sum += results[NR-1];
+}
+
+void calc_vectorized_unrolled_dsines(double* alphas) {
+  double normalized_alphas[NR];
+  for (size_t i = 0; i < NR; i++) {
+      normalized_alphas[i] = pi_to_pi_while(alphas[i]);
+  }
+  tscheb_dsines(normalized_alphas, NR, results);
+  sum += results[NR-1];
 }
 
 int main() {
@@ -74,6 +93,8 @@ int main() {
     bench.add_function(&calc_csines, "Cmath sines", 14*NR);
     bench.add_function(&calc_tscheb_fsines, "Tscheb. sines on floats", (18+10)*NR);  // the 10 is only approximate and should probably be performance counted
     bench.add_function(&calc_tscheb_dsines, "Tscheb. sines on doubles", (18+10)*NR);
+    bench.add_function(&calc_vectorized_dsines, "Vect. tscheb. sines on doubles", 18*NR);
+    bench.add_function(&calc_vectorized_dsines, "Unrld. tscheb. sines on doubles", 18*NR);
 
     // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(alphas_d);

@@ -18,6 +18,7 @@ int main() {
                 double fsine_results[100];
                 double dsine_results[100];
                 double dsine_vec_results[100];
+                double dsine_unrolled_results[100];
 
                 for (size_t i = 0; i < 100; i++) {
                     sin_results[i] = sin(angles[i]);
@@ -30,12 +31,14 @@ int main() {
                     angles[i] = pi_to_pi(angles[i]);
                 }
                 tscheb_dsines(angles, 100, dsine_vec_results);
+                tscheb_dsines_unrolled(angles, 100, dsine_unrolled_results);
 
                 then("I expect each approximation to be close to cmath::sin, up to some tolerance") = [=] {
                     for (size_t i = 0; i < 100; i++) {
                         expect(that % fabs(fsine_results[i] - sin_results[i]) < 1e-6);
                         expect(that % fabs(dsine_results[i] - sin_results[i]) < 1e-12);
                         expect(that % fabs(dsine_vec_results[i] - sin_results[i]) < 1e-12);
+                        expect(that % fabs(dsine_unrolled_results[i] - sin_results[i]) < 1e-12);
                     }
                 };
             };
