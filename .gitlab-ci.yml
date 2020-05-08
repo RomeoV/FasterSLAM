@@ -10,7 +10,7 @@ build:
   script:
     - mkdir src/build -p
     - cmake -S src -B src/build -DTEST_COVERAGE=On
-    - cmake --build src/build -j
+    - cmake --build src/build -j 1
   artifacts:
     paths:
       - src/build
