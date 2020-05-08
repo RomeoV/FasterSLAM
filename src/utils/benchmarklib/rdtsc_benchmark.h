@@ -312,6 +312,7 @@ double measure_cycles(comp_func f, comp_func data_loader, BenchControls controls
     // Warm-up phase: we determine a number of executions that allows
     // the code to be executed for at least CYCLES_REQUIRED cycles.
     // This helps excluding timing overhead when measuring small runtimes.
+#ifdef WARMUP
     do {
         num_runs = num_runs * multiplier;
         start = start_tsc();
@@ -324,6 +325,7 @@ double measure_cycles(comp_func f, comp_func data_loader, BenchControls controls
         multiplier = (controls.CYCLES_REQUIRED) / (cycles);
         
     } while (multiplier > 2);
+#endif
 
     std::list<double> cyclesList;
 
@@ -384,6 +386,7 @@ double measure_cycles(comp_func f, BenchControls controls) {
     // Warm-up phase: we determine a number of executions that allows
     // the code to be executed for at least CYCLES_REQUIRED cycles.
     // This helps excluding timing overhead when measuring small runtimes.
+#ifdef WARMUP
     do {
         num_runs = num_runs * multiplier;
         start = start_tsc();
@@ -396,6 +399,7 @@ double measure_cycles(comp_func f, BenchControls controls) {
         multiplier = (controls.CYCLES_REQUIRED) / (cycles);
         
     } while (multiplier > 2);
+#endif
 
     std::list<double> cyclesList;
 
