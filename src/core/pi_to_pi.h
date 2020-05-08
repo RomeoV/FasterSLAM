@@ -1,6 +1,5 @@
 #pragma once
 #include "typedefs.h"
-#include <stddef.h>
 
 /*!
     Clips ang  to range [-pi,pi].
