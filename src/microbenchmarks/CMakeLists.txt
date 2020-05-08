@@ -3,7 +3,7 @@ file(GLOB benchfiles "*_bench.cpp")
 if(NOT ${CMAKE_BUILD_TYPE} STREQUAL Release)
     set(bench_comment "Please make sure to set build type to Release for benchmarking!")
 endif()
-add_custom_command(OUTPUT _benchmark_command
+add_custom_command(OUTPUT _microbenchmark_command
     COMMAND echo "Starting benchmarks"
     COMMENT ${bench_comment}
 )
@@ -19,12 +19,12 @@ foreach(file ${benchfiles})
     boost_ut
     nanobench
   )
-  add_custom_command(OUTPUT _benchmark_command
+  add_custom_command(OUTPUT _microbenchmark_command
       COMMAND ${name}_exe
       APPEND
   )
 endforeach()
 
-add_custom_target(benchmarks
-    DEPENDS _benchmark_command
+add_custom_target(microbenchmarks
+    DEPENDS _microbenchmark_command
 )
