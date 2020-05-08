@@ -21,6 +21,7 @@
 #define CYCLES_REQUIRED_ 1e8 // Cache warmup
 #define REP_ 50 // repetitions
 #define NUM_RUNS_ 100 //number of runs within each repetition (avg)
+#define WARMUP
 
 typedef struct BenchControls {
     long CYCLES_REQUIRED = CYCLES_REQUIRED_;
