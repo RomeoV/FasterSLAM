@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
+#include "fast_rand.h"
 
 //! ------------------------------------------------------- //
 //! ---------- Linear Algebra Utility Functions ----------- //
@@ -48,6 +49,13 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
     double range = hi - lo;
     for (size_t i = 0; i < size; i++) {
         x[i] = lo + range * ((double)rand())/((double)RAND_MAX);
+    }
+}
+
+void fill_rand_fast(double *x, size_t size, double lo, double hi) {
+    double range = hi - lo;
+    for (size_t i = 0; i < size; i++) {
+        x[i] = lo + range * xorshf96()*1.0/ulong_max;
     }
 }
 
