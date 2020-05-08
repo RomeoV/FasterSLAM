@@ -68,6 +68,8 @@ int main() {
     bench.add_function(&pi_to_pi_base, "pi_to_pi_base", work);
     bench.add_function(&pi_to_pi, "pi_to_pi", work);
     bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", work);
+    bench.add_function(&pi_to_pi_nongeneral, "pi_to_pi_nongeneral", 2);
+    bench.add_function(&pi_to_pi_while, "pi_to_pi_while", 4);  // on average
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(angles[0]);
