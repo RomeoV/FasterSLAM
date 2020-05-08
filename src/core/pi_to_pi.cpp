@@ -64,3 +64,19 @@ double pi_to_pi_fmod(double ang) {
     if (tmp <= 0) tmp += 2*M_PI;
     return tmp - M_PI;
 }
+
+double pi_to_pi_nongeneral(double ang) {
+    if (ang > M_PI) ang -= 2*M_PI;
+    else if (ang <= M_PI) ang += 2*M_PI;
+    return ang;
+}
+
+double pi_to_pi_while(double ang) {
+    if (ang > M_PI) {
+        while (ang > M_PI) ang -= 2*M_PI;
+    }
+    else if (ang <= M_PI) {
+        while (ang <= M_PI) ang += 2*M_PI;
+    }
+    return ang;
+}
