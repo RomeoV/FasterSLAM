@@ -6,6 +6,8 @@ set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOL "Export compile commands" FORC
 
 set(TEST_COVERAGE FALSE CACHE BOOL "Debug compile and test coverage output")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native")
+
 include(CTest)
 enable_testing()
 add_subdirectory(core)
