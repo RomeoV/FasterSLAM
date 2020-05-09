@@ -243,6 +243,24 @@ int main() {
             };
         };
     };
+    given("I have two matrices") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        double B[4] = {5., 6., 7., 8.};
+
+        when("I multiply A * B^T") = [&] {
+            double C[4], D[4];
+            mmT_2x2(A, B, C);
+            stranspose_2x2(B);
+            mul(A, B, 2, 2, 2, D);
+            then("I get the correct result ( according to stranspose() and mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - D[i*2+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
     given("I have three matrices") = [] {
         double A[4] = {1., -5., 3.14, 0.};
         double B[4] = {12., 45., 56., 16.};
