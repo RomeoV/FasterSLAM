@@ -22,6 +22,7 @@ add_library(FasterSlamCore
   add_control_noise.cpp
   data_associate_known.cpp
   fastrand.cpp
+  trigonometry.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}

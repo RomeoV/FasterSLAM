@@ -72,8 +72,21 @@ std::function<void (int *, int)> random_vec_lambda(func rand_func) {
     };
 }
 
+
+template<typename func>
+std::function<void (int *, int)> random_vec32_lambda(func rand_func) {
+    auto mask = _mm256_set1_epi32 (1);
+    return [=] (int* recipient, int N)
+    {
+        for (int i = 0; i<N; i+=8) {
+            _mm256_maskstore_epi32(recipient+i,mask, rand_func());
+        }
+    };
+}
+
+
 int main() {
-    const int N = 1000;
+    const int N = 10000;
     int* recipient = static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
     srand(0);
@@ -109,7 +122,7 @@ int main() {
     //SIMD
     auto avx_xorshift128plus_lambda = random_vec_lambda(&avx_xorshift128plus);
     auto avx_fast_rand_lambda = random_vec_lambda(&avx_fast_rand);
-    auto avx2_pcg32_lambda = random_vec_lambda(&avx2_pcg32);
+    auto avx2_pcg32_lambda = random_vec32_lambda(&avx2_pcg32);
 
     Benchmark<decltype(fastrand_lambda)> bench("fastrand Benchmark");
 

@@ -3,6 +3,7 @@
 #include <cmath>
 #include <functional>
 #include "tscheb_sine.h"
+#include "trigonometry.h"
 
 #define NR 256
 
@@ -74,6 +75,22 @@ void calc_avx_normalized_dsines(double* alphas) {
   sum += results[NR-1];
 }
 
+void read_sine(double* alphas) {
+  float result = 0;
+  for (size_t i = 0; i < NR; i++) {
+      sum += read_sin(alphas[i]);
+  }
+}
+
+void read_sine_vec(double* alphas) {
+  float result = 0;
+  for (size_t i = 0; i < NR; i+=4) {
+      auto vec = _mm256_load_pd(alphas+i);
+      _mm256_store_pd(results+i, read_sin_vec(vec));
+  }
+  sum += results[NR-1];
+}
+
 int main() {
     // Initialize Input
     double *alphas_d;
@@ -95,6 +112,8 @@ int main() {
     bench.add_function(&calc_vectorized_normalized_dsines, "Vect. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&calc_unrolled_normalized_dsines, "Unrld. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&calc_avx_normalized_dsines, "AVX. tscheb. sines on norm. doubles", 18*NR);
+    bench.add_function(&read_sine, "read_sine", 6*NR);
+    bench.add_function(&read_sine_vec, "read_sine_vec", 6*NR);
 
     // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(alphas_d);
