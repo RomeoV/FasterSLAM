@@ -51,8 +51,14 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
 //! Matrix x Matrix Multiplication ( 2x2 )
 void mm_2x2(const double *A, const double *B, double *C);
 
+//! C += A*B ( 2x2 )
+void mmadd_2x2(const double *A, const double *B, double *C);
+
 //! Matrix x Vector Multiplication ( 2x2 )
-void mv_2x2(const double *A, const double *B, double *C);
+void mv_2x2(const double *A, const double *b, double *c);
+
+//! c += A*b ( 2x2 )
+void mvadd_2x2(const double *A, const double *b, double *c);
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
 void llt_2x2(const double *A, double *L);

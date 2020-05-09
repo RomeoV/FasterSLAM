@@ -24,10 +24,10 @@ int main() {
                     double actual_x[2] = {3.1065907987134258, -25.693760147763445};
                     double actual_P[4] = {0.098876426893456063, 0.0071308261313384278, 0.0071308261313384278, 0.0055235811468849847};
                     for (int i = 0; i < 2; i++) {
-                        expect(fabs(x[i] - actual_x[i]) < 1e-14);
+                        expect(fabs(x[i] - actual_x[i]) < 1e-14) << x[i] << " != " << actual_x[i];
                     }
                     for (int i = 0; i < 4; i++) {
-                        expect(fabs(P[i] - actual_P[i]) < 1e-14);
+                        expect(fabs(P[i] - actual_P[i]) < 1e-14) << P[i] << " != " << actual_P[i];
                     }
                 };
             };

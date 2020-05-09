@@ -243,6 +243,22 @@ int main() {
             };
         };
     };
+    given("I have three matrices") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double B[4] = {12., 45., 56., 16.};
+        double C[4] = {133., 0.2, 1.2, 5.6}; // will be modified inside mmadd_2x2
+        when("I multiply-add them") = [&] {
+            double D[4];
+            mul(A, B, 2, 2, 2, D); // D = A*B
+            add(D, C, 4, D);       // D = D + C
+            mmadd_2x2(A, B, C);    // C = A*B + C 
+            then("I get the correct matrix ( according to mul() and add() )") = [=] {
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(C[i] - D[i]) < 1e-16);
+                }
+            };
+        };
+    };
 };
 
 //!
@@ -272,6 +288,22 @@ int main() {
             mv_2x2(A, b, c);
             mul(A, b, 2, 2, 1, d);
             then("I get the correct vector ( according to mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - d[i]) < 1e-16);
+                }
+            };
+        };
+    };
+    given("I have a matrix and two vectors") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double b[2] = {12., 45.};
+        double c[2] = {133., 0.2}; // will be modified inside mvadd_2x2
+        when("I multiply-add them") = [&] {
+            double d[2];
+            mul(A, b, 2, 2, 1, d); // d = A*b
+            add(d, c, 2, d);       // d = d + c
+            mvadd_2x2(A, b, c);    // c = A*b + c 
+            then("I get the correct vector ( according to mul() and add() )") = [=] {
                 for (size_t i = 0; i < 2; i++) {
                     expect(fabs(c[i] - d[i]) < 1e-16);
                 }
