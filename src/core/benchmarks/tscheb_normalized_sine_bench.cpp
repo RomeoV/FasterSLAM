@@ -74,6 +74,11 @@ void calc_avx_normalized_dsines(double* alphas) {
   sum += results[NR-1];
 }
 
+void calc_avx_unrolled_normalized_dsines(double* alphas) {
+  tscheb_dsines_avx_unrolled(alphas, NR, results);
+  sum += results[NR-1];
+}
+
 int main() {
     // Initialize Input
     double *alphas_d;
@@ -95,6 +100,7 @@ int main() {
     bench.add_function(&calc_vectorized_normalized_dsines, "Vect. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&calc_unrolled_normalized_dsines, "Unrld. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&calc_avx_normalized_dsines, "AVX. tscheb. sines on norm. doubles", 18*NR);
+    bench.add_function(&calc_avx_unrolled_normalized_dsines, "AVX. unrld. tscheb. sines on norm. doubles", 18*NR);
 
     // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(alphas_d);

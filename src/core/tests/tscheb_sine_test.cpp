@@ -21,6 +21,7 @@ int main() {
                 double dsine_vec_results[99];
                 double dsine_unrolled_results[99];
                 double* dsine_avx_results = (double*)aligned_alloc(32, 100*sizeof(double));
+                double* dsine_avx_unrolled_results = (double*)aligned_alloc(32, 100*sizeof(double));
 
                 for (size_t i = 0; i < 99; i++) {
                     sin_results[i] = sin(angles[i]);
@@ -37,8 +38,10 @@ int main() {
                 "aligned_avx_containers"_test = [&]{
                     expect(((unsigned long)angles & 15) == 0);
                     expect(((unsigned long)dsine_avx_results & 15) == 0);
+                    expect(((unsigned long)dsine_avx_unrolled_results & 15) == 0);
                 };
                 tscheb_dsines_avx(angles, 99, dsine_avx_results);
+                tscheb_dsines_avx_unrolled(angles, 99, dsine_avx_unrolled_results);
 
                 then("I expect each approximation to be close to cmath::sin, up to some tolerance") = [=] {
                     for (size_t i = 0; i < 99; i++) {
@@ -47,6 +50,7 @@ int main() {
                         expect(that % fabs(dsine_vec_results[i] - sin_results[i]) < 1e-6);
                         expect(that % fabs(dsine_unrolled_results[i] - sin_results[i]) < 1e-6);
                         expect(that % fabs(dsine_avx_results[i] - sin_results[i]) < 1e-6);
+                        expect(that % fabs(dsine_avx_unrolled_results[i] - sin_results[i]) < 1e-6);
                     }
                 };
 

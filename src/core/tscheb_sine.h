@@ -22,3 +22,5 @@ void tscheb_dsines(double* alphas, size_t N, double* results);
 void tscheb_dsines_unrolled(double* alphas, size_t N, double* results);
 
 void tscheb_dsines_avx(double* alphas, size_t N, double* results);
+
+void tscheb_dsines_avx_unrolled(double* alphas, size_t N, double* results);
