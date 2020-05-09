@@ -42,7 +42,13 @@ int main (int argc, char *argv[])
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
-    setup_initial_particles(&particles, &weights, N_features, xtrue);
+
+    if (argc > 2) {
+        setup_initial_particles(&particles, &weights, N_features, xtrue);
+    } else {
+        setup_initial_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES, N_features, xtrue);
+    }
+
     setup_initial_Q_R();  // modifies global variables
 
     int *ftag;
@@ -135,7 +141,12 @@ int main (int argc, char *argv[])
     cleanup_landmarks(&ftag, &da_table);
     cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
 
-    cleanup_particles(&particles, &weights);
+    if (argc > 2) {
+        cleanup_particles(&particles, &weights);
+    } else {
+        cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
+    }
+    
 
 	free(lm);
 	free(wp);

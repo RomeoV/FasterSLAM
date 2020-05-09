@@ -20,7 +20,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_)
 {
-    fastslam1_sim_base(lm, lm_rows, lm_cols, wp, wp_rows, wp_cols, particles_, weights_);
+    fastslam1_sim_active(lm, lm_rows, lm_cols, wp, wp_rows, wp_cols, particles_, weights_);
 }
 
 void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols, 
@@ -109,8 +109,11 @@ void fastslam1_sim_active( double* lm, const size_t lm_rows, const size_t lm_col
 
     Particle *particles;
     double *weights;
+    // double *xv; We get them from the configfile
+    // double *Pv; We get them from the configfile
+
     Vector3d xtrue   = {0,0,0};
-    setup_initial_particles(&particles, &weights, N_features, xtrue);
+    setup_initial_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES, N_features, xtrue);
     setup_initial_Q_R();  // modifies global variables
 
     int *ftag;

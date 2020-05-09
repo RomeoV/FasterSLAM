@@ -23,7 +23,7 @@ int main() {
 
                 then("I expect its size to be a fixed value.") = [=] {
                     // (1+1empty) ints + 2 size_t +  (3+9) = 12 double arr elements + 3 pointers + 6*8 function pointers
-                    size_t p_size = 2*sizeof(int) + 12*sizeof(double) + 3*sizeof(double*);  
+                    size_t p_size = 2*sizeof(int) + 5*sizeof(double*);  
                     expect(that % sizeof(*p) == p_size);
                 };
 

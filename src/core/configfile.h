@@ -4,6 +4,9 @@
 // Global Variables
 //******************
 
+extern double* xv; //Workaround
+extern double* Pv; //Workaround
+
 extern double V_;
 extern double MAXG;
 extern double RATEG;

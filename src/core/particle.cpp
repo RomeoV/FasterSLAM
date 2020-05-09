@@ -24,7 +24,7 @@
 //! for now.
 //////////////////////////////////////////////////////////////////////////////
 
-void initParticle(Particle* p, const int Nf, const double* xv_initial) {
+void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial) {
 	copy(xv_initial, 3, p->xv);
 	for (int i = 0; i<9;i++) {
 		p->Pv[i] = 0.0;
@@ -45,6 +45,12 @@ void initParticle(Particle* p, const int Nf, const double* xv_initial) {
 
 	p->Nfa = 0;
 	p->Nf = Nf;
+}
+
+void initParticle(Particle* p, const int Nf, const double* xv_initial) {
+	p->xv = (double*) malloc (3 * sizeof (double)); //NEW
+	p->Pv = (double*) malloc (9 * sizeof (double)); //NEW
+	initParticle_prealloc(p, Nf, xv_initial);
 }
 
 /* This method assumes that all particle have allocated the same amount of memory for xf and Pf, namely 2*Nf and 4*Nf respectively. */
@@ -71,12 +77,29 @@ Particle* newParticle(const int Nf, const double* xv_initial) {
 	return p;
 }
 
+void delParticleMembers_prealloc(Particle* p) {
+    free (p->xf);
+    free (p->Pf);
+}
+
 void delParticleMembers (Particle* p) {
+	free (p->xv);
+	free (p->Pv);
     free (p->xf);
     free (p->Pf);
 }
 
 void delParticleMembersAndFreePtr (Particle* p) {
+    // Can safely assume particle is NULL or fully built.
+
+    if (p != NULL) {
+		free (p->xv);
+		free (p->Pv);
+    }
+	delParticleMembersAndFreePtr_prealloc(p);
+}	
+
+void delParticleMembersAndFreePtr_prealloc (Particle* p) {
     // Can safely assume particle is NULL or fully built.
 
     if (p != NULL) {

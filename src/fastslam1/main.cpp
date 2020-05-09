@@ -2,9 +2,12 @@
 #include "read_input_file.h"
 #include "particle.h"
 #include "fastslam1_utils.h"
+#include "configfile.h"
+
 
 int main (int argc, char *argv[])
 {
+
 	double *lm; // landmark positions
 	double *wp; // way points
     size_t lm_rows, wp_rows;
@@ -14,14 +17,21 @@ int main (int argc, char *argv[])
 
 	read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
 
-    Particle *particles;
+	Particle *particles;
 	double *weights;
-    fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
 
+	if (argc == 2 || bool(argv[2])) {
+		//Active routine
+		fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
 
-    cleanup_particles(&particles, &weights);
+		cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
 
+	} else {
+		// Base routine
+		fastslam1_sim_base(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
+
+		cleanup_particles(&particles, &weights);
+	}
 	free(lm);
 	free(wp);
-
 }

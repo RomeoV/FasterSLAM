@@ -7,8 +7,8 @@
 
 typedef struct Particle {
   double* w;    //! importance weight
-  Vector3d xv;  //! robot pose: x,y,theta (heading dir)
-  Matrix3d Pv;  //! control inputs, i.e. velocities
+  double* xv;  //! robot pose: x,y,theta (heading dir)
+  double* Pv;  //! control inputs, i.e. velocities
   int Nf;    //! Max Number of features (you should hardly ever need this)
   int Nfa;   //! Actual number of known features (you should hardly ever need
                 //! this)
@@ -21,7 +21,16 @@ typedef struct Particle {
 void copyParticle(const Particle* p_ref, Particle* p_target);
 
 /*!
-    Initialize existing particle with particle_index.
+    Initialize existing particle with particle_index. xv & Pv point to external memory.
+    @param[out] p   Pointer to a particle.
+        @param[in]  Nf  	        Maximum number of expected features.
+        @param[in]  xv_initial      Array[3] of initial state vector.
+ */
+void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial);
+
+
+/*!
+    Initialize existing particle with particle_index. Alloc xv and Pv.
     @param[out] p   Pointer to a particle.
         @param[in]  Nf  	        Maximum number of expected features.
         @param[in]  xv_initial      Array[3] of initial state vector.
@@ -29,7 +38,7 @@ void copyParticle(const Particle* p_ref, Particle* p_target);
 void initParticle(Particle* p, const int Nf, const double* xv_initial);
 
 /*!
-    Constructor for an empty particle with index.
+    Constructor for an empty particle with index. Allocs xv and Pv.
     @param[out] p   Pointer to a particle.
         @param[in]  Nf  	        Maximum number of expected features.
         @param[in]  xv_initial      Array[3] of initial state vector.
@@ -43,10 +52,22 @@ Particle* newParticle(const int Nf, const double* xv_initial);
 void delParticleMembers(Particle* p);
 
 /*!
+    Free particle.
+    @param[in]  p   Pointer to a particle.
+ */
+void delParticleMembers_prealloc(Particle* p);
+
+/*!
     Free particle behind ptr.
     @param[in]  p   Pointer to a particle.
  */
 void delParticleMembersAndFreePtr(Particle* p);
+
+/*!
+    Free particle behind ptr.
+    @param[in]  p   Pointer to a particle.
+ */
+void delParticleMembersAndFreePtr_prealloc (Particle* p);
 
 /*!
     Set covariance matrix of this particles state vector.

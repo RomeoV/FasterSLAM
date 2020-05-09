@@ -20,6 +20,44 @@ void setup_initial_Q_R() {
     }
 }
 
+
+void setup_initial_particles_and_pose(Particle **p_, double **w_,  double**xv_, double**Pv_, 
+                        const size_t N_particles, const size_t N_features, const Vector3d xv_initial) {
+    *p_ = (Particle *) malloc( N_particles * sizeof(Particle) );
+    Particle *p = *p_;
+    
+
+    // Weights and pose
+    *w_ = (double *) malloc( N_particles * sizeof(double) );
+    *xv_ = (double *) malloc( 3 * N_particles * sizeof(double) );
+    *Pv_ = (double *) malloc( 9 * N_particles * sizeof(double) );
+
+    double *w = *w_;
+    const double uniform_w = 1.0 / N_particles; 
+    for (size_t i = 0; i < N_particles; i++) {
+        w[i] = uniform_w;
+        p[i].w = w+i;
+        p[i].xv = xv + 3*i;
+        p[i].Pv = Pv + 9*i;
+    }
+
+    for (size_t i = 0; i < N_particles; i++) {
+        initParticle_prealloc(p+i, N_features, xv_initial);
+    }
+    
+}
+
+void cleanup_particles_and_pose(Particle** p_, double** w_, double** xv_, double**Pv_, const size_t N_particles) {
+    Particle* particles = *p_;
+    for (size_t i = 0; i < N_particles; i++) {
+        delParticleMembers_prealloc(particles+i);
+    }
+    free(particles);
+    free(*w_);
+    free(*xv_);
+    free(*Pv_);
+}
+
 void setup_initial_particles(Particle **p_, double **w_, const size_t N_features, const Vector3d xv_initial) {
     *p_ = (Particle *) malloc( NPARTICLES * sizeof(Particle) );
     Particle *p = *p_;
