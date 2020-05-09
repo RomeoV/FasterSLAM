@@ -34,6 +34,7 @@ void multivariate_gauss_base(cVector2d x, cMatrix2d P, Vector2d result)
     add(result, x, 2, result);
 }
 
+/*
 void multivariate_gauss_fast_rand(cVector2d x, cMatrix2d P, Vector2d result)
 {
     double S[4]; //! 2x2 matrix, lower triangular cholesky factor
@@ -46,3 +47,4 @@ void multivariate_gauss_fast_rand(cVector2d x, cMatrix2d P, Vector2d result)
     mul(S, X, 2, 2, 1, result);
     add(result, x, 2, result);
 }
+*/

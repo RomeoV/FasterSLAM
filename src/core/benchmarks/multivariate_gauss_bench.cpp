@@ -43,7 +43,7 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&multivariate_gauss_base, "base", work);
-    bench.add_function(&multivariate_gauss_fast_rand, "fast pseudo RNG", work);
+    //bench.add_function(&multivariate_gauss_fast_rand, "fast pseudo RNG", work);
     bench.add_function(&multivariate_gauss, "active", work);
 
     bench.run_benchmark(x, P, result);

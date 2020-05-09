@@ -16,6 +16,37 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
+/*
+
+O3:
+ |  i | Name                           |      Work [flops] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | random_base                    |              1000 |        27306.0762 |            0.0366 |            1.0000 | 
+ |  1 | fastrand                       |              1000 |         7033.3294 |            0.1422 |            3.8824 | 
+ |  2 | lehmer64                       |              1000 |         7069.1736 |            0.1415 |            3.8627 | 
+ |  3 | wyrng                          |              1000 |         6185.3129 |            0.1617 |            4.4147 | 
+ |  4 | wyhash64                       |              1000 |         7079.0271 |            0.1413 |            3.8573 | 
+ |  5 | pcg32                          |              1000 |         8458.2665 |            0.1182 |            3.2283 | 
+ |  6 | xorshift128plus                |              1000 |         7226.9642 |            0.1384 |            3.7784 | 
+ |  7 | avx_xorshift128plus            |              1000 |         2826.4394 |            0.3538 |            9.6609 | 
+ |  8 | xorshf96                       |              1000 |         6794.7543 |            0.1472 |            4.0187 | 
+ |  9 | read_rand                      |              1000 |         8410.5777 |            0.1189 |            3.2466 | 
+ 
+O0:
+fastrand Benchmark (1 runs, avg):
+ |  i | Name                           |      Work [flops] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | random_base                    |              1000 |        27911.7286 |            0.0358 |            1.0000 | 
+ |  1 | fastrand                       |              1000 |         9373.5196 |            0.1067 |            2.9777 | 
+ |  2 | lehmer64                       |              1000 |        10981.6625 |            0.0911 |            2.5417 | 
+ |  3 | wyrng                          |              1000 |        22765.0730 |            0.0439 |            1.2261 | 
+ |  4 | wyhash64                       |              1000 |        22940.7960 |            0.0436 |            1.2167 | 
+ |  5 | pcg32                          |              1000 |        16455.2145 |            0.0608 |            1.6962 | 
+ |  6 | xorshift128plus                |              1000 |        16270.4372 |            0.0615 |            1.7155 | 
+ |  7 | avx_xorshift128plus            |              1000 |        13071.6596 |            0.0765 |            2.1353 | 
+ |  8 | xorshf96                       |              1000 |        19125.6207 |            0.0523 |            1.4594 | 
+ |  9 | read_rand                      |              1000 |         9839.0255 |            0.1016 |            2.8368 | 
+ 
+ 
+ */
 
 template<typename func>
 std::function<void (int *, int)> random_lambda(func rand_func) {
@@ -54,6 +85,17 @@ int main() {
     pcg32_srand(1,1);
     avx_xorshift128plus_init(1,1);
 
+    avx_fast_srand(0,10,100,1000);
+
+    uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
+    uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
+
+    avx2_pcg32_srand(init_state, init_seq);
+
+
     auto rand_lambda = random_lambda(&rand);
     auto fastrand_lambda = random_lambda(&fast_rand);
     auto lehmer64_lambda = random_lambda(&lehmer64);
@@ -61,11 +103,14 @@ int main() {
     auto wyhash64_lambda = random_lambda(&wyhash64);
     auto xorshift128plus_lambda = random_lambda(&xorshift128plus);
     auto pcg32_lambda = random_lambda(&pcg32);
+    auto xorshf96_lambda = random_lambda(&xorshf96);
     auto read_rand_lambda = random_lambda(&read_rand);
 
     //SIMD
     auto avx_xorshift128plus_lambda = random_vec_lambda(&avx_xorshift128plus);
-    
+    auto avx_fast_rand_lambda = random_vec_lambda(&avx_fast_rand);
+    auto avx2_pcg32_lambda = random_vec_lambda(&avx2_pcg32);
+
     Benchmark<decltype(fastrand_lambda)> bench("fastrand Benchmark");
 
     double work = N; // best-case in flops
@@ -79,20 +124,26 @@ int main() {
     bench.add_function(wyhash64_lambda, "wyhash64", work);
     bench.add_function(pcg32_lambda, "pcg32", work);
     bench.add_function(xorshift128plus_lambda, "xorshift128plus", work);
-    bench.add_function(avx_xorshift128plus_lambda, "avx_xorshift128plus", work);
+    
+    bench.add_function(xorshf96_lambda, "xorshf96", work);
     bench.add_function(read_rand_lambda, "read_rand", work);
 
+    bench.add_function(avx_xorshift128plus_lambda, "avx_xorshift128plus", work);
+    bench.add_function(avx_fast_rand_lambda, "avx_fast_rand", work);
+    bench.add_function(avx2_pcg32_lambda, "avx2_pcg32", work);
+
+    
+    
     /*
     lehmer64_srand(1);
     fast_srand(0);
     srand(0);
-    for ( int i = 0; i<N; i++) {
+    for ( int i = 0; i<10; i++) {
         std::cout<<rand()<<std::endl;
         std::cout<<fast_rand()<<std::endl;
         std::cout<<lehmer64()<<std::endl<<std::endl;
     }
     */
-    
 
     bench.run_benchmark(recipient, N);
 
