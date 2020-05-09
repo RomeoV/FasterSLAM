@@ -28,6 +28,27 @@ int main() {
         };
     };
 
+    "pi_to_pi base"_test = [] {
+        given("I have the argument angle") = [] {
+
+            double angle = 5*M_PI;
+
+            when("I call pi_to_pi_base(angle)") = [&] {
+                
+                double computed_angle = pi_to_pi_base(angle);
+
+                then("I get the clipped angle in the range (-PI, PI]") = [=] {
+
+                    double exact_angle = M_PI;
+                    double error_same = fabs(computed_angle - exact_angle);
+                    
+                    expect(that % -M_PI < computed_angle and computed_angle <= M_PI);
+                    expect(that % error_same < 1e-14);
+                };
+            };
+        };
+    };
+
     "pi_to_pi_arr"_test = [] {
         given("I have the argument angles, N") = [] {
             const size_t N=5;
@@ -74,4 +95,26 @@ int main() {
             };
         };
     };
+
+    "pi_to_pi while"_test = [] {
+        given("I have the argument angle") = [] {
+
+            double angle = 5*M_PI;
+
+            when("I call pi_to_pi_while(angle)") = [&] {
+                
+                double computed_angle = pi_to_pi_while(angle);
+
+                then("I get the clipped angle in the range (-PI, PI]") = [=] {
+
+                    double exact_angle = M_PI;
+                    double error_same = fabs(computed_angle - exact_angle);
+                    
+                    expect(that % -M_PI < computed_angle and computed_angle <= M_PI);
+                    expect(that % error_same < 1e-14);
+                };
+            };
+        };
+    };
+
 };

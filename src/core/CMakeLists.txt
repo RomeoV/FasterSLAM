@@ -7,6 +7,7 @@ add_library(FasterSlamCore
   compute_weight.cpp
   configfile.cpp
   example.cpp
+  tscheb_sine.cpp
   feature_update.cpp
   get_observations.cpp
   linalg.cpp
@@ -24,6 +25,9 @@ add_library(FasterSlamCore
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
+)
+target_compile_options(FasterSlamCore PUBLIC
+  -march=native
 )
 
 add_subdirectory(tests)

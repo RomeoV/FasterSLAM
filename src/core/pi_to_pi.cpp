@@ -6,11 +6,12 @@
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation, unit test, Benchmark added
- * ToDo: Start optimizing
+ *       While and if implementation -> probably doesn't get much faster
+ * ToDo: Maybe a unrolled wihle implementation? Debatable though...
  ****************************************************************************/
 
 double pi_to_pi(double ang) {
-    return pi_to_pi_base(ang);
+    return pi_to_pi_while(ang);
 }
 
 /*****************************************************************************
@@ -18,8 +19,8 @@ double pi_to_pi(double ang) {
  * Work, best: 1 negate + 2 mult + 4 fl-comp = 7 flops
  * Work, worst: 2 negate + 6 mult + 1 div + 1 floor + 4 fl-comp + 2 add=16 fl
  * Memory moved: 0 (register)
- * Cycles: 42 cyc
- * Performance: 0.33 flops / cyc
+ * Cycles: 32 cyc
+ * Performance: 0.18 flops / cyc
  * Optimal: TBD
  * Status: Baseline
  ****************************************************************************/
@@ -41,13 +42,8 @@ double pi_to_pi_base(double ang)
 
 void pi_to_pi_arr(double* angles,const size_t n) 
 {
-    pi_to_pi_arr_base(angles, n);
-}
-
-void pi_to_pi_arr_base(double* angles,const size_t n) 
-{
     for (int i=0; i<n; i++) {
-        angles[i] = pi_to_pi_base(angles[i]);
+        angles[i] = pi_to_pi(angles[i]);
     }
 }
 
@@ -63,4 +59,30 @@ double pi_to_pi_fmod(double ang) {
     double tmp = fmod(ang+M_PI, 2*M_PI);
     if (tmp <= 0) tmp += 2*M_PI;
     return tmp - M_PI;
+}
+
+double pi_to_pi_nongeneral(double ang) {
+    if (ang > M_PI) ang -= 2*M_PI;
+    else if (ang <= M_PI) ang += 2*M_PI;
+    return ang;
+}
+
+/*****************************************************************************
+ * PERFORMANCE STATUS BASE
+ * Work, best: 2 fl-comp = 2 flops
+ * Work, worst: 4 fl-comp + 1 fl-sub = 5 flops if angle in [-2PI, 2PI], otherwise potentially arbitrarily long
+ * Memory moved: 0 (register)
+ * Cycles: 20 cyc
+ * Performance: 0.29 flops / cyc
+ * Optimal: I think to
+ * Status: Pretty good
+ ****************************************************************************/
+double pi_to_pi_while(double ang) {
+    if (ang > M_PI) {
+        while (ang > M_PI) ang -= 2*M_PI;
+    }
+    else if (ang <= -M_PI) {
+        while (ang <= -M_PI) ang += 2*M_PI;
+    }
+    return ang;
 }
