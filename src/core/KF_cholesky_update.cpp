@@ -19,8 +19,8 @@
 
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     //KF_cholesky_update_base(x, P, v, R, H);
-    KF_cholesky_update_active(x, P, v, R, H);
-    //KF_cholesky_update_active_modified(x, P, v, R, H);
+    //KF_cholesky_update_v1(x, P, v, R, H);
+    KF_cholesky_update_v2(x, P, v, R, H);
 }
 
 void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
@@ -55,7 +55,7 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
     sub(P, W1W1t, 4, P);
 }
 
-void KF_cholesky_update_active(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double Ht[4], PHt[4], S[4], St[4], SChol[4], SCholInv[4], SCholInvt[4];
     double W1[4], W1t[4], W[4], W1W1t[4];
@@ -86,7 +86,7 @@ void KF_cholesky_update_active(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R,
 }
 
 // slightly modified version ( fails test )
-void KF_cholesky_update_active_modified(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double Ht[4], PHt[4], S[4], St[4], Sinv[4], W[4], HP[4], W1W1t[4];
 
