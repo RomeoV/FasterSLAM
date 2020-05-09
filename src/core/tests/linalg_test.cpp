@@ -174,5 +174,111 @@ int main() {
     };
 };
 
+"transpose_2x2"_test = [] {
+    given("I have a matrix (row-major)") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        when("I transpose it") = [=] {
+            double T[4];
+            transpose_2x2(A, T);
+            then("I get the transpose (col-major)") = [=] {
+                double T_actual[4] = {1., 3., 2., 4.};
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(T[i] - T_actual[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
+"stranspose_2x2"_test = [] {
+    given("I have a matrix (row-major)") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        when("I transpose it") = [&] {
+            stranspose_2x2(A);
+            then("I get the transpose (col-major)") = [=] {
+                double T_actual[4] = {1., 3., 2., 4.};
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(A[i] - T_actual[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
+
+//!
+//! Matrix - Matrix multiplication test (2x2)
+//!
+"mm_2x2"_test = [] {
+    given("I have two identity matrices") = [] {
+        double A[4] = {1., 0., 0., 1.};
+        double B[4] = {1., 0., 0., 1.};
+
+        when("I multiply them") = [=] {
+            double C[4];
+            mm_2x2(A, B, C);
+            then("They are still the identity matrix") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - (i == j)) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+    given("I have two matrices") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        double B[4] = {5., 6., 7., 8.};
+
+        when("I multiply them") = [=] {
+            double C[4], D[4];
+            mm_2x2(A, B, C);
+            mul(A, B, 2, 2, 2, D);
+            then("I get the correct result ( according to mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - D[i*2+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+};
+
+//!
+//! Matrix - Vector multiplication test (2x2)
+//!
+"mv_2x2"_test = [] {
+    given("I have an identity matrix and a vector") = [] {
+        double A[4] = {1., 0., 0., 1.};
+        double b[2] = {12., 45.};
+
+        when("I multiply them") = [=] {
+            double c[2];
+            mv_2x2(A, b, c);
+            then("I get the exact same vector") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - b[i]) < 1e-16);
+                }
+            };
+        };
+    };
+    given("I have a matrix and a vector") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double b[2] = {12., 45.};
+
+        when("I multiply them") = [=] {
+            double c[2], d[2];
+            mv_2x2(A, b, c);
+            mul(A, b, 2, 2, 1, d);
+            then("I get the correct vector ( according to mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - d[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
 }
 
