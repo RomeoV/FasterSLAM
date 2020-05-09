@@ -17,6 +17,9 @@ void copy(const double* ref, size_t N, double* target);
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi);
 
+//! Same as fill_rand but uses a faster pseudo RNG
+void fill_rand_fast(double *x, size_t size, double lo, double hi);
+
 //! ------------------------------------------------------- //
 //! -------------- Basic Matrix Operations ---------------- //
 //! ------------------------------------------------------- //
