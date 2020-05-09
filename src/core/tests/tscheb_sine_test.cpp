@@ -55,6 +55,7 @@ int main() {
                 };
 
                 free(dsine_avx_results);
+                free(dsine_avx_unrolled_results);
             };
             free(angles);
         };
