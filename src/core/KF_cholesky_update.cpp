@@ -19,8 +19,8 @@
 
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     //KF_cholesky_update_base(x, P, v, R, H);
-    KF_cholesky_update_v1(x, P, v, R, H);
-    //KF_cholesky_update_v2(x, P, v, R, H);
+    //KF_cholesky_update_v1(x, P, v, R, H);
+    KF_cholesky_update_v2(x, P, v, R, H);
 }
 
 void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
@@ -41,9 +41,9 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
     llt_2x2(S, SChol);                    //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv);             //! SCholInv = inv( SChol )
 
-    mul(PHt, SCholInv, 2, 2, 2, W1);      //! W1 = PHt * SCholInv;
     transpose(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
-    mul(W1, SCholInvt, 2, 2, 2, W);       //! W = W1 * SCholInvt;
+    mul(PHt, SCholInvt, 2, 2, 2, W1);     //! W1 = PHt * SCholInvt;
+    mul(W1, SCholInv, 2, 2, 2, W);        //! W = W1 * SCholInv;
 
     //! x = x + Wv;
     mul(W, v, 2, 2, 1, Wv);
@@ -55,6 +55,7 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
     sub(P, W1W1t, 4, P);
 }
 
+// maybe more stable (according to MATLAB code)
 void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
@@ -72,8 +73,8 @@ void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     llt_2x2(S, SChol);                  //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv);           //! SCholInv = inv( SChol )
 
-    mm_2x2(PHt, SCholInv, W1);          //! W1 = PHt * SCholInv
-    mmT_2x2(W1, SCholInv, W);
+    mmT_2x2(PHt, SCholInv, W1);          //! W1 = PHt * SCholInv
+    mm_2x2(W1, SCholInv, W);
 
     mvadd_2x2(W, v, x);                 //! x = x + W*v
 
@@ -82,7 +83,7 @@ void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     sub(P, W1W1t, 4, P);
 }
 
-// slightly modified version ( fails test )
+// fast
 void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
