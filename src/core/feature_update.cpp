@@ -23,7 +23,7 @@ void feature_update(Particle* particle,
                     int idf[],
                     size_t N_idf,
                     Matrix2d R) {
-    feature_update(particle, z, idf, N_idf, R);
+    feature_update_base(particle, z, idf, N_idf, R);
 }
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,
@@ -39,6 +39,7 @@ void feature_update_base(Particle* particle,
 
   // double* xf = (double*)malloc(2 * N_idf * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_idf * sizeof(double));
+
   Vector2d xf[N_idf];
   Matrix2d Pf[N_idf];
 
@@ -54,7 +55,6 @@ void feature_update_base(Particle* particle,
   Matrix2d Hf[N_idf];
   Matrix2d Sf[N_idf];
   
-
   compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
   Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
