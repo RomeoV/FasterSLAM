@@ -1,5 +1,6 @@
 #include "linalg.h"
 #include <iostream>
+#include <immintrin.h>
 #include <cmath>
 #include <cassert>
 
@@ -117,18 +118,96 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
 
 //! Matrix x Matrix Multiplication ( 2x2 )
 void mm_2x2(const double *A, const double *B, double *C) {
+    //mm_2x2_avx_v1(A, B, C);
+    //mm_2x2_avx_v2(A, B, C);
     C[0] = A[0]*B[0] + A[1]*B[2];
     C[1] = A[0]*B[1] + A[1]*B[3];
     C[2] = A[2]*B[0] + A[3]*B[2];
     C[3] = A[2]*B[1] + A[3]*B[3];
 }
 
+//! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
+void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+
+    __m256d c = _mm256_mul_pd(
+                   _mm256_permute_pd( a, 0b0000 ),
+                   _mm256_permute2f128_pd( b, b, 0b00000000 )
+                );
+
+    c = _mm256_fmadd_pd(
+           _mm256_permute_pd( a, 0b1111 ),
+           _mm256_permute2f128_pd( b, b, 0b01010101 ), c );
+
+    _mm256_store_pd(C, c);
+}
+
+//! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
+void mm_2x2_avx_v2(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+
+    __m256d c0 = _mm256_mul_pd(
+                    _mm256_permute_pd( a, 0b0000 ),
+                    _mm256_permute2f128_pd( b, b, 0b00000000 )
+                );
+
+    __m256d c1 = _mm256_mul_pd(
+                    _mm256_permute_pd( a, 0b1111 ),
+                    _mm256_permute2f128_pd( b, b, 0b01010101 )
+                );
+
+    _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
+}
+
 //! Matrix x Matrix Transpose Multiplication ( 2x2 )
 void mmT_2x2(const double *A, const double *B, double *C) {
+    //mmT_2x2_avx_v1(A, B, C);
+    //mmT_2x2_avx_v2(A, B, C);
     C[0] = A[0]*B[0] + A[1]*B[1];
     C[1] = A[0]*B[2] + A[1]*B[3];
     C[2] = A[2]*B[0] + A[3]*B[1];
     C[3] = A[2]*B[2] + A[3]*B[3];
+}
+
+//! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
+void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+
+    __m256d c = _mm256_mul_pd(
+                  _mm256_permute_pd( a, 0b0000 ),
+                  _mm256_permute4x64_pd( b, 0b10001000 )
+                );
+
+    c = _mm256_fmadd_pd(
+           _mm256_permute_pd( a, 0b1111 ),
+           _mm256_permute4x64_pd( b, 0b11011101 ), c );
+
+    _mm256_store_pd(C, c);
+}
+
+//! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
+void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+
+    __m256d c0 = _mm256_mul_pd(
+                    _mm256_permute_pd( a, 0b0000 ),
+                    _mm256_permute4x64_pd( b, 0b10001000 )
+                 );
+
+    __m256d c1 = _mm256_mul_pd(
+                    _mm256_permute_pd( a, 0b1111 ),
+                    _mm256_permute4x64_pd( b, 0b11011101 )
+                 );
+
+    _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
 }
 
 //! C += A*B ( 2x2 )
