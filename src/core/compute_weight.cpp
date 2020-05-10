@@ -47,7 +47,7 @@ double compute_weight_base(Particle* particle,
   for (size_t j = 0; j < N_z; j++) {
     Vector2d v_j;
     sub(z[j], zp[j], 2, v_j);  // v_j = z[j] - zp[j]
-    v_j[1] = pi_to_pi(v_j[1]);
+    v_j[1] = pi_to_pi_base(v_j[1]);
     copy(v_j, 2, v[j]);  // v[j] = v_j
   }
 

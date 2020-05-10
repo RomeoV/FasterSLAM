@@ -29,14 +29,14 @@ void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial) 
 	for (int i = 0; i<9;i++) {
 		p->Pv[i] = 0.0;
 	}
-	p->xf = (double*) malloc (2* Nf * sizeof (double));
+	p->xf = static_cast<double *>(aligned_alloc(32, 2* Nf * sizeof(double)));
     if (p->xf == NULL) {
         free (p);  // \todo is this correct? What if particle is statically allocated...
 		return;
 	}
 	// Try to allocate Pf, free structure if fail.
 
-	p->Pf = (double*) malloc (4* Nf * sizeof (double));
+	p->Pf = static_cast<double *>(aligned_alloc(32, 4* Nf * sizeof(double)));
 	if (p->Pf == NULL) {
 		free(p->xf);
         free (p);

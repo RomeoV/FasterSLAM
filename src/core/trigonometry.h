@@ -3,6 +3,8 @@
 #include <math.h>
 #include <iostream>
 #include <immintrin.h>
+
+
 const int n_2pi = 5;
 const int steps_pi = 1000;
 
@@ -21,6 +23,8 @@ double sin_table[N_sin]; //Here we only store positive sin for angles >=0
 
 // Symmetric sine table [- n_2pi * M_PI, + n_2pi * M_PI]
 double sin2_table[N_sin];
+
+
 
 void init_sin() {
     for (int i = 0; i < N_sin; i++) {
@@ -45,6 +49,62 @@ double read_sin(double angle) {
     } else {
         return -sin_table[-idx];
     }
+}
+
+
+
+
+//! ERROR in 0.x range (rad)!
+float atan2_approximation1(float y, float x)
+{
+    //http://pubs.opengroup.org/onlinepubs/009695399/functions/atan2.html
+    //Volkan SALMA
+
+    const float ONEQTR_PI = M_PI / 4.0;
+	const float THRQTR_PI = 3.0 * M_PI / 4.0;
+	float r, angle;
+	float abs_y = fabs(y) + 1e-10f;      // kludge to prevent 0/0 condition
+	if ( x < 0.0f )
+	{
+		r = (x + abs_y) / (abs_y - x);
+		angle = THRQTR_PI;
+	}
+	else
+	{
+		r = (x - abs_y) / (x + abs_y);
+		angle = ONEQTR_PI;
+	}
+	angle += (0.1963f * r * r - 0.9817f) * r;
+	if ( y < 0.0f )
+		return( -angle );     // negate if in quad III or IV
+	else
+		return( angle );
+
+
+}
+
+//! Error in 0.00x range (appr)
+float sqrt3(const float& n)
+{
+   static union {int i; float f;} u;
+   u.i = 0x2035AD0C + (*(int*)&n >> 1);
+   return n / u.f + u.f * 0.25f;
+}
+
+inline float rsqrtss_times_x( float* x)
+{
+   float out;
+   __m128 in = _mm_load_ss( x );
+   _mm_store_ss( &out, _mm_mul_ss( in, _mm_rsqrt_ss( in ) ) );
+   // compiles to movss, movaps, rsqrtss, mulss, movss
+   return out;
+}
+
+inline void rsqrtss_times_x_void( float* x, float* out)
+{
+   __m128 in = _mm_load_ss( x );
+   _mm_store_ss( out, _mm_mul_ss( in, _mm_rsqrt_ss( in ) ) );
+   // compiles to movss, movaps, rsqrtss, mulss, movss
 }
 
 inline __m256d read_sin_vec(__m256d angle) {
@@ -79,8 +139,25 @@ inline __m256d read_cos2_vec(__m256d angle) {
     angle = _mm256_sub_pd(angle, pi_2_vec);
     return read_sin2_vec(angle);
 }
-
 double read_cos(double angle) {
     return read_sin(angle - M_PI_2);
+}
+
+
+double Q_rsqrt( double number )
+{
+	long i;
+	double x2, y;
+	const double threehalfs = 1.5F;
+
+	x2 = number * 0.5F;
+	y  = number;
+	i  = * ( long * ) &y;                       // evil floating point bit level hacking
+	i  = 0x5f3759df - ( i >> 1 );               // what the fuck? 
+	y  = * ( double * ) &i;
+	y  = y * ( threehalfs - ( x2 * y * y ) );   // 1st iteration
+//	y  = y * ( threehalfs - ( x2 * y * y ) );   // 2nd iteration, this can be removed
+
+	return y;
 }
 

@@ -1,89 +1,150 @@
 #include "rdtsc_benchmark.h"
-#include <iostream>
-#include "compute_jacobians.h"
+#include "ut.hpp"
 
+#include <iostream>
+#include <random>
+#include <algorithm>
+#include <math.h>
+#include <functional>
+#include <vector>
+#include <immintrin.h>
+
+#include "compute_jacobians.h"
+#include "linalg.h"
+
+using namespace boost::ut;  // provides `expect`, `""_test`, etc
+using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+
+Particle* particle_preloader(Vector3d xv, Vector2d xf[], Matrix2d Pf[], const size_t Nfa) {
+    Particle* particle = newParticle(50, xv);
+    for (int i = 0; i< Nfa; i++) {
+        set_xfi(particle,xf[i] ,i);
+        set_Pfi(particle, Pf[i], i);
+    }
+    return particle;
+}
+
+void data_loader(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    
+}
+
+void enforce_symmetry_Pf(Matrix2d Pf[], const size_t Nfa) {
+    for ( int i = 0; i<Nfa; i++) {
+        Pf[i][2] = Pf[i][1];
+    }
+}
 
 int main() {
     // Initialize Input
     // prepare particle
+    srand(0);
     Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
-    Particle* particle = newParticle(5, xv);
-    Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
-    for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
-    set_xfi(particle, xf[i], i);
-    }
-    Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
-    for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
-    set_Pfi(particle, Pf[i], i);
-    }
-    int idf[3] = {0,0,0};
-    int N_z = 3;
+    const size_t Nfa = 20;
+    Vector2d xf[Nfa];
+    Matrix2d Pf[Nfa];
+    
+    fill_rand(*xf, 2*Nfa, -2.0,2.0);
+    fill_rand(*Pf, 6*Nfa, 0.0,0.2); //Ignore symmetry for computation for now. Pos. semi-definite
+    enforce_symmetry_Pf(Pf, Nfa);
+
+    Particle* particle = particle_preloader(xv,xf,Pf, Nfa);
+
     Matrix2d R = {1,0,0,1};
 
+    
+    
+
     // outputs
-    Vector2d zp[2*3] = {0,0, 0,0, 0,0}; // measurement (range, bearing)
-    Matrix23d Hv[6*3] = {0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0}; // jacobians of function h (deriv of h wrt pose)
-    Matrix2d Hf[4*3] = {0,0,0,0, 0,0,0,0, 0,0,0,0}; // jacobians of function h (deriv of h wrt mean)
-    Matrix2d Sf[4*3] = {0,0,0,0, 0,0,0,0, 0,0,0,0}; // Measurement covariance of feature observation given the vehicle.
+    Vector2d zp[Nfa];
+    Matrix23d* Hv = static_cast<Matrix23d *>(aligned_alloc(32, Nfa * sizeof(Matrix23d)));
+    Matrix2d* Hf = static_cast<Matrix2d *>(aligned_alloc(32, Nfa * sizeof(Matrix2d)));
+    //Matrix2d Sf[Nfa]; NOT ALIGNED (Segfault, works with storeu, but this is shit)
+    Matrix2d* Sf = static_cast<Matrix2d *>(aligned_alloc(32, Nfa * sizeof(Matrix2d)));
+    //Matrix2d* Sf = (Matrix2d*) malloc( Nfa * sizeof(Matrix2d) ); // No seg fault but test fails
 
-    const size_t N = 1000;
+    //static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
-    double(*lambda)(Particle* particle, int* idf, int N_z, Matrix2d R, Vector2d* zp, Matrix23d* Hv, Matrix2d* Hf, Matrix2d* Sf) = [](Particle* particle, int* idf, int N_z, Matrix2d R, Vector2d* zp, Matrix23d* Hv, Matrix2d* Hf, Matrix2d* Sf){
-        double sum=0;
-        for (int i = 0; i<N; i++) {
-            compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    //Input -> Change this as you like
+    const size_t Nfz = 10; // Nfz <= Nfa
+    int idf[Nfz] = {0,1,2,3,4,5,6,7,8,9}; //Unique
+
+    // Compare two methods
+    "functional equality"_test = [&] {
+        auto is_close = [&](double lhs, double rhs) -> bool {return std::abs(lhs - rhs) < 1e-4;};
+        
+        Vector2d zp_base[Nfa];
+        Matrix23d Hv_base[Nfa];
+        Matrix2d Hf_base[Nfa];
+        Matrix2d Sf_base[Nfa];
+
+        compute_jacobians_base(particle, idf, Nfz, R, zp_base, Hv_base, Hf_base, Sf_base);
+
+        //decltype(&compute_jacobians) func[1] = {&compute_jacobians_fast};
+
+        
+        compute_jacobians_fast(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
+        for (int i = 0; i < Nfz; i++) {
+            for (int j = 0; j<4;j++) {
+                expect(is_close(Hf_base[i][j], Hf[i][j])) <<i << "Hf" <<j;
+                expect(is_close(Sf_base[i][j], Sf[i][j])) <<i <<"Sf"<<j << Sf[i][j]<< Sf_base[i][j];
+            }
+
+            for (int j = 0; j<6;j++) {
+                expect(is_close(Hv_base[i][j], Hv[i][j])) <<i << "Hv"<<j;
+            }
+
+            for (int j = 0; j<2;j++) {
+                expect(is_close(zp_base[i][j], zp[i][j])) <<i << "zp"<<j << zp[i][j]<< zp_base[i][j];
+            }
         }
-        return sum;
     };
+    
+    auto ymm0 = _mm256_set_pd(3,2,1,0);
 
-    double(*lambda_base)(Particle* particle, int* idf, int N_z, Matrix2d R, Vector2d* zp, Matrix23d* Hv, Matrix2d* Hf, Matrix2d* Sf) = [](Particle* particle, int* idf, int N_z, Matrix2d R, Vector2d* zp, Matrix23d* Hv, Matrix2d* Hf, Matrix2d* Sf){
-        double sum=0;
-        for (int i = 0; i<N;i++) {
-            compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-        }
-        return sum;
-    };
+    auto ymm1 = _mm256_set_pd(7,6,5,4);
 
-    /*double(*lambda_fmod)(double* angles) = [](double* angles){
-        double sum = 0;
-        for (int i = 0; i<N;i++) {
-            sum+=compute_jacobians(angles[i]);
-        }
-        return sum;
-    };*/
+    auto ymm2 = _mm256_permute2f128_pd(ymm0, ymm0, 0b00000001);
+
+    auto ymm3 = _mm256_blend_pd(ymm0,ymm1,0b0001);
+
+    print256d(ymm3);
+
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&compute_jacobians)> bench("compute_jacobians Benchmark");
 
-    double work = 50000.0; // best-case in flops
+    double work = Nfz*10; // best-case in flops
+    bench.data_loader = data_loader;
 
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    bench.add_function(&compute_jacobians, "compute_jacobians", work);
     bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
-    //bench.add_function(&compute_jacobians_fmod, "compute_jacobians_fmod", work);
+    bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", work);
+    //bench.add_function(&compute_jacobians, "compute_jacobians", work);
+    
+    int idf_4[1] = {5};
+    bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
 
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
+
+    int idf_2[Nfz] = {0,2,4,6,8,10,12,14,16,18};
+    bench.run_benchmark(particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
+
+
+    int idf_3[20] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
+    bench.run_benchmark(particle, idf_3, 20, R, zp, Hv, Hf, Sf);
 
     
-    Benchmark<decltype(lambda)> bench_lambda("compute_jacobians on array Benchmark");
 
-    // Add lambda functions to aggregate over range of inputs.
-    bench_lambda.add_function(lambda, "compute_jacobians", work*N);
-    bench_lambda.add_function(lambda_base, "acompute_jacobians_base", work*N);
-    //bench_lambda.add_function(lambda_fmod, "compute_jacobians_fmod", work*N);
-
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench_lambda.run_benchmark(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-
-
-    // Free memory
-    // destroy(A);
-    // destroy(x);
-    // destroy(y);
-    //! Delete Particle
     delParticleMembersAndFreePtr(particle);
+    //bench.destructor_output = false;
+
+    bench.details();
 
     return 0;
 }

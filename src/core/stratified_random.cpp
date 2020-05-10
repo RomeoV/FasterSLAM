@@ -2,6 +2,7 @@
 #include <assert.h>
 #include <stdlib.h>
 #include <stdio.h>
+#include "fastrand.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -37,4 +38,19 @@ void stratified_random_base(const size_t N, double* di)
 double unifRand() {
     
     return double(rand()) / double(RAND_MAX);
+}
+
+
+double unifRand_fast() {
+    return double(lehmer64()) / double(RAND_MAX);
+}
+
+void stratified_random_fastrand(const size_t N, double* di)
+{ 
+    double k = 1.0/(double)N;
+    //deterministic intervals
+
+    for (int i = 0; i<N; i++) {
+        di[i] = k*i + k*unifRand();
+    }
 }

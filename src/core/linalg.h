@@ -1,5 +1,6 @@
 #pragma once
 #include <iostream>
+#include <immintrin.h>
 
 //! ------------------------------------------------------- //
 //! ---------- Linear Algebra Utility Functions ----------- //
@@ -7,6 +8,9 @@
 
 //! Prints an array
 void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout);
+
+//! Prints a SIMD vector
+void print256d(__m256d var);
 
 //! Fills an array with a specific value
 void fill(double *x, size_t size, double val);

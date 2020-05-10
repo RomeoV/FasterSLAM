@@ -2,6 +2,10 @@
 #include <iostream>
 #include <cmath>
 #include <cassert>
+#include <immintrin.h>
+
+#include <stdint.h>
+#include <string.h>
 
 //! ------------------------------------------------------- //
 //! ---------- Linear Algebra Utility Functions ----------- //
@@ -25,6 +29,14 @@ void print(const double *x, size_t rows, size_t cols, std::ostream& stream) {
         }
     }
     stream << std::endl;
+}
+
+void print256d(__m256d var)
+{
+    double val[4];
+    memcpy(val, &var, sizeof(val));
+    printf("SIMD: <%f %f %f %f> \n", 
+           val[0], val[1], val[2], val[3]);
 }
 
 //! Fills an array with a specific value

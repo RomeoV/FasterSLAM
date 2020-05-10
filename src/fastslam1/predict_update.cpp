@@ -46,6 +46,7 @@ void predict_update_base(double* wp, size_t N_waypoints, double V, double* Q, do
     }
 }
 
+
 void predict_update_active(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     compute_steering(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
