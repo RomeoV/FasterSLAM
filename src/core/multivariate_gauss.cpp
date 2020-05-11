@@ -30,6 +30,7 @@ void multivariate_gauss_base(cVector2d x, cMatrix2d P, Vector2d result)
     fill_rand(X, 2, -1.0, 1.0);
     
     //! result = S*X + x
-    mul(S, X, 2, 2, 1, result);
-    add(result, x, 2, result);
+    result[0] = x[0];
+    result[1] = x[1];
+    mvadd_2x2(S, X, result);
 }
