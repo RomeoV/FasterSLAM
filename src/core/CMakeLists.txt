@@ -28,6 +28,7 @@ target_compile_options(FasterSlamCore
 PUBLIC
   -march=native
   -Wall
+  -Wno-sign-compare
 # -Wpedantic  # these warnings are too pedantic...
   -Wno-vla  # no warning when using vla-extension
 # -Wno-c++20-designator
