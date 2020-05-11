@@ -534,7 +534,7 @@ static inline __m256i avx2_pcg32() {
   return result;
 }
 
-    void avx2_pcg32_srand(const uint64_t initstate[8], const uint64_t initseq[8]) {
+void avx2_pcg32_srand(const uint64_t initstate[8], const uint64_t initseq[8]) {
         const __m256i one = _mm256_set1_epi64x((long long) 1);
 
         avx2_pcg32_seed.state[0] = avx2_pcg32_seed.state[1] = _mm256_setzero_si256();
@@ -549,7 +549,7 @@ static inline __m256i avx2_pcg32() {
         avx2_pcg32_seed.state[0] = _mm256_add_epi64(avx2_pcg32_seed.state[0], _mm256_load_si256((__m256i *) &initstate[0]));
         avx2_pcg32_seed.state[1] = _mm256_add_epi64(avx2_pcg32_seed.state[1], _mm256_load_si256((__m256i *) &initstate[4]));
         avx2_pcg32();
-    }
+}
 
 /*
 
