@@ -33,8 +33,8 @@ int main() {
     Vector2d exact_x, x, x_v1, x_v2;
     Matrix2d exact_P, P, P_v1, P_v2;
 #ifdef __AVX2__
-    Vector2d x_v2_avx;
-    Matrix2d P_v2_avx;
+    Vector2d x_v2_avx_v1, x_v2_avx_v2;
+    Matrix2d P_v2_avx_v1, P_v2_avx_v2;
 #endif
 
     data_loader(exact_x, exact_P, v, R, H);
@@ -47,8 +47,11 @@ int main() {
     KF_cholesky_update_v2(x_v2, P_v2, v, R, H);
     
 #ifdef __AVX2__
-    data_loader(x_v2_avx, P_v2_avx, v, R, H);
-    KF_cholesky_update_v2_avx(x_v2_avx, P_v2_avx, v, R, H);
+    data_loader(x_v2_avx_v1, P_v2_avx_v1, v, R, H);
+    KF_cholesky_update_v2_avx_v1(x_v2_avx_v1, P_v2_avx_v1, v, R, H);
+    
+    data_loader(x_v2_avx_v2, P_v2_avx_v2, v, R, H);
+    KF_cholesky_update_v2_avx_v2(x_v2_avx_v2, P_v2_avx_v2, v, R, H);
 #endif
     
     data_loader(x, P, v, R, H);
@@ -61,7 +64,8 @@ int main() {
         error = fabs(     x_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 10;
         error = fabs(     x_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 20;
 #ifdef __AVX2__
-        error = fabs( x_v2_avx[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 30;
+        error = fabs( x_v2_avx_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 30;
+        error = fabs( x_v2_avx_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 40;
 #endif
     }
     // Check P 
@@ -70,7 +74,8 @@ int main() {
         error = fabs(     P_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
         error = fabs(     P_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 20;
 #ifdef __AVX2__
-        error = fabs( P_v2_avx[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 30;
+        error = fabs( P_v2_avx_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 30;
+        error = fabs( P_v2_avx_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 40;
 #endif
     }
 
@@ -83,7 +88,8 @@ int main() {
     bench.add_function(&KF_cholesky_update_v1, "v1", work);
     bench.add_function(&KF_cholesky_update_v2, "v2", work);
 #ifdef __AVX2__
-    bench.add_function(&KF_cholesky_update_v2_avx, "v2-avx", work);
+    bench.add_function(&KF_cholesky_update_v2_avx_v1, "v2-avx-v1", work);
+    bench.add_function(&KF_cholesky_update_v2_avx_v2, "v2-avx-v2", work);
 #endif
     bench.add_function(&KF_cholesky_update, "active", work);
 

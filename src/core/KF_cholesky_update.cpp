@@ -22,7 +22,8 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
     //KF_cholesky_update_base(x, P, v, R, H);
     //KF_cholesky_update_v1(x, P, v, R, H);
 #ifdef __AVX2__
-    KF_cholesky_update_v2_avx(x, P, v, R, H);
+    //KF_cholesky_update_v2_avx_v1(x, P, v, R, H);
+    KF_cholesky_update_v2_avx_v2(x, P, v, R, H);
 #else
     KF_cholesky_update_v2(x, P, v, R, H);
 #endif
@@ -112,7 +113,7 @@ void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
 }
 
 #ifdef __AVX2__
-void KF_cholesky_update_v2_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+void KF_cholesky_update_v2_avx_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double   PHt[4] __attribute__ ((aligned(32)));
     double     S[4] __attribute__ ((aligned(32)));
@@ -190,6 +191,63 @@ void KF_cholesky_update_v2_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R,
     // -------------------- //
     // sub(P, W1W1t, 4, P); //
     // -------------------- //
+    _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
+}
+#endif
+
+#ifdef __AVX2__
+// fast
+void KF_cholesky_update_v2_avx_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+{
+    double   PHt[4] __attribute__ ((aligned(32)));
+    double     S[4] __attribute__ ((aligned(32)));
+    double    St[4] __attribute__ ((aligned(32)));
+    double  Sinv[4] __attribute__ ((aligned(32)));
+    double     W[4] __attribute__ ((aligned(32)));
+    double W1W1t[4] __attribute__ ((aligned(32)));
+
+    // mmT_2x2(P, H, PHt);
+    __m256d p = _mm256_load_pd( P ); // should be aligned
+    __m256d h = _mm256_load_pd( H ); // should be aligned
+    __m256d p0022 = _mm256_permute_pd( p, 0b0000 );
+    __m256d p1133 = _mm256_permute_pd( p, 0b1111 );
+    __m256d h0202 = _mm256_permute4x64_pd( h, 0b10001000 );
+    __m256d h1313 = _mm256_permute4x64_pd( h, 0b11011101 );
+    __m256d pht = _mm256_fmadd_pd( p1133, h1313, _mm256_mul_pd( p0022, h0202 ) );
+
+    // copy(R, 4, S);        //! S = R; 
+    __m256d s = _mm256_load_pd( R ); // should be aligned
+    
+    // mmadd_2x2(H, PHt, S); //! S += H*PHt ( S = H*P*H^T + R )
+    __m256d h0022 = _mm256_permute_pd( h, 0b0000 );
+    __m256d h1133 = _mm256_permute_pd( h, 0b1111 );
+    __m256d pht0101 = _mm256_permute2f128_pd( pht, pht, 0b00000000 );
+    __m256d pht2323 = _mm256_permute2f128_pd( pht, pht, 0b01010101 );
+    s = _mm256_fmadd_pd( h0022, pht0101, s );
+    s = _mm256_fmadd_pd( h1133, pht2323, s );
+    _mm256_store_pd( S, s );
+
+    inv_2x2(S, Sinv);     //! Sinv = S^(-1) ( TODO: AVX )
+     
+    // mm_2x2(PHt, Sinv, W); //! W = PHt*Sinv
+    __m256d sinv = _mm256_load_pd( Sinv );
+    __m256d pht0022 = _mm256_permute_pd( pht, 0b0000 );
+    __m256d pht1133 = _mm256_permute_pd( pht, 0b1111 );
+    __m256d sinv0101 = _mm256_permute2f128_pd( sinv, sinv, 0b00000000 );
+    __m256d sinv2323 = _mm256_permute2f128_pd( sinv, sinv, 0b01010101 );
+    __m256d w = _mm256_fmadd_pd( pht1133, sinv2323, _mm256_mul_pd( pht0022, sinv0101 ) ); 
+    _mm256_store_pd(W, w);
+
+    mvadd_2x2(W, v, x);   //! x = x + W*v ( TODO: AVX )
+
+    // mmT_2x2(W, PHt, W1W1t); 
+    __m256d w0022 = _mm256_permute_pd( w, 0b0000 );
+    __m256d w1133 = _mm256_permute_pd( w, 0b1111 );
+    __m256d pht0202 = _mm256_permute4x64_pd( pht, 0b10001000 );
+    __m256d pht1313 = _mm256_permute4x64_pd( pht, 0b11011101 ); 
+    __m256d w1w1t = _mm256_fmadd_pd( w1133, pht1313, _mm256_mul_pd( w0022, pht0202 ) );
+ 
+    // sub(P, W1W1t, 4, P);
     _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
 }
 #endif
