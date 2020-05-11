@@ -47,17 +47,16 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
     copy(measurement, 2, xf[i]);  // xf[i,:] = measurement[0:2]
 
     Matrix2d Gz = {c, -r * s, s, r * c};
-    Matrix2d MatResult_1, MatResult_2;
+    Matrix2d MatResult_1;
     
 #ifdef __AVX2__
     mm_2x2_avx_v1(Gz, R, MatResult_1);
-    mmT_2x2_avx_v1(MatResult_1, Gz, MatResult_2);
+    mmT_2x2_avx_v1(MatResult_1, Gz, Pf[i]);
 #else
     mm_2x2(Gz, R, MatResult_1);
-    mmT_2x2(MatResult_1, Gz, MatResult_2);
+    mmT_2x2(MatResult_1, Gz, Pf[i]);
 #endif
 
-    copy(MatResult_2, 2 * 2, Pf[i]);  // Pf[i,0:4] = Gz*R*Gz.T
   }
 
   size_t N_x = particle->Nfa;
