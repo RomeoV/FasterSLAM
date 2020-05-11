@@ -67,8 +67,8 @@ double compute_weight_base(Particle* particle,
     inv_2x2(S, S_inv);
 
     
-    mul(S_inv, v[i], 2, 2, 1, S_inv_v);
-    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v);
+    mv_2x2(S_inv, v[i], S_inv_v);
+    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
 
     
 
