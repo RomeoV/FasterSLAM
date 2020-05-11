@@ -21,8 +21,11 @@
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     //KF_cholesky_update_base(x, P, v, R, H);
     //KF_cholesky_update_v1(x, P, v, R, H);
+#ifdef __AVX2__
     KF_cholesky_update_v2_avx(x, P, v, R, H);
-    //KF_cholesky_update_v2_avx(x, P, v, R, H);
+#else
+    KF_cholesky_update_v2(x, P, v, R, H);
+#endif
 }
 
 void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
