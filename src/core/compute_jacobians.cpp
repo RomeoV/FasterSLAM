@@ -241,26 +241,23 @@ void compute_jacobians_fast(Particle* particle,
         //copy(HfMat, 4, Hf[i]);
         // innovation covariance of feature observation given the vehicle'
         // Eq. 60 in Thrun03g
+        // MAt x Mat
         auto pf_vec =  _mm256_load_pd(particle->Pf + 4* idf[i]);
         auto hf_vec = _mm256_load_pd(*(Hf+i));
         auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
 
         auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
-        
+        auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001); 
+        auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
+        auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
 
         auto p0p3 = _mm256_blend_pd(pf_vec, pmm0, 0b0110);
         auto p2p1 = _mm256_blend_pd(pf_vec, pmm0, 0b1001);
-
-        
 
         auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
         auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
 
         //__m256d sum = _mm256_add_pd(ymm0, ymm1);
-
-        auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001); 
-        auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
-        auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
 
         ymm0 = _mm256_mul_pd(h2h1, sum);
         auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
