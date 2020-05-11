@@ -131,16 +131,14 @@ void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
     __m256d b = _mm256_load_pd( B );
+   
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
 
-    __m256d c = _mm256_mul_pd(
-                   _mm256_permute_pd( a, 0b0000 ),
-                   _mm256_permute2f128_pd( b, b, 0b00000000 )
-                );
-
-    c = _mm256_fmadd_pd(
-           _mm256_permute_pd( a, 0b1111 ),
-           _mm256_permute2f128_pd( b, b, 0b01010101 ), c );
-
+    __m256d c = _mm256_fmadd_pd( a1133, b2323, _mm256_mul_pd( a0022, b0101 ) );
+   
     _mm256_store_pd(C, c);
 }
 
@@ -150,15 +148,13 @@ void mm_2x2_avx_v2(const double *A, const double *B, double *C) {
     __m256d a = _mm256_load_pd( A );
     __m256d b = _mm256_load_pd( B );
 
-    __m256d c0 = _mm256_mul_pd(
-                    _mm256_permute_pd( a, 0b0000 ),
-                    _mm256_permute2f128_pd( b, b, 0b00000000 )
-                );
-
-    __m256d c1 = _mm256_mul_pd(
-                    _mm256_permute_pd( a, 0b1111 ),
-                    _mm256_permute2f128_pd( b, b, 0b01010101 )
-                );
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
+    
+    __m256d c0 = _mm256_mul_pd( a0022, b0101 );
+    __m256d c1 = _mm256_mul_pd( a1133, b2323 );
 
     _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
 }
@@ -179,14 +175,12 @@ void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
     __m256d a = _mm256_load_pd( A );
     __m256d b = _mm256_load_pd( B );
 
-    __m256d c = _mm256_mul_pd(
-                  _mm256_permute_pd( a, 0b0000 ),
-                  _mm256_permute4x64_pd( b, 0b10001000 )
-                );
-
-    c = _mm256_fmadd_pd(
-           _mm256_permute_pd( a, 0b1111 ),
-           _mm256_permute4x64_pd( b, 0b11011101 ), c );
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0202 = _mm256_permute4x64_pd( b, 0b10001000 );
+    __m256d b1313 = _mm256_permute4x64_pd( b, 0b11011101 );
+ 
+    __m256d c = _mm256_fmadd_pd( a1133, b1313, _mm256_mul_pd( a0022, b0202 ) );
 
     _mm256_store_pd(C, c);
 }
@@ -197,15 +191,13 @@ void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
     __m256d a = _mm256_load_pd( A );
     __m256d b = _mm256_load_pd( B );
 
-    __m256d c0 = _mm256_mul_pd(
-                    _mm256_permute_pd( a, 0b0000 ),
-                    _mm256_permute4x64_pd( b, 0b10001000 )
-                 );
-
-    __m256d c1 = _mm256_mul_pd(
-                    _mm256_permute_pd( a, 0b1111 ),
-                    _mm256_permute4x64_pd( b, 0b11011101 )
-                 );
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0202 = _mm256_permute4x64_pd( b, 0b10001000 );
+    __m256d b1313 = _mm256_permute4x64_pd( b, 0b11011101 );
+    
+    __m256d c0 = _mm256_mul_pd( a0022, b0202 );
+    __m256d c1 = _mm256_mul_pd( a1133, b1313 );
 
     _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
 }
@@ -225,15 +217,33 @@ void mmadd_2x2_avx_v1(const double *A, const double *B, double *C) {
     __m256d b = _mm256_load_pd( B );
     __m256d c = _mm256_load_pd( C );
 
-    c = _mm256_fmadd_pd(
-           _mm256_permute_pd( a, 0b0000 ),
-           _mm256_permute2f128_pd( b, b, 0b00000000 ), c );
-
-    c = _mm256_fmadd_pd(
-           _mm256_permute_pd( a, 0b1111 ),
-           _mm256_permute2f128_pd( b, b, 0b01010101 ), c );
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
+    
+    c = _mm256_fmadd_pd( a0022, b0101, c );
+    c = _mm256_fmadd_pd( a1133, b2323, c );
 
     _mm256_store_pd(C, c);
+}
+
+void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+    __m256d c = _mm256_load_pd( C );
+
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
+    
+    c = _mm256_fmadd_pd( a0022, b0101, c );
+    
+    __m256d cc = _mm256_mul_pd( a1133, b2323 );
+
+    _mm256_store_pd(C, _mm256_add_pd( c, cc ) );
 }
 
 //! Matrix x Vector Multiplication ( 2x2 )

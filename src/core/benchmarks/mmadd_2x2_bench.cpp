@@ -24,6 +24,7 @@ int main() {
     double B[4] __attribute__ ((aligned(32))) = {1., 2., 3., 4.};
     double C[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
     double C1[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
+    double C2[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
     double D[4] __attribute__ ((aligned(32))) = {8., 9., 16., 21.};
 
     data_loader(A, B, C);
@@ -31,11 +32,15 @@ int main() {
     
     data_loader(A, B, C1);
     mmadd_2x2_avx_v1(A, B, C1);
+    
+    data_loader(A, B, C2);
+    mmadd_2x2_avx_v2(A, B, C2);
      
     double error = 0.0;
     for (int i = 0; i < 4; i++) {
         error = fabs(  C[i] - D[i] ); expect(that % error < 1e-16) << i;
         error = fabs( C1[i] - D[i] ); expect(that % error < 1e-16) << i + 10;
+        error = fabs( C2[i] - D[i] ); expect(that % error < 1e-16) << i + 20;
     }
     
     Benchmark<decltype(&mmadd_2x2)> bench("mmadd_2x2 benchmark");
@@ -45,6 +50,7 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&mmadd_2x2, "base", work);
     bench.add_function(&mmadd_2x2_avx_v1, "avx_v1", work);
+    bench.add_function(&mmadd_2x2_avx_v2, "avx_v2", work);
 
     bench.run_benchmark(A, B, C);
 
