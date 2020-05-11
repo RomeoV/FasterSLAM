@@ -8,16 +8,6 @@
  * ToDo: Start optimizing
  ****************************************************************************/
 
-/*****************************************************************************
- * PERFORMANCE STATUS
- * Work: 2 neg + 60 adds + 54 muls + 2 divs + 2 sqrts = 120 flops
- * Memory moved: TBD
- * Cycles: TBD
- * Performance: TBD
- * Optimal: TBD
- * Status: TBD
- ****************************************************************************/
-
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     //KF_cholesky_update_base(x, P, v, R, H);
     //KF_cholesky_update_v1(x, P, v, R, H);
@@ -29,6 +19,15 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
 #endif
 }
 
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 2 neg + 60 adds + 54 muls + 2 divs + 2 sqrts = 120 flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double Ht[4], PHt[4], HPHt[4];
@@ -62,6 +61,7 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
 }
 
 // maybe more stable (according to MATLAB code)
+// TODO count flops
 void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
@@ -90,6 +90,15 @@ void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
 }
 
 // fast
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 2 neg + 25 adds + 34 muls + 1 divs = 62 flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
 void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
