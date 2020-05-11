@@ -43,7 +43,7 @@ int main() {
 
                 then("This is equal with the actual result [table]") = [&] {
                     for (size_t i = 0; i < 35; i++) {
-                        expect(fabs(table[i] - table_target[i]) < 1e-10) << std::setprecision(12) << table[i] << " != " << table_target[i];
+                        expect(abs(table[i] - table_target[i]) < 1e-10) << std::setprecision(12) << table[i] << " != " << table_target[i];
                     }
                 };
                 // zn needs to be allocated inside data_associate_known()

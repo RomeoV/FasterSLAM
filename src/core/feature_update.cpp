@@ -23,7 +23,7 @@ void feature_update(Particle* particle,
                     int idf[],
                     size_t N_idf,
                     Matrix2d R) {
-    feature_update(particle, z, idf, N_idf, R);
+    feature_update_base(particle, z, idf, N_idf, R);
 }
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,

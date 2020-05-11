@@ -21,10 +21,18 @@ int main() {
     Matrix2d R = {1,0,0,1};
 
     // outputs
-    Vector2d zp[2*3] = {0,0, 0,0, 0,0}; // measurement (range, bearing)
-    Matrix23d Hv[6*3] = {0,0,0,0,0,0, 0,0,0,0,0,0, 0,0,0,0,0,0}; // jacobians of function h (deriv of h wrt pose)
-    Matrix2d Hf[4*3] = {0,0,0,0, 0,0,0,0, 0,0,0,0}; // jacobians of function h (deriv of h wrt mean)
-    Matrix2d Sf[4*3] = {0,0,0,0, 0,0,0,0, 0,0,0,0}; // Measurement covariance of feature observation given the vehicle.
+    Vector2d zp[3] = {{0,0},  // measurement (range, bearing)
+                      {0,0},
+                      {0,0}};
+    Matrix23d Hv[3] = {{0,0,0,0,0,0}, // jacobians of function h (deriv of h wrt pose)
+                       {0,0,0,0,0,0},
+                       {0,0,0,0,0,0}};
+    Matrix2d Hf[3] = {{0,0,0,0}, // jacobians of function h (deriv of h wrt mean)
+                      {0,0,0,0},
+                      {0,0,0,0}};
+    Matrix2d Sf[3] = {{0,0,0,0}, // Measurement covariance of feature observation given the vehicle.
+                      {0,0,0,0},
+                      {0,0,0,0}};
 
     const size_t N = 1000;
 

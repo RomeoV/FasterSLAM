@@ -24,6 +24,16 @@ add_library(FasterSlamCore
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
+target_compile_options(FasterSlamCore
+PUBLIC
+  -march=native
+  -Wall
+# -Wpedantic  # these warnings are too pedantic...
+  -Wno-vla  # no warning when using vla-extension
+# -Wno-c++20-designator
+PRIVATE
+#  -Wno-unused-lambda-capture  # https://stackoverflow.com/q/52416362/5616591
+)
 
 add_subdirectory(tests)
 add_subdirectory(benchmarks)
