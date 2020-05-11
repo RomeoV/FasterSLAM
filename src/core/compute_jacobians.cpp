@@ -234,7 +234,7 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       zp_vec_1 = pi_to_pi_base(zp_vec_1);
       zp[i][0] = d;
       zp[i][1] = zp_vec_1;
-
+      
       // Jacobian wrt feature states
       // inlining of copy
       // is slower due to _mm256_set_pds:
