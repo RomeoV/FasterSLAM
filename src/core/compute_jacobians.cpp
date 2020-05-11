@@ -221,7 +221,7 @@ void compute_jacobians_fast(Particle* particle,
         // predicted observation
         zp[i][0] = d;
         double theta = atan2(dy, dx) - ptheta;
-        zp[i][1] = pi_to_pi_while(theta);
+        zp[i][1] = pi_to_pi(theta);
 
         // Jacobian wrt vehicle states
         //Matrix23d HvMat = {-dx_dinv, -dy_dinv, 0, dy_d2inv, -dx_d2inv, -1};
@@ -254,16 +254,16 @@ void compute_jacobians_fast(Particle* particle,
         
 
         auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
-        auto ymm1 = _mm256_mul_pd(hf_perm, p2p1);
+        auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
 
-        __m256d sum = _mm256_add_pd(ymm0, ymm1);
+        //__m256d sum = _mm256_add_pd(ymm0, ymm1);
 
         auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001); 
         auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
         auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
 
         ymm0 = _mm256_mul_pd(h2h1, sum);
-        ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
+        auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
         ymm0 = _mm256_permute_pd(ymm0, 0b0101);
         sum = _mm256_add_pd(ymm0, ymm1);
         //print256d(sum);

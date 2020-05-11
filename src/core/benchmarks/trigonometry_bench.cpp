@@ -17,6 +17,7 @@ using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 
+
 void fill_angles(double* angles, int N, double lower_bound, double upper_bound) {
     for (int i = 0; i<N; i++) {
         angles[i] = lower_bound + (upper_bound -lower_bound) / (N-1) * i;
@@ -65,24 +66,26 @@ inline double tscheb_sine(double angle) {
 }
 
 int main() {
-    init_sin();
-    init_sin2();
+    
     const int N = 10000;
     double angles[N];
     double vec_angles[N];
-    double lower_bound = 0.0;
+    double lower_bound = M_PI;
     double upper_bound = M_PI;
+
+    init_sin();
+    init_sin2();
 
     fill_angles(angles, N, lower_bound, upper_bound);
     fill_angles(vec_angles, N, 0, 0); // For some reason this is required
 
     // Compare two methods
     "functional equality"_test = [&] {
-        auto is_close = [&](auto lhs, auto rhs) -> bool {return lhs - rhs < 1e-8 or rhs - lhs < 1e-8;};
+        auto is_close = [&](auto lhs, auto rhs) -> bool {return std::abs(lhs - rhs) < 1e-4;};
         
         for (int i = 0; i<N; i+=4) {
             auto vec = _mm256_load_pd(angles+i);
-            _mm256_store_pd(vec_angles+i, read_sin_vec(vec));
+            _mm256_store_pd(vec_angles+i, read_sin2_vec(vec));
         }
 
         
@@ -90,9 +93,9 @@ int main() {
             double method1 = std::sin(angles[i]);
             double method2 = read_sin(angles[i]);
             double method3 = tscheb_sine(angles[i]);
-            expect(is_close(method1, method2));
-            expect(is_close(method1, method3));
-            expect(is_close(method1, vec_angles[i]));
+            expect(is_close(method1, method2))<< "read_sin" << method1 << method2;
+            expect(is_close(method1, method3))<< "tscheb";
+            expect(is_close(method1, vec_angles[i]))<< "read_sin_vec"<< method1 << vec_angles[i];
         }
     };
     

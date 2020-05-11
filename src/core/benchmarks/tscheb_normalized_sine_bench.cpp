@@ -86,7 +86,7 @@ void read_sine_vec(double* alphas) {
   float result = 0;
   for (size_t i = 0; i < NR; i+=4) {
       auto vec = _mm256_load_pd(alphas+i);
-      _mm256_store_pd(results+i, read_sin_vec(vec));
+      _mm256_store_pd(results+i, read_sin2_vec(vec));
   }
   sum += results[NR-1];
 }
@@ -95,6 +95,8 @@ int main() {
     // Initialize Input
     double *alphas_d;
     size_t N = NR;
+    init_sin();
+    init_sin2();
 
     build<double>(&alphas_d, N);
 
