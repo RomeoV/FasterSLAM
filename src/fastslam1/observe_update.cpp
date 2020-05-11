@@ -20,7 +20,7 @@
 void observe_update(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
-    observe_update_base(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
+    observe_update_active(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
                         zn, particles, weights);
 }
 

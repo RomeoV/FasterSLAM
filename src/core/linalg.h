@@ -34,6 +34,12 @@ void fill_rand_fast(double *x, size_t size, double lo, double hi);
 //! CAUTION!!! For in place transposition use stranspose() instead
 void transpose(const double *A, size_t mA, size_t nA, double *T); 
 
+//! Matrix Transpose ( 2x2 )
+void transpose_2x2(const double *A, double *T);
+
+//! Matrix Self Transpose ( 2x2, in place )
+void stranspose_2x2(double *A);
+
 //! Adds two arrays
 void add(const double *x, const double *y, size_t size, double* z); 
 
@@ -48,6 +54,27 @@ void scal(const double *x, size_t size, double a, double *y);
 //! Matrix B ( nA x nB ) -> Input
 //! Matrix C ( mA x nB ) -> Output
 void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
+
+//! Matrix x Matrix Multiplication ( 2x2 )
+void mm_2x2(const double *A, const double *B, double *C);
+void mm_2x2_avx_v1(const double *A, const double *B, double *C);
+void mm_2x2_avx_v2(const double *A, const double *B, double *C);
+
+//! Matrix x Matrix Transpose Multiplication ( 2x2 )
+void mmT_2x2(const double *A, const double *B, double *C);
+void mmT_2x2_avx_v1(const double *A, const double *B, double *C);
+void mmT_2x2_avx_v2(const double *A, const double *B, double *C);
+
+//! C += A*B ( 2x2 )
+void mmadd_2x2(const double *A, const double *B, double *C);
+void mmadd_2x2_avx_v1(const double *A, const double *B, double *C);
+void mmadd_2x2_avx_v2(const double *A, const double *B, double *C);
+
+//! Matrix x Vector Multiplication ( 2x2 )
+void mv_2x2(const double *A, const double *b, double *c);
+
+//! c += A*b ( 2x2 )
+void mvadd_2x2(const double *A, const double *b, double *c);
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
 void llt_2x2(const double *A, double *L);

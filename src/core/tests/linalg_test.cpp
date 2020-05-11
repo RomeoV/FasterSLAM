@@ -70,7 +70,7 @@ int main() {
                 mul(Ainv, A, n, n, n, Il);
                 mul(A, Ainv, n, n, n, Ir);
 
-                "Compare Ainv*A to Id"_test = [Il, n]() {
+                "Compare Ainv*A to Id"_test = [Il, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(Il[i*n+j] - (i == j)) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << Il[i*n+j];
@@ -78,7 +78,7 @@ int main() {
                     }
                 };
 
-                "Compare A*Ainv to Id"_test = [Ir, n]() {
+                "Compare A*Ainv to Id"_test = [Ir, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(Ir[i*n+j] - (i == j)) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << Ir[i*n+j];
@@ -107,7 +107,7 @@ int main() {
                 double LLt[n*n];
                 mul(L, Lt, n, n, n, LLt);
 
-                "Compare L*L^T to A"_test = [LLt, A, n]() {
+                "Compare L*L^T to A"_test = [LLt, A, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(LLt[i*n+j] - A[i*n+j]) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << LLt[i*n+j];
@@ -168,6 +168,162 @@ int main() {
 
                     iter = std::find(iter, str.end(), '\n');
                     expect(iter != str.end()) << "Couldn't find newline";
+                }
+            };
+        };
+    };
+};
+
+"transpose_2x2"_test = [] {
+    given("I have a matrix (row-major)") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        when("I transpose it") = [=] {
+            double T[4];
+            transpose_2x2(A, T);
+            then("I get the transpose (col-major)") = [=] {
+                double T_actual[4] = {1., 3., 2., 4.};
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(T[i] - T_actual[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
+"stranspose_2x2"_test = [] {
+    given("I have a matrix (row-major)") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        when("I transpose it") = [&] {
+            stranspose_2x2(A);
+            then("I get the transpose (col-major)") = [=] {
+                double T_actual[4] = {1., 3., 2., 4.};
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(A[i] - T_actual[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
+
+//!
+//! Matrix - Matrix multiplication test (2x2)
+//!
+"mm_2x2"_test = [] {
+    given("I have two identity matrices") = [] {
+        double A[4] = {1., 0., 0., 1.};
+        double B[4] = {1., 0., 0., 1.};
+
+        when("I multiply them") = [=] {
+            double C[4];
+            mm_2x2(A, B, C);
+            then("They are still the identity matrix") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - (i == j)) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+    given("I have two matrices") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        double B[4] = {5., 6., 7., 8.};
+
+        when("I multiply them") = [=] {
+            double C[4], D[4];
+            mm_2x2(A, B, C);
+            mul(A, B, 2, 2, 2, D);
+            then("I get the correct result ( according to mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - D[i*2+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+    given("I have two matrices") = [] {
+        double A[4] = {1., 2., 3., 4.};
+        double B[4] = {5., 6., 7., 8.};
+
+        when("I multiply A * B^T") = [&] {
+            double C[4], D[4];
+            mmT_2x2(A, B, C);
+            stranspose_2x2(B);
+            mul(A, B, 2, 2, 2, D);
+            then("I get the correct result ( according to stranspose() and mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    for (size_t j = 0; j < 2; j++) {
+                        expect(fabs(C[i*2+j] - D[i*2+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+    given("I have three matrices") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double B[4] = {12., 45., 56., 16.};
+        double C[4] = {133., 0.2, 1.2, 5.6}; // will be modified inside mmadd_2x2
+        when("I multiply-add them") = [&] {
+            double D[4];
+            mul(A, B, 2, 2, 2, D); // D = A*B
+            add(D, C, 4, D);       // D = D + C
+            mmadd_2x2(A, B, C);    // C = A*B + C 
+            then("I get the correct matrix ( according to mul() and add() )") = [=] {
+                for (size_t i = 0; i < 4; i++) {
+                    expect(fabs(C[i] - D[i]) < 1e-16);
+                }
+            };
+        };
+    };
+};
+
+//!
+//! Matrix - Vector multiplication test (2x2)
+//!
+"mv_2x2"_test = [] {
+    given("I have an identity matrix and a vector") = [] {
+        double A[4] = {1., 0., 0., 1.};
+        double b[2] = {12., 45.};
+
+        when("I multiply them") = [=] {
+            double c[2];
+            mv_2x2(A, b, c);
+            then("I get the exact same vector") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - b[i]) < 1e-16);
+                }
+            };
+        };
+    };
+    given("I have a matrix and a vector") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double b[2] = {12., 45.};
+
+        when("I multiply them") = [=] {
+            double c[2], d[2];
+            mv_2x2(A, b, c);
+            mul(A, b, 2, 2, 1, d);
+            then("I get the correct vector ( according to mul() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - d[i]) < 1e-16);
+                }
+            };
+        };
+    };
+    given("I have a matrix and two vectors") = [] {
+        double A[4] = {1., -5., 3.14, 0.};
+        double b[2] = {12., 45.};
+        double c[2] = {133., 0.2}; // will be modified inside mvadd_2x2
+        when("I multiply-add them") = [&] {
+            double d[2];
+            mul(A, b, 2, 2, 1, d); // d = A*b
+            add(d, c, 2, d);       // d = d + c
+            mvadd_2x2(A, b, c);    // c = A*b + c 
+            then("I get the correct vector ( according to mul() and add() )") = [=] {
+                for (size_t i = 0; i < 2; i++) {
+                    expect(fabs(c[i] - d[i]) < 1e-16);
                 }
             };
         };
