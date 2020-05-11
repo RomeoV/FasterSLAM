@@ -67,19 +67,23 @@ void compute_jacobians_base(Particle* particle,
       Matrix23d HvMat = {-dx / d, -dy / d, 0, dy / d2, -dx / d2, -1};
 
       // Jacobian wrt feature states
-      Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
+      Matrix2d HfMat __attribute__ ((aligned(32))) = {dx / d, dy / d, -dy / d2, dx / d2};
 
       copy(HvMat, 6, Hv[i]);
       copy(HfMat, 4, Hf[i]);
       // innovation covariance of feature observation given the vehicle'
       // Eq. 60 in Thrun03g
-      Matrix2d HfMat_T;
-      Matrix2d Hf_Pf;
-      Matrix2d Hf_Pf_HfT;
+      Matrix2d Hf_Pf __attribute__ ((aligned(32)));
+      Matrix2d Hf_Pf_HfT __attribute__ ((aligned(32)));
       Matrix2d Hf_Pf_HfT_R;
-      transpose(HfMat, 2, 2, HfMat_T);
-      mul(HfMat, Pf[i], 2, 2, 2, Hf_Pf);
-      mul(Hf_Pf, HfMat_T, 2, 2, 2, Hf_Pf_HfT);
+
+#ifdef __AVX2__
+      mm_2x2_avx_v1(HfMat, Pf[i], Hf_Pf);
+      mmT_2x2_avx_v1(Hf_Pf, HfMat, Hf_Pf_HfT); 
+#else      
+      mm_2x2(HfMat, Pf[i], Hf_Pf);
+      mmT_2x2(Hf_Pf, HfMat, Hf_Pf_HfT); 
+#endif
 
       add(Hf_Pf_HfT, R, 2 * 2, Hf_Pf_HfT_R);
       copy(Hf_Pf_HfT_R, 2 * 2, Sf[i]);
