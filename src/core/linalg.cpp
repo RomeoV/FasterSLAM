@@ -212,10 +212,28 @@ void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
 
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C) {
+    //mmadd_2x2_avx_v1(A, B, C);
     C[0] += A[0]*B[0] + A[1]*B[2];
     C[1] += A[0]*B[1] + A[1]*B[3];
     C[2] += A[2]*B[0] + A[3]*B[2];
     C[3] += A[2]*B[1] + A[3]*B[3];
+}
+
+void mmadd_2x2_avx_v1(const double *A, const double *B, double *C) {
+
+    __m256d a = _mm256_load_pd( A );
+    __m256d b = _mm256_load_pd( B );
+    __m256d c = _mm256_load_pd( C );
+
+    c = _mm256_fmadd_pd(
+           _mm256_permute_pd( a, 0b0000 ),
+           _mm256_permute2f128_pd( b, b, 0b00000000 ), c );
+
+    c = _mm256_fmadd_pd(
+           _mm256_permute_pd( a, 0b1111 ),
+           _mm256_permute2f128_pd( b, b, 0b01010101 ), c );
+
+    _mm256_store_pd(C, c);
 }
 
 //! Matrix x Vector Multiplication ( 2x2 )
