@@ -27,3 +27,13 @@ void compute_jacobians_base(Particle* particle,
         Matrix2d* Hf, // jacobians of function h (deriv of h wrt mean)
         Matrix2d* Sf) //measurement covariance
 ;
+
+void compute_jacobians_active(Particle* particle, 
+        int idf[], 
+        size_t N_z,
+        Matrix2d R, 
+        Vector2d* zp, //measurements (range, bearing)
+        Matrix23d* Hv, // jacobians of function h (deriv of h wrt pose)
+        Matrix2d* Hf, // jacobians of function h (deriv of h wrt mean)
+        Matrix2d* Sf) //measurement covariance
+;

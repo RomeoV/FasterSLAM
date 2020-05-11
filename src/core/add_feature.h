@@ -13,3 +13,5 @@
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 
 void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
+
+void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
