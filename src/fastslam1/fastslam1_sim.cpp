@@ -20,7 +20,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_)
 {
-    fastslam1_sim_base(lm, lm_rows, lm_cols, wp, wp_rows, wp_cols, particles_, weights_);
+    fastslam1_sim_active(lm, lm_rows, lm_cols, wp, wp_rows, wp_cols, particles_, weights_);
 }
 
 void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols, 
