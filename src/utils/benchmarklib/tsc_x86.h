@@ -78,14 +78,15 @@ static void init_tsc() {
 	; // no need to initialize anything for x86
 }
 
-static myInt64 start_tsc(void) {
+static inline myInt64 start_tsc(void) {
+	init_tsc();
     tsc_counter start;
     CPUID();
     RDTSC(start);
     return COUNTER_VAL(start);
 }
 
-static myInt64 stop_tsc(myInt64 start) {
+static inline myInt64 stop_tsc(myInt64 start) {
 	tsc_counter end;
 	RDTSC(end);
 	CPUID();

@@ -70,7 +70,7 @@ int main() {
                 mul(Ainv, A, n, n, n, Il);
                 mul(A, Ainv, n, n, n, Ir);
 
-                "Compare Ainv*A to Id"_test = [Il, n]() {
+                "Compare Ainv*A to Id"_test = [Il, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(Il[i*n+j] - (i == j)) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << Il[i*n+j];
@@ -78,7 +78,7 @@ int main() {
                     }
                 };
 
-                "Compare A*Ainv to Id"_test = [Ir, n]() {
+                "Compare A*Ainv to Id"_test = [Ir, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(Ir[i*n+j] - (i == j)) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << Ir[i*n+j];
@@ -107,7 +107,7 @@ int main() {
                 double LLt[n*n];
                 mul(L, Lt, n, n, n, LLt);
 
-                "Compare L*L^T to A"_test = [LLt, A, n]() {
+                "Compare L*L^T to A"_test = [LLt, A, n] {
                     for (size_t i = 0; i < n; i++) {
                         for (size_t j = 0; j < n; j++) {
                             expect(fabs(LLt[i*n+j] - A[i*n+j]) < 1e-14) << "i[" << i << "], j[" << j << "]: Value is " << LLt[i*n+j];

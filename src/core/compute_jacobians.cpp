@@ -38,10 +38,9 @@ void compute_jacobians_base(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
 
-  Vector2d xf[N_z];
-  Matrix2d Pf[N_z];
+  Vector2d xf[N_z] __attribute__ ((aligned(32)));
+  Matrix2d Pf[N_z] __attribute__ ((aligned(32)));
 
-  int r;
   for (size_t i = 0; i < N_z; i++) {
       copy(particle->xf + 2*idf[i], 2, xf[i]);
       copy(particle->Pf + 4*idf[i], 4, Pf[i]);  // particle.Pf is a array of matrices
