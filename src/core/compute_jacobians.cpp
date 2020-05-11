@@ -194,7 +194,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
 
 }
 
-
+// around 3.5 speedup
 void compute_jacobians_advanced_optimisations(Particle* particle, 
         int idf[], 
         size_t N_z,
@@ -238,58 +238,30 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       // Jacobian wrt feature states
       // inlining of copy
       // is slower due to _mm256_set_pds:
-      __m256d dxdy_vec = _mm256_set_pd(dx, -dy, dy, dx);
-      __m256d dd2_vec = _mm256_set_pd(d2, d2, d, d);
-      __m256d HfMat_vec = _mm256_div_pd(dxdy_vec, dd2_vec);
+      //__m256d dxdy_vec = _mm256_set_pd(dx, -dy, dy, dx);
+      //__m256d dd2_vec = _mm256_set_pd(d2, d2, d, d);
+      //__m256d HfMat_vec = _mm256_div_pd(dxdy_vec, dd2_vec);
       // is slower too:
       //__m256d Hf_vec = _mm256_set_pd(dx / d, dy / d, -dy / d2, dx / d2);
-      _mm256_store_pd(Hf[i], HfMat_vec);
-      //double dxd = dx / d;
-      //double dyd = dy / d;
-      //double dyd2 = - dy / d2;
-      //double dxd2 = dx / d2;
-      /*Hf[i][0] = dxd;
-      Hf[i][1] = dyd; 
-      Hf[i][2] = dyd2;
-      Hf[i][3] = dxd2;*/
-      //double *HfMat = Hf[i];
+      //_mm256_store_pd(Hf[i], HfMat_vec);
 
+      double dxd = dx / d;
+      double dyd = dy / d; 
+      double dyd2 = -dy / d2;
+      double dxd2 = dx / d2;
+      __m256d HfMat_vec = _mm256_set_pd(dxd, dyd, dyd2, dxd2);
+      
       // inlining of copy
       // Jacobian wrt vehicle states
-      Hv[i][0] = - Hf[i][0];
-      Hv[i][1] = - Hf[i][1];
+      Hv[i][0] = - dxd;
+      Hv[i][1] = - dyd;
       Hv[i][2] = 0;
-      Hv[i][3] = - Hf[i][2];
-      Hv[i][4] = - Hf[i][3];
+      Hv[i][3] = - dyd2;
+      Hv[i][4] = - dxd2;
       Hv[i][5] = -1;
       
-      // innovation covariance of feature observation given the vehicle'
-      // Eq. 60 in Thrun03g
-      //Matrix2d HfMat_T;
-      //Matrix2d Hf_Pf;
-      //Matrix2d Hf_Pf_HfT;
-      //Matrix2d Hf_Pf_HfT_R;
-
-      // inlining of transpose
-      // transpose(HfMat, 2, 2, HfMat_T);
-      // it's just a 2x2 matrix
-      //__m256d HfMat_vec = _mm256_load_pd(HfMat);
       __m256d HfMat_T_vec = _mm256_permute4x64_pd(HfMat_vec, 0xD8);
-      //_mm256_store_pd(HfMat_T, HfMat_T_vec);
-      //std::cout << "HfMat: " << HfMat[0] << " " << HfMat[1] << " " << HfMat[2] << " " << HfMat[3] << std::endl;
-      //std::cout << "HfMat_T: " << HfMat_T[0] << " " << HfMat_T[1] << " " << HfMat_T[2] << " " << HfMat_T[3] << std::endl;
-      /*HfMat_T[0] = HfMat[0];
-      HfMat_T[1] = HfMat[2];
-      HfMat_T[2] = HfMat[1];
-      HfMat_T[3] = HfMat[3];*/
-      //__m256d HfMat_T_vec = _mm256_load_pd(R);
-
-      // inlining of mul
-      // multiply 3 matrices
-      // HfMat * Pf_i * HfMat_T
-      // 2x2 * 2x2 * 2x2
-      // so there is not much to optimise
-      // this seemed to make the biggest difference
+     
       __m256d Pf_vec = _mm256_load_pd(Pf_i);
       __m256d avec = _mm256_permute4x64_pd(HfMat_vec, 0xA0); // 2,2,0,0
       __m256d bvec = _mm256_permute4x64_pd(Pf_vec, 0x44); // 1,0,1,0
@@ -298,13 +270,6 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       __m256d left_mul = _mm256_mul_pd(avec,bvec);
       __m256d right_mul = _mm256_mul_pd(cvec,dvec);
       __m256d Hf_Pf_vec = _mm256_add_pd(left_mul, right_mul);
-      //_mm256_store_pd(Hf_Pf, Hf_Pf_vec);
-      //std::cout << "Hf_Pf: " << Hf_Pf[0] << " " << Hf_Pf[1] << " " << Hf_Pf[2] << " " << Hf_Pf[3] << std::endl;
-      //Hf_Pf[0] = HfMat[0] * Pf_i[0] + HfMat[1] * Pf_i[2];
-      //Hf_Pf[1] = HfMat[0] * Pf_i[1] + HfMat[1] * Pf_i[3];
-      //Hf_Pf[2] = HfMat[2] * Pf_i[0] + HfMat[3] * Pf_i[2];
-      //Hf_Pf[3] = HfMat[2] * Pf_i[1] + HfMat[3] * Pf_i[3];
-      //std::cout << "Hf_Pf: " << Hf_Pf[0] << " " << Hf_Pf[1] << " " << Hf_Pf[2] << " " << Hf_Pf[3] << std::endl;
 
       __m256d evec = _mm256_permute4x64_pd(Hf_Pf_vec, 0xA0); // 2,2,0,0
       __m256d fvec = _mm256_permute4x64_pd(HfMat_T_vec, 0x44); // 1,0,1,0
@@ -313,35 +278,11 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       __m256d left_mul2 = _mm256_mul_pd(evec,fvec);
       __m256d right_mul2 = _mm256_mul_pd(gvec,hvec);
       __m256d Hf_Pf_HfT_vec = _mm256_add_pd(left_mul2, right_mul2);
-      //_mm256_store_pd(Hf_Pf_HfT, Hf_Pf_HfT_vec);
-      //std::cout << "Hf_Pf_HfT: " << Hf_Pf_HfT[0] << " " << Hf_Pf_HfT[1] << " " << Hf_Pf_HfT[2] << " " << Hf_Pf_HfT[3] << std::endl;
 
-      //mul(HfMat, Pf_i, 2, 2, 2, Hf_Pf);
-      //Hf_Pf_HfT[0] = Hf_Pf[0] * HfMat_T[0] + Hf_Pf[1] * HfMat_T[2];
-      //Hf_Pf_HfT[1] = Hf_Pf[0] * HfMat_T[1] + Hf_Pf[1] * HfMat_T[3];
-      //Hf_Pf_HfT[2] = Hf_Pf[2] * HfMat_T[0] + Hf_Pf[3] * HfMat_T[2];
-      //Hf_Pf_HfT[3] = Hf_Pf[2] * HfMat_T[1] + Hf_Pf[3] * HfMat_T[3];
-      //std::cout << "Hf_Pf_HfT: " << Hf_Pf_HfT[0] << " " << Hf_Pf_HfT[1] << " " << Hf_Pf_HfT[2] << " " << Hf_Pf_HfT[3] << std::endl;
-      //mul(Hf_Pf, HfMat_T, 2, 2, 2, Hf_Pf_HfT);
-
-      // inlining of add
-      /* slower due to loading */
-      // __m256d Hf_Pf_HfT_vec = _mm256_load_pd(Hf_Pf_HfT);
       __m256d R_vec = _mm256_load_pd(R);
       __m256d Hf_Pf_HfT_R_vec = _mm256_add_pd(Hf_Pf_HfT_vec, R_vec);
       _mm256_store_pd(Sf[i], Hf_Pf_HfT_R_vec);
 
-      // inlining of add
-      /*Hf_Pf_HfT_R[0] = Hf_Pf_HfT[0] + R[0];
-      Hf_Pf_HfT_R[1] = Hf_Pf_HfT[1] + R[1];
-      Hf_Pf_HfT_R[2] = Hf_Pf_HfT[2] + R[2];
-      Hf_Pf_HfT_R[3] = Hf_Pf_HfT[3] + R[3];*/
-
-      // inlining of copy
-      /*Sf[i][0] = Hf_Pf_HfT_R[0];
-      Sf[i][1] = Hf_Pf_HfT_R[1];
-      Sf[i][2] = Hf_Pf_HfT_R[2];
-      Sf[i][3] = Hf_Pf_HfT_R[3];*/
   };
 
 }
