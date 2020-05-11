@@ -30,9 +30,11 @@ int main() {
     double R[4] = {0.010000000000000, 0.0, 0.0, 0.000304617419787};
     //cMatrix2d H = {0.073819203427568675, -0.99727164063023443, 0.038893076096335785, 0.0028789105989867826};    
     double H[4] = {0.075431770172036, -0.997150965525639, 0.038902059641499, 0.002942835461779};
+    Vector2d exact_x, x, x_v1, x_v2;
+    Matrix2d exact_P, P, P_v1, P_v2;
 #ifdef __AVX2__
-    Vector2d exact_x, x, x_v1, x_v2, x_v2_avx;
-    Matrix2d exact_P, P, P_v1, P_v2, P_v2_avx;
+    Vector2d x_v2_avx;
+    Matrix2d P_v2_avx;
 #endif
 
     data_loader(exact_x, exact_P, v, R, H);

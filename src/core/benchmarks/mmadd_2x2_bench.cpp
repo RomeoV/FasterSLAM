@@ -30,11 +30,13 @@ int main() {
     data_loader(A, B, C);
     mmadd_2x2(A, B, C);
     
+#ifdef __AVX2__
     data_loader(A, B, C1);
     mmadd_2x2_avx_v1(A, B, C1);
     
     data_loader(A, B, C2);
     mmadd_2x2_avx_v2(A, B, C2);
+#endif
      
     double error = 0.0;
     for (int i = 0; i < 4; i++) {
@@ -49,8 +51,10 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&mmadd_2x2, "base", work);
+#ifdef __AVX2__
     bench.add_function(&mmadd_2x2_avx_v1, "avx_v1", work);
     bench.add_function(&mmadd_2x2_avx_v2, "avx_v2", work);
+#endif
 
     bench.run_benchmark(A, B, C);
 

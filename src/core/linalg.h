@@ -51,18 +51,24 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
 
 //! Matrix x Matrix Multiplication ( 2x2 )
 void mm_2x2(const double *A, const double *B, double *C);
+#ifdef __AVX2__
 void mm_2x2_avx_v1(const double *A, const double *B, double *C);
 void mm_2x2_avx_v2(const double *A, const double *B, double *C);
+#endif
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 )
 void mmT_2x2(const double *A, const double *B, double *C);
+#ifdef __AVX2__
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v2(const double *A, const double *B, double *C);
+#endif
 
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C);
+#ifdef __AVX2__
 void mmadd_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmadd_2x2_avx_v2(const double *A, const double *B, double *C);
+#endif
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);

@@ -111,6 +111,7 @@ void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     sub(P, W1W1t, 4, P);
 }
 
+#ifdef __AVX2__
 void KF_cholesky_update_v2_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double   PHt[4] __attribute__ ((aligned(32)));
@@ -191,3 +192,4 @@ void KF_cholesky_update_v2_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R,
     // -------------------- //
     _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
 }
+#endif

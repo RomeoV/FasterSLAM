@@ -127,6 +127,7 @@ void mm_2x2(const double *A, const double *B, double *C) {
 }
 
 //! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
+#ifdef __AVX2__
 void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -141,8 +142,10 @@ void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
    
     _mm256_store_pd(C, c);
 }
+#endif
 
 //! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
+#ifdef __AVX2__
 void mm_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -158,6 +161,7 @@ void mm_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
 }
+#endif
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 )
 void mmT_2x2(const double *A, const double *B, double *C) {
@@ -170,6 +174,7 @@ void mmT_2x2(const double *A, const double *B, double *C) {
 }
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
+#ifdef __AVX2__
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -184,8 +189,10 @@ void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     _mm256_store_pd(C, c);
 }
+#endif
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
+#ifdef __AVX2__
 void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -201,6 +208,7 @@ void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     _mm256_store_pd(C, _mm256_add_pd( c0, c1 ));
 }
+#endif
 
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C) {
@@ -211,6 +219,7 @@ void mmadd_2x2(const double *A, const double *B, double *C) {
     C[3] += A[2]*B[1] + A[3]*B[3];
 }
 
+#ifdef __AVX2__
 void mmadd_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -227,7 +236,9 @@ void mmadd_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     _mm256_store_pd(C, c);
 }
+#endif
 
+#ifdef __AVX2__
 void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -245,6 +256,7 @@ void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     _mm256_store_pd(C, _mm256_add_pd( c, cc ) );
 }
+#endif
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c) {
