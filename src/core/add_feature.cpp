@@ -27,10 +27,10 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
 void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
   // double* xf = (double*)malloc(2 * N_z * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
-  Vector2d xf[N_z];
-  Matrix2d Pf[N_z];
+  Vector2d xf[N_z] __attribute__((aligned(32)));
+  Matrix2d Pf[N_z] __attribute__((aligned(32)));
 
-  Vector3d xv;
+  Vector3d xv __attribute__((aligned(32)));
   copy(particle->xv, 3, xv);
 
   double r, b, s, c;
@@ -46,8 +46,8 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
     measurement[1] = xv[1] + r * s;
     copy(measurement, 2, xf[i]);  // xf[i,:] = measurement[0:2]
 
-    Matrix2d Gz = {c, -r * s, s, r * c};
-    Matrix2d MatResult_1;
+    Matrix2d Gz __attribute__((aligned(32))) = {c, -r * s, s, r * c} ;
+    Matrix2d MatResult_1 __attribute__((aligned(32)));
     
 #ifdef __AVX2__
     mm_2x2_avx_v1(Gz, R, MatResult_1);

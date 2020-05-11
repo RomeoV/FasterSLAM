@@ -112,8 +112,8 @@ void feature_update_active(Particle* particle,
 
   // double* xf = (double*)malloc(2 * N_idf * sizeof(double));
   // double* Pf = (double*)malloc(4 * N_idf * sizeof(double));
-  Vector2d xf[N_idf];
-  Matrix2d Pf[N_idf];
+  Vector2d xf[N_idf] __attribute__((aligned(32)));
+  Matrix2d Pf[N_idf] __attribute__((aligned(32)));
 
   for (size_t i = 0; i < N_idf; i++) {
     copy(particle->xf + (2 * idf[i]), 2, xf[i]);  // means
@@ -130,7 +130,7 @@ void feature_update_active(Particle* particle,
 
   compute_jacobians(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
-  Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
+  Vector2d feat_diff[N_idf] __attribute__((aligned(32)));  // difference btw feature prediciton and
                             // measurement (used to update mean)
   for (int i = 0; i < N_idf; i++) {
     sub(z[i], zp[i], 2, feat_diff[i]);
