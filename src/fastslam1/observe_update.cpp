@@ -53,10 +53,17 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
     // perform update
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
+            // this will half the processing need of compute_jacobians
+            Vector2d zp[count_zf];
+            Matrix23d Hv[count_zf];
+            Matrix2d Hf[count_zf];
+            Matrix2d Sf[count_zf];
+            compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
             double w = compute_weight_base(&particles[i], zf, count_zf, idf, R);
             w *= weights[i];
             weights[i] = w;
-            feature_update_base(&particles[i], zf, idf, count_zf, R);
+            feature_update_base(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
         }
         if ( count_zn != 0 ) { // !zn.empty() 
             add_feature_base(&particles[i], zn, count_zn, R);
@@ -95,10 +102,16 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
     // perform update
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            Vector2d zp[count_zf];
+            Matrix23d Hv[count_zf];
+            Matrix2d Hf[count_zf];
+            Matrix2d Sf[count_zf];
+            compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+
             double w = compute_weight(&particles[i], zf, count_zf, idf, R);
             w *= weights[i];
             weights[i] = w;
-            feature_update(&particles[i], zf, idf, count_zf, R);
+            feature_update(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
         }
         if ( count_zn != 0 ) { // !zn.empty() 
             add_feature(&particles[i], zn, count_zn, R);
