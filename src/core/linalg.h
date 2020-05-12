@@ -21,6 +21,8 @@ void copy(const double* ref, size_t N, double* target);
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi);
 
+__m256d fill_rand_avx(double lo, double hi);
+
 //! Same as fill_rand but uses a faster pseudo RNG
 void fill_rand_fast(double *x, size_t size, double lo, double hi);
 
@@ -71,6 +73,7 @@ void mmT_2x2_avx_v3(const double *A, const double *B, double *C);
 void mmadd_2x2(const double *A, const double *B, double *C);
 void mmadd_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmadd_2x2_avx_v2(const double *A, const double *B, double *C);
+__m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c);
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);

@@ -118,7 +118,7 @@ __m256d read_sin_vec(__m256d angle) {
 __m256d read_cos_vec(__m256d angle) {
     //This sub and the mul in read_sin_vec can be fused to an fmsub, but I keep it modular for now
     // In cos we can also use symmetry!
-    angle = _mm256_sub_pd(angle, pi_2_vec);
+    angle = _mm256_add_pd(angle, pi_2_vec);
     return read_sin_vec(angle);
 }
 
@@ -129,12 +129,12 @@ __m256d read_sin2_vec(__m256d angle) {
 }
 
 __m256d read_cos2_vec(__m256d angle) {
-    angle = _mm256_sub_pd(angle, pi_2_vec);
+    angle = _mm256_add_pd(angle, pi_2_vec);
     return read_sin2_vec(angle);
 }
 
 double read_cos(double angle) {
-    return read_sin(angle - M_PI_2);
+    return read_sin(angle + M_PI_2);
 }
 
 

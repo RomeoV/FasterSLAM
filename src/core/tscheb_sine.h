@@ -1,5 +1,6 @@
+#pragma once
 #include <cstdlib>
-
+#include <immintrin.h>
 /** Tschebyscheff approximation with floats
  * Taken from here: http://mooooo.ooo/chebyshev-sine-approximation/
  */
@@ -22,3 +23,10 @@ void tscheb_dsines(double* alphas, size_t N, double* results);
 void tscheb_dsines_unrolled(double* alphas, size_t N, double* results);
 
 void tscheb_dsines_avx(double* alphas, size_t N, double* results);
+
+double tscheb_sin(double alpha);
+
+double tscheb_cos(double alpha);
+
+__m256d tscheb_sin_avx(__m256d alpha);
+__m256d tscheb_cos_avx(__m256d alpha);

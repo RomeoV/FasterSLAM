@@ -4,6 +4,7 @@
 #include <cmath>
 #include <cassert>
 #include <immintrin.h>
+#include "fastrand.h"
 
 #include <stdint.h>
 #include <string.h>
@@ -64,6 +65,22 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
     }
 }
 
+
+__m256d fill_rand_avx(double lo, double hi) {
+    __m256d lov = _mm256_set1_pd(lo);
+    __m256d hiv = _mm256_set1_pd(hi);
+    __m256i rand_vec =  _mm256_abs_epi32(avx2_pcg32());
+    
+    //__m256d rmax = _mm256_set1_pd(9223372036854775807); //Assume 64bit
+    //__m256d ymm0 = _mm256_castsi256_pd(rand_vec);
+    
+    __m256d rmax = _mm256_set1_pd(2147483647); //2147483647
+    __m256d ymm0 = _mm256_cvtepi32_pd(_mm256_extractf128_si256(rand_vec, 0)); //32 bit
+    __m256d ymm1 = _mm256_div_pd(ymm0, rmax);
+
+    __m256d range = _mm256_sub_pd(hiv, lov);
+    return _mm256_fmadd_pd(range, ymm1, lov);
+}
 /*
 void fill_rand_fast(double *x, size_t size, double lo, double hi) {
     double range = hi - lo;
@@ -311,6 +328,22 @@ void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
     __m256d cc = _mm256_mul_pd( a1133, b2323 );
 
     _mm256_store_pd(C, _mm256_add_pd( c, cc ) );
+}
+#endif
+
+#ifdef __AVX2__
+__m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c) {
+
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
+    
+    c = _mm256_fmadd_pd( a0022, b0101, c );
+    
+    __m256d cc = _mm256_mul_pd( a1133, b2323 );
+
+    return _mm256_add_pd( c, cc );
 }
 #endif
 

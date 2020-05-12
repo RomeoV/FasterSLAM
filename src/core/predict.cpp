@@ -3,7 +3,7 @@
 #include "pi_to_pi.h"
 #include "multivariate_gauss.h"
 #include <cmath>
-
+#include <iostream>
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base implementation, unit test

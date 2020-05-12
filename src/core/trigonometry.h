@@ -6,7 +6,7 @@
 
 
 #define n_2pi 3
-#define steps_pi 10000
+#define steps_pi 10000000
 #define N_sin n_2pi * (steps_pi*2 +1)
 
 extern const double step_size;

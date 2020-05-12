@@ -11,6 +11,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "fastrand.h"
+#include "linalg.h"
 
 
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
@@ -100,11 +101,14 @@ int main() {
 
     avx_fast_srand(0,10,100,1000);
 
-    uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-                                0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
-    uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
+    // uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
+    // uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
+    uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
+    uint64_t init_seq[8] =   {1,1,1,1,1,1,1,1};
+
 
     avx2_pcg32_srand(init_state, init_seq);
 
@@ -159,5 +163,31 @@ int main() {
     */
 
     bench.run_benchmark(recipient, N);
+
+    // pcg32_srand(1,1);
+    // avx_xorshift128plus_init(1,1);
+
+    // avx_fast_srand(0,10,100,1000);
+
+    // // uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
+    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
+    // // uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
+    // uint64_t init_state2[8] = {1,1,1,1,1,1,1,1};
+    // uint64_t init_seq2[8] =   {1,1,1,1,1,1,1,1};
+    // avx2_pcg32_srand(init_state2, init_seq2);
+
+    // int S[8] = {0,0,0,0,0,0,0,0};
+    // auto ones = _mm256_set1_epi32(111111111111111111);
+    // for (int i = 0; i< 5; i++) {
+    //     //print256d(fill_rand_avx(-1.0,1.0));
+    //     std::cout<<pcg32()<<std::endl;
+    //     _mm256_maskstore_epi32(S, ones, avx2_pcg32());
+    //     for (int i = 0; i< 8; i++) {
+    //         std::cout<<(S[i]+2147483647)<<std::endl;
+    //     }
+    // }
+    return 0;
 
 }

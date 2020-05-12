@@ -70,8 +70,8 @@ int main() {
     const int N = 10000;
     double angles[N];
     double vec_angles[N];
-    double lower_bound = M_PI;
-    double upper_bound = M_PI;
+    double lower_bound = -3* M_PI;
+    double upper_bound = 3* M_PI;
 
     init_sin();
     init_sin2();
@@ -81,21 +81,21 @@ int main() {
 
     // Compare two methods
     "functional equality"_test = [&] {
-        auto is_close = [&](auto lhs, auto rhs) -> bool {return std::abs(lhs - rhs) < 1e-4;};
+        auto is_close = [&](auto lhs, auto rhs) -> bool {return std::abs(lhs - rhs) < 1e-6;};
         
         for (int i = 0; i<N; i+=4) {
             auto vec = _mm256_load_pd(angles+i);
-            _mm256_store_pd(vec_angles+i, read_sin2_vec(vec));
+            _mm256_store_pd(vec_angles+i, tscheb_sin_avx(vec));
         }
 
         
         for (int i = 0; i < N; i++) {
             double method1 = std::sin(angles[i]);
-            double method2 = read_sin(angles[i]);
-            double method3 = tscheb_sine(angles[i]);
-            expect(is_close(method1, method2))<< "read_sin" << method1 << method2;
+            //double method2 = read_sin(angles[i]);
+            double method3 = tscheb_sin(angles[i]);
+            //expect(is_close(method1, method2))<< "read_sin" << method1 << method2;
             expect(is_close(method1, method3))<< "tscheb";
-            expect(is_close(method1, vec_angles[i]))<< "read_sin_vec"<< method1 << vec_angles[i];
+            expect(is_close(method1, vec_angles[i]))<< "read_sin_vec"<< method1 << vec_angles[i]<< i << angles[i];
         }
     };
     

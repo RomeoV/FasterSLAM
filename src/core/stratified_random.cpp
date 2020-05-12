@@ -40,11 +40,6 @@ double unifRand() {
     return double(rand()) / double(RAND_MAX);
 }
 
-
-double unifRand_fast() {
-    return double(lehmer64()) / double(RAND_MAX);
-}
-
 void stratified_random_fastrand(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
