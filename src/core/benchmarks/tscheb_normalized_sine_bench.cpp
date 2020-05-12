@@ -101,7 +101,7 @@ int main() {
     build<double>(&alphas_d, N);
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
-    Benchmark<decltype(&calc_tscheb_normalized_dsines)> bench("Fast float sine");
+    Benchmark<decltype(&calc_tscheb_normalized_dsines)> bench("normalized_sine");
 
     // Set function to reload data for each benchmarked function
     bench.data_loader = &fill<double>;

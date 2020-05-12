@@ -15,6 +15,8 @@ using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 
+
+
 void data_loader(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
     particle->xv[0] = 1;
     particle->xv[1] = 1;
@@ -23,7 +25,7 @@ void data_loader(Particle *particle, double V, double G, Matrix2d Q, double WB, 
 
 int main() {
     SWITCH_PREDICT_NOISE = 0;
-    
+    double xv_initial[3] = {0.0,0.0,0.0};
     double Q[4] = {0.01,0,0,0.03};
 
     double V = 1.0;
@@ -32,14 +34,15 @@ int main() {
     double WB = 0.1;
     
     Particle p;
+    initParticle(&p, 1, xv_initial);
     data_loader(&p, V,G, Q, WB, dt);
 
     Particle p_exact;
+    initParticle(&p_exact, 1, xv_initial);
     data_loader(&p_exact, V,G, Q, WB, dt);
 
     predict(&p, V,G, Q, WB, dt),
     predict_base(&p_exact, V,G, Q, WB, dt);
-
     for (int i = 0; i< 3; i++) {
         expect(that % fabs(p.xv[i]-p_exact.xv[i])<= 1.0e-10) <<i;
     }
@@ -48,6 +51,7 @@ int main() {
     Benchmark<decltype(&predict_base)> bench("predict Benchmark");
 
     double work = 19.0; // best-case
+    
 
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)

@@ -57,6 +57,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
             w *= weights[i];
             weights[i] = w;
             feature_update_base(&particles[i], zf, idf, count_zf, R);
+            //compute_weight_and_feature_update_base(particles+i, zf, count_zf, idf, R)
         }
         if ( count_zn != 0 ) { // !zn.empty() 
             add_feature_base(&particles[i], zn, count_zn, R);

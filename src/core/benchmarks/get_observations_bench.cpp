@@ -19,46 +19,46 @@ auto data_loader(cVector3d x, const double rmax, const double *lm, const size_t 
 }
 
 int main() {
-    cVector3d x = {0.674090417131751, -0.030904471130924017, -0.0073589032333721818};
-    const double rmax = 30; 
-    const size_t lm_rows = 35;
-    size_t exact_nidf = 35, nidf = 35;
-    double lm[70];
-    int exact_idf[35], idf[35];
-    Vector2d exact_z[2], z[2];
+    // cVector3d x = {0.674090417131751, -0.030904471130924017, -0.0073589032333721818};
+    // const double rmax = 30; 
+    // const size_t lm_rows = 35;
+    // size_t exact_nidf = 35, nidf = 35;
+    // double lm[70];
+    // int exact_idf[35], idf[35];
+    // Vector2d exact_z[2], z[2];
 
-    // Fill lm from file
-    FILE* fp = fopen("inputfiles_test/lm.txt", "r");  expect(fp != 0);
-    for (size_t i = 0; i < lm_rows; i++) {
-        fscanf(fp, "%lf\t%lf\n", &lm[i*2+0], &lm[i*2+1]);
-    }
-    fclose(fp);
+    // // Fill lm from file
+    // FILE* fp = fopen("inputfiles_test/lm.txt", "r");  expect(fp != 0);
+    // for (size_t i = 0; i < lm_rows; i++) {
+    //     fscanf(fp, "%lf\t%lf\n", &lm[i*2+0], &lm[i*2+1]);
+    // }
+    // fclose(fp);
 
-    // Test:  
-    data_loader(x, rmax, lm, lm_rows, exact_idf, &exact_nidf, exact_z);
-    get_observations_base(x, rmax, lm, lm_rows, exact_idf, &exact_nidf, exact_z);
+    // // Test:  
+    // data_loader(x, rmax, lm, lm_rows, exact_idf, &exact_nidf, exact_z);
+    // get_observations_base(x, rmax, lm, lm_rows, exact_idf, &exact_nidf, exact_z);
     
-    data_loader(x, rmax, lm, lm_rows, idf, &nidf, z);
-    get_observations(x, rmax, lm, lm_rows, idf, &nidf, z);
+    // data_loader(x, rmax, lm, lm_rows, idf, &nidf, z);
+    // get_observations(x, rmax, lm, lm_rows, idf, &nidf, z);
     
-    // Check x
-    expect( exact_nidf == nidf );
-    for (int i = 0; i < 2; i++) {
-        double error0 = fabs( z[i][0] - exact_z[i][0] );
-        double error1 = fabs( z[i][1] - exact_z[i][1] );
-        expect(that % error0 < 1e-12) << i;
-        expect(that % error1 < 1e-12) << i;
-    }
+    // // Check x
+    // expect( exact_nidf == nidf );
+    // for (int i = 0; i < 2; i++) {
+    //     double error0 = fabs( z[i][0] - exact_z[i][0] );
+    //     double error1 = fabs( z[i][1] - exact_z[i][1] );
+    //     expect(that % error0 < 1e-12) << i;
+    //     expect(that % error1 < 1e-12) << i;
+    // }
 
-    Benchmark<decltype(&get_observations)> bench("get_observations benchmark");
-    double work = 15*lm_rows; // TODO Count work //best-case
-    bench.data_loader = data_loader; // To guarantee same inputs
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    bench.add_function(&get_observations_base, "base", work);
-    bench.add_function(&get_observations, "active", work);
+    // Benchmark<decltype(&get_observations)> bench("get_observations benchmark");
+    // double work = 15*lm_rows; // TODO Count work //best-case
+    // bench.data_loader = data_loader; // To guarantee same inputs
+    // // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
+    // // First function should always be the base case you want to benchmark against!
+    // bench.add_function(&get_observations_base, "base", work);
+    // bench.add_function(&get_observations, "active", work);
 
-    bench.run_benchmark(x, rmax, lm, lm_rows, idf, &nidf, z);
+    // bench.run_benchmark(x, rmax, lm, lm_rows, idf, &nidf, z);
 
     /*
     // Alternative (much slower here, but nicer to look at. Generally useful if you want to average over a few inputs). Yields averages over all runs.

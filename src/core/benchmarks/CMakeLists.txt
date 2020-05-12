@@ -5,6 +5,11 @@ add_custom_command(OUTPUT _run_benchmarks
     COMMAND echo "Starting benchmarks"
 )
 
+add_custom_command(OUTPUT _run_benchmarks
+    COMMAND ${CMAKE_COMMAND} -E remove -f benchmark.csv
+    APPEND
+)
+
 file(GLOB benchfiles "*_bench.cpp")
   foreach(file ${benchfiles})
     get_filename_component(name ${file} NAME_WE)  # strip file ending
