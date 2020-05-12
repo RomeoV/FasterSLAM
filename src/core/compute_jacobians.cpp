@@ -249,7 +249,8 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       double dyd = dy / d; 
       double dyd2 = -dy / d2;
       double dxd2 = dx / d2;
-      __m256d HfMat_vec = _mm256_set_pd(dxd, dyd, dyd2, dxd2);
+      __m256d HfMat_vec = _mm256_set_pd(dxd2, dyd2, dyd, dxd);
+      _mm256_store_pd(Hf[i], HfMat_vec);
       
       // inlining of copy
       // Jacobian wrt vehicle states
