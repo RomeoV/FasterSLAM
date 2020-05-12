@@ -2,7 +2,7 @@
 #include <iostream>
 #include "feature_update.h"
 
-void data_loader(Particle *p, Vector2d *z, int *idf, size_t N_idf, double *R) {
+void data_loader(Particle *p, Vector2d *z, int *idf, size_t N_idf, double *R, Vector2d *zp, Matrix23d *Hv, Matrix2d *Hf, Matrix2d *Sf) {
     // Initialize Input
     Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
     initParticle(p, 300000, xv);
@@ -61,8 +61,14 @@ int main() {
     bench.add_function(&feature_update_base, "feature_update_base", work);
     //bench.add_function(&feature_update_fmod, "feature_update_fmod", work);
 
+    Vector2d zp[3];
+    Matrix23d Hv[3];
+    Matrix2d Hf[3];
+    Matrix2d Sf[3];
+    compute_jacobians_base(&p, idf, 3, R, zp, Hv, Hf, Sf);
+
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(&p, z, idf, N_idf, R);
+    bench.run_benchmark(&p, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 
     /*Benchmark<decltype(lambda)> bench_lambda("feature_update on array Benchmark");
 

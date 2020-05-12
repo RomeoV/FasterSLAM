@@ -22,8 +22,12 @@ void feature_update(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
-                    Matrix2d R) {
-    feature_update_base(particle, z, idf, N_idf, R);
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]) {
+    feature_update_base(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 }
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,
@@ -32,7 +36,12 @@ void feature_update_base(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
-                    Matrix2d R) {
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]
+                    ) {
   // Having selected a new pose from the proposal distribution, this pose is
   // assumed perfect and each feature update maybe computed independently and
   // without pose uncertainty
@@ -48,14 +57,14 @@ void feature_update_base(Particle* particle,
     copy(particle->Pf + (4 * idf[i]), 4, Pf[i]);  // covariances
   }
 
-  Vector2d zp[N_idf];  // this contains all predicted features in the updated
+  /*Vector2d zp[N_idf];  // this contains all predicted features in the updated
                        // robot frame (after movement) but before considering
                        // new measurements
   Matrix23d Hv[N_idf];
   Matrix2d Hf[N_idf];
   Matrix2d Sf[N_idf];
   
-  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
+  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);*/
 
   Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
                             // measurement (used to update mean)
