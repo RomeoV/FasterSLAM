@@ -23,6 +23,7 @@ add_library(FasterSlamCore
   data_associate_known.cpp
   fastrand.cpp
   trigonometry.cpp
+  compute_weight_and_feature_update.cpp
 )
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
