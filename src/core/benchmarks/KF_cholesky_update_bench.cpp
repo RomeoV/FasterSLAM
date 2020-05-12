@@ -40,11 +40,11 @@ int main() {
     data_loader(exact_x, exact_P, v, R, H);
     KF_cholesky_update_base(exact_x, exact_P, v, R, H);
     
-//    data_loader(x_v1, P_v1, v, R, H);
-//    KF_cholesky_update_v1(x_v1, P_v1, v, R, H);
-//    
-//    data_loader(x_v2, P_v2, v, R, H);
-//    KF_cholesky_update_v2(x_v2, P_v2, v, R, H);
+    data_loader(x_v1, P_v1, v, R, H);
+    KF_cholesky_update_v1(x_v1, P_v1, v, R, H);
+    
+    data_loader(x_v2, P_v2, v, R, H);
+    KF_cholesky_update_v2(x_v2, P_v2, v, R, H);
     
 //#ifdef __AVX2__
 //    data_loader(x_v2_avx_v1, P_v2_avx_v1, v, R, H);
@@ -61,8 +61,8 @@ int main() {
     double error = 0.0;
     for (int i = 0; i < 2; i++) {
         error = fabs(        x[i] - exact_x[i] ); expect(that % error < 1e-10) << i;
-//        error = fabs(     x_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 10;
-//        error = fabs(     x_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     x_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 10;
+        error = fabs(     x_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 20;
 //#ifdef __AVX2__
 //        error = fabs( x_v2_avx_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 30;
 //        error = fabs( x_v2_avx_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 40;
@@ -71,8 +71,8 @@ int main() {
     // Check P 
     for (int i = 0; i < 4; i++) {
         error = fabs(        P[i] - exact_P[i] ); expect(that % error < 1e-10) << i;
-//        error = fabs(     P_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
-//        error = fabs(     P_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     P_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
+        error = fabs(     P_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 20;
 //#ifdef __AVX2__
 //        error = fabs( P_v2_avx_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 30;
 //        error = fabs( P_v2_avx_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 40;
@@ -85,8 +85,8 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&KF_cholesky_update_base, "base", work);
-//    bench.add_function(&KF_cholesky_update_v1, "v1", work);
-//    bench.add_function(&KF_cholesky_update_v2, "v2", work);
+    bench.add_function(&KF_cholesky_update_v1, "v1", work);
+    bench.add_function(&KF_cholesky_update_v2, "v2", work);
 //#ifdef __AVX2__
 //    bench.add_function(&KF_cholesky_update_v2_avx_v1, "v2-avx-v1", work);
 //    bench.add_function(&KF_cholesky_update_v2_avx_v2, "v2-avx-v2", work);
