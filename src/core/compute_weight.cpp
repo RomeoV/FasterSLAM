@@ -31,7 +31,7 @@ double compute_weight(Particle* particle,
                       Matrix23d Hv[],
                       Matrix2d Hf[],
                       Matrix2d Sf[]) {
-    return compute_weight_base(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    return compute_weight_active(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 }
 
 double compute_weight_base(Particle* particle,

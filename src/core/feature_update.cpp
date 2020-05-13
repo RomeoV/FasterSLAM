@@ -27,7 +27,7 @@ void feature_update(Particle* particle,
                     Matrix23d Hv[],
                     Matrix2d Hf[],
                     Matrix2d Sf[]) {
-    feature_update_base(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    feature_update_active(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 }
 
 // z is the list of measurements conditioned on the particle.

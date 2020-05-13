@@ -105,7 +105,7 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
             Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
             Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
             Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-            compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+            compute_jacobians(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
             double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
