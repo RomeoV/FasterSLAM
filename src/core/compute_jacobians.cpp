@@ -198,13 +198,13 @@ void compute_jacobians_fast(Particle* particle,
 
     double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
 
-    double px = particle->xv[0];
-    double py = particle->xv[1];
-    double ptheta = particle->xv[2];
-
     auto R_vec =  _mm256_load_pd(R);
 
     for (int i = 0; i < N_z; i++) {
+        double px = particle->xv[0];
+        double py = particle->xv[1];
+        double ptheta = particle->xv[2];
+
         dx = particle->xf[2*idf[i]] - px;
         dy = particle->xf[2*idf[i]+1] - py;
         //d2 = pow(dx, 2) + pow(dy, 2);
@@ -236,17 +236,19 @@ void compute_jacobians_fast(Particle* particle,
         Hv[i][4] = -dx_d2inv;
         Hv[i][5] = -1.0;
 
-        Hf[i][0] = dx_dinv;
-        Hf[i][1] = dy_dinv;
-        Hf[i][2] = -dy_d2inv;
-        Hf[i][3] = dx_d2inv;
+        // Hf[i][0] = dx_dinv;
+        // Hf[i][1] = dy_dinv;
+        // Hf[i][2] = -dy_d2inv;
+        // Hf[i][3] = dx_d2inv;
+
+        __m256d hf_vec = _mm256_set_pd(dx_d2inv, - dy_d2inv, dy_dinv,  dx_dinv);
+        _mm256_store_pd(Hf[i], hf_vec);
         //copy(HvMat, 6, Hv[i]);
         //copy(HfMat, 4, Hf[i]);
         // innovation covariance of feature observation given the vehicle'
         // Eq. 60 in Thrun03g
         // MAt x Mat
         auto pf_vec =  _mm256_load_pd(particle->Pf + 4* idf[i]);
-        auto hf_vec = _mm256_load_pd(*(Hf+i));
         auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
 
         auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
@@ -608,18 +610,20 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
   // iterate over the number of features (= N_z)
   // hard to do loop unrolling because not a power of 2
   // the loops are all independent
+ 
+
   for (size_t i = 0; i < N_z; i++) {
       //std::cout << "Nzi " << i << std::endl;
-
+      double particle_xv_0 = particle->xv[0];
+      double particle_xv_1 = particle->xv[1];
+      double particle_xv_2 = particle->xv[2];
       int idf_i = idf[i];
       double *particle_xf = particle->xf;
       double *Pf_i = (particle->Pf + 4*idf_i); // length 4
       double xf_i0 = *(particle_xf + 2*idf_i);
       double xf_i1 = *(particle_xf + 2*idf_i + 1);
       
-      double particle_xv_0 = particle->xv[0];
-      double particle_xv_1 = particle->xv[1];
-      double particle_xv_2 = particle->xv[2];
+      
 
       double dx, dy, d2, d;
       dx = xf_i0 - particle_xv_0;
