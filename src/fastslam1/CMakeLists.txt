@@ -26,7 +26,7 @@ add_subdirectory(benchmarks)
 
 target_compile_options(FasterSlamCore PRIVATE -march=core-avx-i)
 target_compile_options(FasterSlamCore PRIVATE -march=core-avx2)
-
+target_compile_options(FasterSlamCore PRIVATE -mfma)
 
 
 if(TEST_COVERAGE)
