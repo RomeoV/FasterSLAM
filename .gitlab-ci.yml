@@ -29,6 +29,12 @@ valgrind:
     - cd src/build
     - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
 
+benchmarks:
+  stage: test
+  script:
+    - cd src/build
+    - make benchmarks
+
 coverage:
   stage: coverage
   script:
