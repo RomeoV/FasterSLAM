@@ -30,3 +30,4 @@ double tscheb_cos(double alpha);
 
 __m256d tscheb_sin_avx(__m256d alpha);
 __m256d tscheb_cos_avx(__m256d alpha);
+__m256d  simple_pi_to_pi_avx(__m256d alphas);

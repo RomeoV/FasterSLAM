@@ -157,14 +157,14 @@ void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, do
         _mm256_store2_m128d(particles[i+2].xv, particles[i].xv, xv1);
         _mm256_store2_m128d(particles[i+3].xv, particles[i+1].xv, xv2);
         
-        
+        angles = simple_pi_to_pi_avx(angles);
         _mm256_store_pd(angle_buffer, angles);
         //double xv2 = particles[i].xv[2];
         //particles[i].xv[0] += Vn*dt*tscheb_cos(Gn + xv2);
         //particles[i].xv[1] += Vn*dt*tscheb_sin(Gn + xv2); 
 
         for (int j = 0; j<4; j++) {
-            particles[i+j].xv[2] = pi_to_pi_base(angle_buffer[j]);
+            particles[i+j].xv[2] = angle_buffer[j];
         }
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }

@@ -145,7 +145,8 @@ __m256d tscheb_cos_avx(__m256d alphas) {
     alphas = _mm256_add_pd(alphas, pi_2_vec);
     return tscheb_sin_avx(alphas);
 }
-__m256d tscheb_sin_avx(__m256d alphas) {
+
+__m256d  simple_pi_to_pi_avx(__m256d alphas) {
     __m256d gt_pi_mask = _mm256_cmp_pd(alphas, pi_vec, 30); //GT
     __m256d lt_minuspi_mask = _mm256_cmp_pd(alphas, minus_pi_vec,17);
 
@@ -154,6 +155,10 @@ __m256d tscheb_sin_avx(__m256d alphas) {
 
     alphas = _mm256_blendv_pd(alphas, alpha_minus, gt_pi_mask);
     alphas = _mm256_blendv_pd(alphas, alpha_plus, lt_minuspi_mask );
+    return alphas;    
+}
+__m256d tscheb_sin_avx(__m256d alphas) {
+    alphas = simple_pi_to_pi_avx(alphas);
 
     double coeffs[] = {
         -0.10132118,          // x
