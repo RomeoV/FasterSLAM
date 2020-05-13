@@ -60,7 +60,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
             Matrix2d Hf[count_zf];
             Matrix2d Sf[count_zf];
             compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
-            double w = compute_weight_base(&particles[i], zf, count_zf, idf, R);
+            double w = compute_weight_base(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
             feature_update_base(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
@@ -108,7 +108,7 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
             Matrix2d Sf[count_zf];
             compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
 
-            double w = compute_weight(&particles[i], zf, count_zf, idf, R);
+            double w = compute_weight(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
             feature_update(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
