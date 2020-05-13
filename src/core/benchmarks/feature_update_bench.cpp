@@ -30,7 +30,6 @@ int main() {
 
     const size_t N = 1000;
 
-    std::cout << "step 6" << std::endl;
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");
 
