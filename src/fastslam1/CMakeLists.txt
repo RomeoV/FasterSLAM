@@ -23,12 +23,10 @@ target_link_libraries(FasterSlamExe PUBLIC
 add_subdirectory(tests)
 add_subdirectory(benchmarks)
 
+
 target_compile_options(FasterSlamCore PRIVATE -march=core-avx-i)
 target_compile_options(FasterSlamCore PRIVATE -march=core-avx2)
-target_compile_options(FasterSlamCore PRIVATE -march=skylake-avx512)
-target_compile_options(FasterSlamCore PRIVATE -std=c++11)
-target_compile_options(FasterSlamCore PRIVATE -std=c++17)
-target_compile_options(FasterSlamCore PRIVATE -mavx)
+
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamLib PRIVATE
