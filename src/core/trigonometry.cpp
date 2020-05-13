@@ -31,7 +31,7 @@ void init_sin2() {
     //symmetric
     double low = - (double)n_2pi * M_PI;
     for (int i = 0; i < N_sin; i++) {
-        sin2_table[i] = std::sin((double)low + ((double)i/steps_pi)*M_PI);
+        sin2_table[i] = sin((double)low + ((double)i/steps_pi)*M_PI);
     }
 }
 
