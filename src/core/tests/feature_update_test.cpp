@@ -13,7 +13,7 @@ int main() {
       ) = [] {
       // prepare particle
       Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
-      Particle* particle = newParticle(5, xv);
+      Particle* particle = newParticle(3, xv);
       Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
       for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
         set_xfi(particle, xf[i], i);
@@ -55,7 +55,7 @@ int main() {
         };
        
       };
-      delParticleMembers(particle);
+      delParticleMembersAndFreePtr(particle);
     };
   };
 }
