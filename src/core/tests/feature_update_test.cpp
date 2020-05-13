@@ -28,10 +28,10 @@ int main() {
       int idf[3] = {0,0,0};  // vector of map indices
       Matrix2d R = {1,0,0,1};   // matrix of observation noises
 
-      Vector2d zp[3];
-      Matrix23d Hv[3];
-      Matrix2d Hf[3];
-      Matrix2d Sf[3];
+      Vector2d zp[3] __attribute__ ((aligned(32)));
+      Matrix23d Hv[3] __attribute__ ((aligned(32)));
+      Matrix2d Hf[3] __attribute__ ((aligned(32)));
+      Matrix2d Sf[3] __attribute__ ((aligned(32)));
       compute_jacobians_base(particle, idf, 3, R, zp, Hv, Hf, Sf);
 
       when("I update features of the particle") = [&](){
