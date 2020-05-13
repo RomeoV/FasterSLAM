@@ -1,6 +1,7 @@
 #include "rdtsc_benchmark.h"
 #include <iostream>
 #include "compute_weight.h"
+#include "compute_jacobians.h"
 
 int main() {
     // Initialize Input
@@ -23,18 +24,24 @@ int main() {
 
     const size_t N = 1000;
 
-    double(*lambda)(Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R) = [](Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R){
+    Vector2d zp[3];
+    Matrix23d Hv[3];
+    Matrix2d Hf[3];
+    Matrix2d Sf[3];
+    compute_jacobians_base(particle, idf, 3, R, zp, Hv, Hf, Sf);
+
+    double(*lambda)(Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R, Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], Matrix2d Sf[]) = [](Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R, Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], Matrix2d Sf[]){
         double sum=0;
         for (int i = 0; i<N; i++) {
-            compute_weight(particle, z, N_z, idf, R);
+            compute_weight(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
         }
         return sum;
     };
 
-    double(*lambda_base)(Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R) = [](Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R){
+    double(*lambda_base)(Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R, Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], Matrix2d Sf[]) = [](Particle* particle, Vector2d* z, size_t N_z, int* idf, Matrix2d R, Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], Matrix2d Sf[]){
         double sum=0;
         for (int i = 0; i<N;i++) {
-            compute_weight(particle, z, N_z, idf, R);
+            compute_weight(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
         }
         return sum;
     };
@@ -59,7 +66,7 @@ int main() {
     //bench.add_function(&compute_weight_fmod, "compute_weight_fmod", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particle, z, N_z, idf, R);
+    bench.run_benchmark(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 
     
     Benchmark<decltype(lambda)> bench_lambda("compute_weight on array Benchmark");
@@ -70,7 +77,7 @@ int main() {
     //bench_lambda.add_function(lambda_fmod, "compute_weight_fmod", work*N);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench_lambda.run_benchmark(particle, z, N_z, idf, R);
+    bench_lambda.run_benchmark(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 
 
     // Free memory
