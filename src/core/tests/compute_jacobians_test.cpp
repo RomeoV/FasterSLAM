@@ -4,6 +4,7 @@
 #include "ut.hpp"  // import functionality and namespaces from single header file
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+#include <cmath>
 
 int main() {
   "jabobian_simple"_test = [] {
@@ -30,31 +31,36 @@ int main() {
         compute_jacobians(particle, idf, N_z, R, // in
                 zp, Hv, Hf, Sf // out
                 );
-        
+        //std::cout << "returned " << Hv[0][0] << ", " << Hv[0][1] << ", " << Hv[0][2] << ", " << Hv[0][3] << ", " << Hv[0][4] << ", " << Hv[0][5] << std::endl;
+
         then("I get the right values back") = [=] {
-            auto is_close = [](auto lhs, auto rhs) -> bool {return lhs - rhs < 1e-14 or rhs - lhs < 1e-14;};
+            auto is_close = [](auto lhs, auto rhs) -> bool {return fabs(lhs - rhs) < 1e-5;};
 
             Vector2d target_zp[2*3] = {1.00499,0.0996687,1.00499,0.0996687,1.00499,0.0996687};
             for(int j=0; j<3; j++){
                 for(int i=0; i<2; i++){
+                    //std::cout << "zp " << zp[j][i] << " target_zp " << target_zp[j][i] << std::endl;
                     expect(is_close(zp[j][i], target_zp[j][i]));
                 }
             }
             Matrix23d target_Hv[6*3] = {-0.995037,-0.0995037,0,0.0990099,-0.990099,-1,-0.995037,-0.0995037,0,0.0990099,-0.990099,-1,-0.995037,-0.0995037,0,0.0990099,-0.990099,-1};
             for(int j=0; j<3; j++){
                 for(int i=0; i<6; i++){
+                    //std::cout << "Hv " << Hv[j][i] << " target_Hv " << target_Hv[j][i] << std::endl;
                     expect(is_close(Hv[j][i], target_Hv[j][i]));
                 }
             }
             Matrix2d target_Hf[4*3] = {0.995037,0.0995037,-0.0990099,0.990099,0.995037,0.0995037,-0.0990099,0.990099,0.995037,0.0995037,-0.0990099,0.990099};
             for(int j=0; j<3; j++){
                 for(int i=0; i<4; i++){
+                    std::cout << "Hf " << Hf[j][i] << " target_Hf " << target_Hf[j][i] << std::endl;
                     expect(is_close(Hf[j][i], target_Hf[j][i]));
                 }
             }
             Matrix2d target_Sf[4*3] = {2.08911,-0.10837,0.886667,0.911773,2.08911,-0.10837,0.886667,0.911773,2.08911,-0.10837,0.886667,0.911773};
             for(int j=0; j<3; j++){
                 for(int i=0; i<4; i++){
+                    //std::cout << "Sf " << Sf[j][i] << " target_Sf " << target_Sf[j][i] << std::endl;
                     expect(is_close(Sf[j][i], target_Sf[j][i]));
                 }
             }

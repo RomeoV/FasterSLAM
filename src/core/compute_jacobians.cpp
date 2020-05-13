@@ -16,8 +16,8 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
                        Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
                        Matrix2d Sf[]) {
     //compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    //compute_jacobians_basic_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    compute_jacobians_advanced_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    compute_jacobians_basic_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    //compute_jacobians_advanced_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
 }
 
@@ -251,7 +251,7 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       double dxd2 = dx / d2;
       __m256d HfMat_vec = _mm256_set_pd(dxd2, dyd2, dyd, dxd);
       _mm256_store_pd(Hf[i], HfMat_vec);
-      
+
       // inlining of copy
       // Jacobian wrt vehicle states
       Hv[i][0] = - dxd;

@@ -59,23 +59,23 @@ int main() {
 
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&compute_jacobians, "compute_jacobians", work);
     bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
+    bench.add_function(&compute_jacobians, "compute_jacobians", work);
     //bench.add_function(&compute_jacobians_fmod, "compute_jacobians_fmod", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
     
-    Benchmark<decltype(lambda)> bench_lambda("compute_jacobians on array Benchmark");
+    /*Benchmark<decltype(lambda)> bench_lambda("compute_jacobians on array Benchmark");
 
     // Add lambda functions to aggregate over range of inputs.
+    bench_lambda.add_function(lambda_base, "compute_jacobians_base", work*N);
     bench_lambda.add_function(lambda, "compute_jacobians", work*N);
-    bench_lambda.add_function(lambda_base, "acompute_jacobians_base", work*N);
     //bench_lambda.add_function(lambda_fmod, "compute_jacobians_fmod", work*N);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench_lambda.run_benchmark(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench_lambda.run_benchmark(particle, idf, N_z, R, zp, Hv, Hf, Sf);*/
 
 
     // Free memory
