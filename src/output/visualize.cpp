@@ -10,6 +10,7 @@
 #include <iomanip>
 
 #include "linalg.h"
+#include "fastrand.h"
 #include "predict_update.h"
 #include "observe_update.h"
 #include "configfile.h"
@@ -64,6 +65,11 @@ int main (int argc, char *argv[])
     if ( SWITCH_SEED_RANDOM ) {
         srand( SWITCH_SEED_RANDOM );
     }	
+    uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
+    avx_xorshift128plus_init(1,1);
+    uint64_t init_seq[8] = {1,3,5,7,9,11,13,15};
+    pcg32_srand(1,1);
+    avx2_pcg32_srand(init_state, init_seq);
 
     double dt        = DT_CONTROLS; // change in time btw predicts
     double dtsum     = 0;           // change in time since last observation

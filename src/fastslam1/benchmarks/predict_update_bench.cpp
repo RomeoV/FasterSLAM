@@ -25,7 +25,7 @@ void data_loader(double* wp, size_t N_waypoints, double V, double* Q, double dt,
     srand(0);
     
     uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
-    uint64_t init_seq[8] = {1,1,1,1,1,1,1,1};
+    uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
     pcg32_srand(1,1);
 
     avx2_pcg32_srand(init_state, init_seq);
@@ -81,17 +81,20 @@ int main() {
     double G = 0.0;
     Vector3d xtrue;
     data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
-    predict_update_fast(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G, particles);
+    predict_update_fast_normal_rand(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G, particles);
 
+    
     double xv_exact[3*N] __attribute__ ((aligned(32)));
     double Pv_exact[9*N] __attribute__ ((aligned(32)));
     fill(xv_exact, 2*N, 0.0);
     Particle particles_exact[N];
     init_particles_contigous(particles_exact, xv_exact, Pv_exact, N);
+    
     int iwp_exact = 1;
     double G_exact = 0.0;
     Vector3d xtrue_exact;
     data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue_exact, &iwp_exact, &G_exact, particles_exact);
+
     predict_update_base(wp, N_waypoints, V, *Q, dt, N, xtrue_exact, &iwp_exact, &G_exact, particles_exact);
     
 

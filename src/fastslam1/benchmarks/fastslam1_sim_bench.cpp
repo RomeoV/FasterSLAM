@@ -38,19 +38,21 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&fastslam1_sim_base, "fastslam1_sim_base", 0.0);
+    bench.add_function(&fastslam1_sim_active, "fastslam1_sim_active", 0.0);
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     int N= 100;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     for (int i = 0; i < 5; i++) {
         NPARTICLES = pow(2,i) * N;
         bench.funcFlops[0] = NPARTICLES * 17329; // Not real work, but interesting to look at
+        bench.funcFlops[1] = NPARTICLES * 17329;
         bench.run_name = std::to_string(NPARTICLES); // Set name of run to identify it easier
         bench.run_benchmark(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
     }
 
     bench.details(); // We want output per func and run, so details is the choice
 
-    cleanup_particles(&particles, &weights);
+    cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
 
 	free(lm);
 	free(wp);

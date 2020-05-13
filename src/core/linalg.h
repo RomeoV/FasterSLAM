@@ -75,6 +75,8 @@ void mmadd_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmadd_2x2_avx_v2(const double *A, const double *B, double *C);
 __m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c);
 
+__m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c);
+
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);
 

@@ -66,17 +66,34 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 }
 
 
+
+// Works ;)
 __m256d fill_rand_avx(double lo, double hi) {
     __m256d lov = _mm256_set1_pd(lo);
     __m256d hiv = _mm256_set1_pd(hi);
-    __m256i rand_vec =  _mm256_abs_epi32(avx2_pcg32());
+    __m256i rand_vec =  avx_xorshift128plus();
     
-    //__m256d rmax = _mm256_set1_pd(9223372036854775807); //Assume 64bit
-    //__m256d ymm0 = _mm256_castsi256_pd(rand_vec);
-    
-    __m256d rmax = _mm256_set1_pd(2147483647); //2147483647
+    __m256d intmax = _mm256_set1_pd(2147483647);
+    __m256d uintmax = _mm256_set1_pd(4294967295);
+
+    // We only use 128bit of the vector atm. E.g. for predict-update, we could make use of the other 128 bit too.
     __m256d ymm0 = _mm256_cvtepi32_pd(_mm256_extractf128_si256(rand_vec, 0)); //32 bit
-    __m256d ymm1 = _mm256_div_pd(ymm0, rmax);
+    ymm0 = _mm256_add_pd(ymm0, intmax);
+    __m256d ymm1 = _mm256_div_pd(ymm0, uintmax);
+
+    __m256d range = _mm256_sub_pd(hiv, lov);
+    return _mm256_fmadd_pd(range, ymm1, lov);
+}
+
+// Fails some tests
+__m256d fill_rand_avx_abs(double lo, double hi) {
+    __m256d lov = _mm256_set1_pd(lo);
+    __m256d hiv = _mm256_set1_pd(hi);
+    __m256i rand_vec =  _mm256_abs_epi32(avx_xorshift128plus());
+    
+    __m256d intmax = _mm256_set1_pd(2147483647); //2147483647
+    __m256d ymm0 = _mm256_cvtepi32_pd(_mm256_extractf128_si256(rand_vec, 0)); //32 bit
+    __m256d ymm1 = _mm256_div_pd(ymm0, intmax);
 
     __m256d range = _mm256_sub_pd(hiv, lov);
     return _mm256_fmadd_pd(range, ymm1, lov);
@@ -283,6 +300,8 @@ void mmT_2x2_avx_v3(const double *A, const double *B, double *C) {
 }
 #endif
 
+
+
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C) {
     //mmadd_2x2_avx_v1(A, B, C);
@@ -344,6 +363,21 @@ __m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c) {
     __m256d cc = _mm256_mul_pd( a1133, b2323 );
 
     return _mm256_add_pd( c, cc );
+}
+#endif
+
+#ifdef __AVX2__
+__m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c) {
+
+    __m256d b2301 = _mm256_permute2f128_pd( b0123, b0123, 0b00000001 );
+    __m256d b0303 = _mm256_blend_pd( b0123, b2301, 0b0110 );
+    __m256d b2121 = _mm256_blend_pd( b0123, b2301, 0b1001 );
+    
+    __m256d c0 = _mm256_mul_pd( a0123, b2121 );
+    __m256d cc = _mm256_fmadd_pd( a0123, b0303, c );
+    __m256d c0_perm = _mm256_permute_pd( c0, 0b0101 );
+
+    return _mm256_add_pd(cc, c0_perm);
 }
 #endif
 

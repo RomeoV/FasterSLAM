@@ -101,13 +101,8 @@ int main() {
 
     avx_fast_srand(0,10,100,1000);
 
-    // uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
-    // uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
     uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
-    uint64_t init_seq[8] =   {1,1,1,1,1,1,1,1};
+    uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
 
 
     avx2_pcg32_srand(init_state, init_seq);
@@ -148,46 +143,8 @@ int main() {
     bench.add_function(avx_xorshift128plus_lambda, "avx_xorshift128plus", work);
     bench.add_function(avx_fast_rand_lambda, "avx_fast_rand", work);
     bench.add_function(avx2_pcg32_lambda, "avx2_pcg32", work);
-
-    
-    
-    /*
-    lehmer64_srand(1);
-    fast_srand(0);
-    srand(0);
-    for ( int i = 0; i<10; i++) {
-        std::cout<<rand()<<std::endl;
-        std::cout<<fast_rand()<<std::endl;
-        std::cout<<lehmer64()<<std::endl<<std::endl;
-    }
-    */
-
     bench.run_benchmark(recipient, N);
 
-    // pcg32_srand(1,1);
-    // avx_xorshift128plus_init(1,1);
-
-    // avx_fast_srand(0,10,100,1000);
-
-    // // uint64_t init_state[8] = {0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL,
-    // //                             0x853c49e6748fea9bULL,0x853c49e6748fea9bULL};
-    // // uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
-    // uint64_t init_state2[8] = {1,1,1,1,1,1,1,1};
-    // uint64_t init_seq2[8] =   {1,1,1,1,1,1,1,1};
-    // avx2_pcg32_srand(init_state2, init_seq2);
-
-    // int S[8] = {0,0,0,0,0,0,0,0};
-    // auto ones = _mm256_set1_epi32(111111111111111111);
-    // for (int i = 0; i< 5; i++) {
-    //     //print256d(fill_rand_avx(-1.0,1.0));
-    //     std::cout<<pcg32()<<std::endl;
-    //     _mm256_maskstore_epi32(S, ones, avx2_pcg32());
-    //     for (int i = 0; i< 8; i++) {
-    //         std::cout<<(S[i]+2147483647)<<std::endl;
-    //     }
-    // }
     return 0;
 
 }

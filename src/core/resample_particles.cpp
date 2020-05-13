@@ -59,8 +59,6 @@ void resample_particles_base(Particle* particles, size_t N, double* weights,int 
     size_t keep_indices[N];  // can be seen as dependencies   
     stratified_resample_base(weights, N, &Neff, keep_indices);
 
-    
-
     if ((Neff < Nmin) && (doresample == 1)) {
         int count[N];
         count_occurences(keep_indices,N,count);
