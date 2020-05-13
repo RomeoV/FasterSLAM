@@ -105,16 +105,6 @@ int main() {
             }
         }
     };
-    
-    auto ymm0 = _mm256_set_pd(3,2,1,0);
-
-    auto ymm1 = _mm256_set_pd(7,6,5,4);
-
-    auto ymm2 = _mm256_permute2f128_pd(ymm0, ymm0, 0b00000001);
-
-    auto ymm3 = _mm256_blend_pd(ymm0,ymm1,0b0001);
-
-    print256d(ymm3);
 
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
@@ -125,6 +115,7 @@ int main() {
 
     bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
     bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", work);
+    bench.add_function(&compute_jacobians_advanced_optimisations, "compute_jacobians_jonathan", work);
     //bench.add_function(&compute_jacobians, "compute_jacobians", work);
     
     int idf_4[1] = {5};

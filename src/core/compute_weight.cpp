@@ -26,19 +26,27 @@ double compute_weight(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
                       int idf[],
-                      Matrix2d R) {
-    return compute_weight_active(particle,z,N_z, idf, R);
+                      Matrix2d R,
+                      Vector2d zp[],
+                      Matrix23d Hv[],
+                      Matrix2d Hf[],
+                      Matrix2d Sf[]) {
+    return compute_weight_base(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 }
 
 double compute_weight_base(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
                       int idf[],
-                      Matrix2d R) {
-  Vector2d zp[N_z];
-  Matrix23d Hv[N_z];
-  Matrix2d Hf[N_z];
-  Matrix2d Sf[N_z];
+                      Matrix2d R,
+                      Vector2d zp[],
+                      Matrix23d Hv[],
+                      Matrix2d Hf[],
+                      Matrix2d Sf[]) {
+  // Vector2d zp[N_z];
+  // Matrix23d Hv[N_z];
+  // Matrix2d Hf[N_z];
+  // Matrix2d Sf[N_z];
 
   // process each feature, incrementally refine proposal distribution
   compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
@@ -84,14 +92,18 @@ double compute_weight_active(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
                       int idf[],
-                      Matrix2d R) {
-  Vector2d zp[N_z];
-  Matrix23d Hv[N_z];
-  Matrix2d Hf[N_z];
-  Matrix2d Sf[N_z];
+                      Matrix2d R,
+                      Vector2d zp[],
+                      Matrix23d Hv[],
+                      Matrix2d Hf[],
+                      Matrix2d Sf[]) {
+  // Vector2d zp[N_z];
+  // Matrix23d Hv[N_z];
+  // Matrix2d Hf[N_z];
+  // Matrix2d Sf[N_z];
 
   // process each feature, incrementally refine proposal distribution
-  compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+  // compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
   Vector2d v[N_z];
   for (size_t j = 0; j < N_z; j++) {

@@ -21,8 +21,12 @@ void compute_weight_and_feature_update_base(Particle* particle,
                     int idf[],
                     size_t N_idf,
                     Matrix2d R) {
-    *(particle->w) *= compute_weight_base(particle, z,N_idf, idf, R);
-    feature_update_base(particle, z, idf,N_idf, R);
+    Vector2d zp[N_idf];
+    Matrix23d Hv[N_idf];
+    Matrix2d Hf[N_idf];
+    Matrix2d Sf[N_idf];
+    *(particle->w) *= compute_weight_base(particle, z,N_idf, idf, R, zp, Hv, Hf, Sf);
+    feature_update_base(particle, z, idf,N_idf, R, zp, Hv, Hf, Sf);
 }
 
 void compute_weight_and_feature_update_active(Particle* particle,
@@ -33,7 +37,7 @@ void compute_weight_and_feature_update_active(Particle* particle,
     Vector2d zp[N_idf] __attribute__((aligned(32)));
     Matrix23d Hv[N_idf] __attribute__((aligned(32)));
     Matrix2d Hf[N_idf] __attribute__((aligned(32)));
-    Matrix2d Sf[N_idf]__attribute__((aligned(32)));
+    Matrix2d Sf[N_idf] __attribute__((aligned(32)));
 
     // process each feature, incrementally refine proposal distribution
     compute_jacobians_fast(particle, idf, N_idf, R, zp, Hv, Hf, Sf);

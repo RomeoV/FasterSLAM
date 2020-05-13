@@ -53,11 +53,16 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
     // perform update
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            double w = compute_weight_base(&particles[i], zf, count_zf, idf, R);
+            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
+            // this will half the processing need of compute_jacobians
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            double w = compute_weight_base(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
-            feature_update_base(&particles[i], zf, idf, count_zf, R);
-            //compute_weight_and_feature_update_base(particles+i, zf, count_zf, idf, R)
+            feature_update_base(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
         }
         if ( count_zn != 0 ) { // !zn.empty() 
             add_feature_base(&particles[i], zn, count_zn, R);
@@ -96,10 +101,15 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
     // perform update
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            double w = compute_weight(&particles[i], zf, count_zf, idf, R);
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+            double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
-            feature_update(&particles[i], zf, idf, count_zf, R);
+            feature_update_active(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
         }
         if ( count_zn != 0 ) { // !zn.empty() 
             add_feature(&particles[i], zn, count_zn, R);

@@ -18,16 +18,29 @@ void feature_update(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
-                    Matrix2d R);
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
 
 void feature_update_base(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
-                    Matrix2d R);
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
+
 
 void feature_update_active(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
-                    Matrix2d R);
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
