@@ -173,6 +173,7 @@ static inline unsigned long xorshf96(void) { //period 2^96-1
 
 //////////////////// SIMD ////////////////////////////////////////
 
+#ifdef __AVX2__
 static __m256i mul64_haswell (__m256i a, __m256i b) {
     // instruction does not exist. Split into 32-bit multiplies
     __m256i bswap   = _mm256_shuffle_epi32(b,0xB1);           // swap H<->L
@@ -187,11 +188,13 @@ static __m256i mul64_haswell (__m256i a, __m256i b) {
     __m256i prod    = _mm256_add_epi64(prodll,prodlh4);       // a0Lb0L+(a0Lb0H+a0Hb0L)<<32, a1Lb1L+(a1Lb1H+a1Hb1L)<<32
     return  prod;
 }
+#endif
 
 static inline void avx_fast_srand(uint64_t s0, uint64_t s1, uint64_t s2, uint64_t s3) {
   avx_g_seed = _mm256_set_epi64x(s3,s2,s1,s0);
 }
 
+#ifdef __AVX2__
 static __m256i avx_fast_rand(void) {
   avx_g_seed = mul64_haswell(avx_g_seed, avx_g_mult);
   avx_g_seed = _mm256_add_epi64(avx_g_seed, avx_g_add);
@@ -200,6 +203,7 @@ static __m256i avx_fast_rand(void) {
 
   return _mm256_and_si256(ymm0, avx_uint64_max);
 }
+#endif
 
 
 /* used by xorshift128plus_jump_onkeys */
@@ -245,6 +249,7 @@ static void avx_xorshift128plus_init(uint64_t key1, uint64_t key2) {
 /*
  Return a 256-bit random "number"
  */
+#ifdef __AVX2__
 static __m256i avx_xorshift128plus() {
 	__m256i s1 = avx_xorshift128plus_seed.part1;
 	const __m256i s0 = avx_xorshift128plus_seed.part2;
@@ -255,9 +260,11 @@ static __m256i avx_xorshift128plus() {
 					_mm256_srli_epi64(s1, 18)), _mm256_srli_epi64(s0, 5));
 	return _mm256_add_epi64(avx_xorshift128plus_seed.part2, s0);
 }
+#endif
 
 // credit Wenzel Jakob and Daniel Lemire 
 // https://github.com/wjakob/pcg32/blob/master/pcg32_8.h and https://github.com/lemire/simdpcg/blob/master/include/simdpcg32.h
+#ifdef __AVX2__
 static inline __m256i avx2_pcg32() {
   const __m256i mask_l = _mm256_set1_epi64x(UINT64_C(0x00000000ffffffff));
   const __m256i shift0 = _mm256_set_epi32(7, 7, 7, 7, 6, 4, 2, 0);
@@ -327,7 +334,9 @@ static inline __m256i avx2_pcg32() {
 
   return result;
 }
+#endif
 
+#ifdef __AVX2__
 static void avx2_pcg32_srand(const uint64_t initstate[8], const uint64_t initseq[8]) {
         const __m256i one = _mm256_set1_epi64x((long long) 1);
 
@@ -344,6 +353,7 @@ static void avx2_pcg32_srand(const uint64_t initstate[8], const uint64_t initseq
         avx2_pcg32_seed.state[1] = _mm256_add_epi64(avx2_pcg32_seed.state[1], _mm256_load_si256((__m256i *) &initstate[4]));
         avx2_pcg32();
 }
+#endif
 
 static inline int read_rand() {
   
