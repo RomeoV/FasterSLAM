@@ -35,7 +35,7 @@ valgrind:
   stage: test
   script:
     - cd src/build
-    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
+    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1" --exclude-regex "full"
   dependencies:
     - build
 
