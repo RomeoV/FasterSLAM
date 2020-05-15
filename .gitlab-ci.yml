@@ -5,6 +5,10 @@ stages:
   - test
   - coverage
 
+info:
+  stage: build
+  script: g++ -E -march=native -dM - < /dev/null | grep -i avx
+
 build:
   stage: build
   script:
