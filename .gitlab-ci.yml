@@ -15,7 +15,7 @@ build:
   stage: build
   script:
     - mkdir src/build -p
-    - cmake -S src -B src/build -DTEST_COVERAGE=On -DCMAKE_CXX_FLAGS="-mavx"
+    - cmake -S src -B src/build -DTEST_COVERAGE=On -DCMAKE_CXX_FLAGS="-mno-avx2 -mno-fma"
     - cmake --build src/build -j 2
   artifacts:
     paths:
@@ -25,7 +25,7 @@ build_release:
   stage: build
   script:
     - mkdir src/build_release -p
-    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mavx"
+    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mno-avx2 -mno-fma"
     - cmake --build src/build_release -j 2
   artifacts:
     paths:
