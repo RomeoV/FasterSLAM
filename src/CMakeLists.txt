@@ -8,6 +8,8 @@ set(TEST_COVERAGE FALSE CACHE BOOL "Debug compile and test coverage output")
 set(BUILD_BENCHMARKS TRUE CACHE BOOL "Make benchmark targets")
 set(USE_MARCH_NATIVE TRUE CACHE BOOL "Compile with -march=native")
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mavx2 -march=native")
+
 include(CTest)
 enable_testing()
 add_subdirectory(core)

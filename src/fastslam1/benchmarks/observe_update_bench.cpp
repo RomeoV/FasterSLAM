@@ -20,7 +20,7 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
-# define Nfa_start 5
+# define Nfa_start 0
 
 void data_loader(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
@@ -37,6 +37,11 @@ void data_loader(double * lm, int N_features, Vector3d xtrue, double* R, int* ft
     int iwp = 1;
     double G = 0.0;
     predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xv_initial, &iwp, &G,particles);
+    for (int i = 0; i<Nfa_start; i++) {
+        double _xf[2];
+        double _Pf[4];
+        // Add here start values to each particle to not test the add_feature part!
+    }
 }
 
 void init_particles_contigous(Particle* particle, double* _xv, double* _Pv, double* weight, const size_t N, const size_t Nf) {
@@ -77,7 +82,7 @@ int main() {
     
     
     srand(0);
-    fill_rand(lm, 2*Nf, 10.0,10.0);
+    fill_rand(lm, 2*Nf, -1.0,1.0);
 
     srand(0);
     size_t Nf_visible;
