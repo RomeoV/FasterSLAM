@@ -489,7 +489,7 @@ void compute_jacobians_nik(Particle* particle,
       Matrix2d Hf_Pf_HfT __attribute__ ((aligned(32)));
       Matrix2d Hf_Pf_HfT_R;
 
-#ifdef __FMA__
+#ifdef __AVX2__
       mm_2x2_avx_v1(HfMat, Pf[i], Hf_Pf);
       mmT_2x2_avx_v1(Hf_Pf, HfMat, Hf_Pf_HfT); 
 #else      

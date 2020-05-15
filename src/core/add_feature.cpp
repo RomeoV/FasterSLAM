@@ -104,7 +104,7 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
     Matrix2d Gz __attribute__((aligned(32))) = {c, -r * s, s, r * c} ;
     Matrix2d MatResult_1 __attribute__((aligned(32)));
     
-#ifdef __FMA__
+#ifdef __AVX2__
     mm_2x2_avx_v1(Gz, R, MatResult_1);
     mmT_2x2_avx_v1(MatResult_1, Gz, Pf[i]);
 #else

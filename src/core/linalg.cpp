@@ -92,7 +92,7 @@ __m256d fill_rand_avx(double lo, double hi) {
 #endif
 
 // Fails some tests
-#ifdef __AVX__
+#ifdef __AVX2__
 __m256d fill_rand_avx_abs(double lo, double hi) {
     __m256d lov = _mm256_set1_pd(lo);
     __m256d hiv = _mm256_set1_pd(hi);
@@ -267,7 +267,7 @@ void mmT_2x2(const double *A, const double *B, double *C) {
 }
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
-#ifdef __AVX__
+#ifdef __AVX2__
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
@@ -289,7 +289,7 @@ void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
 #endif
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
-#ifdef __AVX__
+#ifdef __AVX2__
 void mmT_2x2_avx_v2(const double *A, const double *B, double *C) {
 
     __m256d a = _mm256_load_pd( A );
