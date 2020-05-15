@@ -108,8 +108,8 @@ void compute_jacobians_simd(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    Vector2d xf[N_z] __attribute__((aligned(32)));
-    Matrix2d Pf[N_z] __attribute__((aligned(32)));
+    Vector2d xf[N_z];
+    Matrix2d Pf[N_z];
 
     int r;
     for (size_t i = 0; i < N_z; i++) {
@@ -296,8 +296,8 @@ void compute_jacobians_linalg_inplace(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    Vector2d xf[N_z] __attribute__((aligned(32)));
-    Matrix2d Pf[N_z] __attribute__((aligned(32)));
+    Vector2d xf[N_z];
+    Matrix2d Pf[N_z];
 
     int r;
     for (size_t i = 0; i < N_z; i++) {
@@ -377,8 +377,8 @@ void compute_jacobians_scalar_replacement(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    Vector2d xf[N_z] __attribute__((aligned(32)));
-    Matrix2d Pf[N_z] __attribute__((aligned(32)));
+    Vector2d xf[N_z];
+    Matrix2d Pf[N_z];
 
     int r;
     for (size_t i = 0; i < N_z; i++) {

@@ -18,7 +18,6 @@ int main() {
                 double sin_results[99];
                 double fsine_results[99];
                 double dsine_results[99];
-                double sine_results[99];
                 double dsine_vec_results[99];
                 double dsine_unrolled_results[99];
                 double* dsine_avx_results = (double*)aligned_alloc(32, 100*sizeof(double));
@@ -27,7 +26,6 @@ int main() {
                     sin_results[i] = sin(angles[i]);
                     fsine_results[i] = tscheb_fsine(angles[i], false);
                     dsine_results[i] = tscheb_dsine(angles[i], false);
-                    sine_results[i] = tscheb_sin(angles[i]);
                 }
 
                 // normalize angles for methods that can only deal with normalized angles
