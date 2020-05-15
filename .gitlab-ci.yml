@@ -15,21 +15,11 @@ build:
   stage: build
   script:
     - mkdir src/build -p
-    - cmake -S src -B src/build -DTEST_COVERAGE=On -DCMAKE_CXX_FLAGS="-mno-avx2 -mno-fma"
+    - cmake -S src -B src/build -DTEST_COVERAGE=On -DBUILD_BENCHMARKS=Off -DUSE_MARCH_NATIVE=Off -DCMAKE_CXX_FLAGS="-march=sandybridge"
     - cmake --build src/build -j 2
   artifacts:
     paths:
       - src/build
-
-build_release:
-  stage: build
-  script:
-    - mkdir src/build_release -p
-    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release -DCMAKE_CXX_FLAGS="-mno-avx2 -mno-fma"
-    - cmake --build src/build_release -j 2
-  artifacts:
-    paths:
-      - src/build_release
 
 unittests:
   stage: test
@@ -48,14 +38,6 @@ valgrind:
     - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
   dependencies:
     - build
-
-benchmarks:
-  stage: test
-  script:
-    - make -C src/build_release benchmarks
-  dependencies:
-    - build_release
-  allow_failure: true
 
 coverage:
   stage: coverage
