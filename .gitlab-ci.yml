@@ -38,7 +38,7 @@ valgrind:
     - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1" --exclude-regex "full"
   artifacts:
     paths:
-      -src/build
+      - src/build
   dependencies:
     - build
 
