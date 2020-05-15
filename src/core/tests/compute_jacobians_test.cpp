@@ -17,7 +17,9 @@ int main() {
       {"compute_jacobians_fast", compute_jacobians_fast},
       //{"compute_jacobians_active", compute_jacobians_active},
       {"compute_jacobians_basic_optimizations", compute_jacobians_basic_optimizations},
+#ifdef __AVX2__
       {"compute_jacobians_advanced_optimizations", compute_jacobians_advanced_optimizations},
+#endif
       {"compute_jacobians_simd", compute_jacobians_simd},
       {"compute_jacobians_nik", compute_jacobians_nik},
       {"compute_jacobians_scalar_replacement", compute_jacobians_scalar_replacement},
