@@ -48,8 +48,8 @@ void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial) 
 }
 
 void initParticle(Particle* p, const int Nf, const double* xv_initial) {
-	p->xv = (double*) malloc (3 * sizeof (double)); //NEW
-	p->Pv = (double*) malloc (9 * sizeof (double)); //NEW
+	p->xv = (double*) aligned_alloc (32, 3 * sizeof (double)); //NEW
+	p->Pv = (double*) aligned_alloc (32, 9 * sizeof (double)); //NEW
 	initParticle_prealloc(p, Nf, xv_initial);
 }
 

@@ -23,7 +23,12 @@ extern __inline void _mm256_store2_m128d (double *__PH, double *__PL, __m256d __
 
 void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+#ifdef __AVX2__
     predict_update_fast(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);                   
+#else
+#warning "Using predict_update_base because AVX2 is not supported!"
+    predict_update_base(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);                   
+#endif
 }
 
 
@@ -79,6 +84,7 @@ void predict_update_active(double* wp, size_t N_waypoints, double V, double* Q, 
     }
 }
 
+#ifdef __AVX2__
 void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -145,11 +151,23 @@ void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, do
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __FMA__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_cos), xs);
+#endif
+#ifdef __FMA__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __FMA__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd( _mm256_mul_pd(VndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -169,8 +187,10 @@ void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, do
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
 
+#ifdef __AVX2__
 void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -239,11 +259,23 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __FMA__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_cos), xs);
+#endif
+#ifdef __FMA__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __FMA__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd( _mm256_mul_pd(VndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -265,7 +297,9 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
     }
 
 }
+#endif
 
+#ifdef __AVX2__
 void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -332,11 +366,23 @@ void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, d
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __FMA__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_cos), xs);
+#endif
+#ifdef __FMA__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __FMA__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd( _mm256_mul_pd(VndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -356,7 +402,9 @@ void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, d
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
+#ifdef __AVX2__
 void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     compute_steering_base(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
@@ -420,11 +468,23 @@ void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, do
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __FMA__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_cos), xs);
+#endif
+#ifdef __FMA__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd( _mm256_mul_pd(Vndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __FMA__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd( _mm256_mul_pd(VndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -444,6 +504,7 @@ void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, do
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
 void predict_update_sine(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {

@@ -93,7 +93,11 @@ void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     double        W[4] __attribute__ ((aligned(32)));
     double    W1W1t[4] __attribute__ ((aligned(32)));
 
+#ifdef __AVX2__
     mmT_2x2_avx_v1(P, H, PHt);          //! PHt = P*Ht
+#else
+    mmT_2x2(P, H, PHt);          //! PHt = P*Ht
+#endif
     copy(R, 4, S);                      //! S = R;
     mmadd_2x2_avx_v1(H, PHt, S);        //! S += H*PHt ( S = H*P*H^T + R )
 
@@ -106,11 +110,19 @@ void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     inv_2x2(SChol, SCholInv);           //! SCholInv = inv( SChol )
 
     mm_2x2_avx_v1(PHt, SCholInv, W1);   //! W1 = PHt * SCholInv
+#ifdef __AVX2__
     mmT_2x2_avx_v1(W1, SCholInv, W);
+#else
+    mmT_2x2(W1, SCholInv, W);
+#endif
 
     mvadd_2x2(W, v, x);                 //! x = x + W*v
 
     //! P = P - W1*W1.transpose();
+#ifdef __AVX2__
     mmT_2x2_avx_v1(W1, W1, W1W1t);
+#else
+    mmT_2x2(W1, W1, W1W1t);
+#endif
     sub(P, W1W1t, 4, P);
 }

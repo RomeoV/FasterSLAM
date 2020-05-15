@@ -32,8 +32,9 @@ int main() {
       Vector2d landmarks[2] = {
           {5, 0}, {2, M_PI / 2 - acos(4. / 5.)}};  // local robot frame
 
-      Matrix2d R = {pow(0.1, 2), 0,
-                    0, pow(1.0 * M_PI / 180, 2)};  // this is from the yglee config
+      Matrix2d R __attribute__((aligned(32))) = 
+        {pow(0.1, 2), 0,
+         0, pow(1.0 * M_PI / 180, 2)};  // this is from the yglee config
 
       when("I add the new features to the particle") = [&]() mutable {
         add_feature(&p, landmarks, 2, R);
