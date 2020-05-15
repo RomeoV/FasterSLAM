@@ -58,7 +58,7 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
   }
 
   size_t N_x = particle->Nfa;
-  assert(particle->Nfa + N_z < particle->Nf);
+  assert(particle->Nfa + N_z <= particle->Nf);
   particle->Nfa += N_z;
 
   for (size_t i = 0; i < N_z; i++) {

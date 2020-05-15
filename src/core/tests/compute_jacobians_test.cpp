@@ -5,10 +5,27 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 #include <cmath>
+#include <vector>
+#include <functional>
 
 int main() {
-  "jabobian_simple"_test = [] {
-    given("I have a particle, features and a covariance matrix of observation") = [] {
+    std::vector<std::pair<std::string, std::function<void (Particle*, int[], size_t, Matrix2d, Vector2d[],
+                                                           Matrix23d[], Matrix2d[], Matrix2d[])>>>
+    compute_jacobians_functions = {
+      {"compute_jacobians", compute_jacobians},
+      {"compute_jacobians_base", compute_jacobians_base},
+      {"compute_jacobians_fast", compute_jacobians_fast},
+      //{"compute_jacobians_active", compute_jacobians_active},
+      {"compute_jacobians_basic_optimizations", compute_jacobians_basic_optimizations},
+      {"compute_jacobians_advanced_optimizations", compute_jacobians_advanced_optimizations},
+      {"compute_jacobians_simd", compute_jacobians_simd},
+      {"compute_jacobians_nik", compute_jacobians_nik},
+      {"compute_jacobians_scalar_replacement", compute_jacobians_scalar_replacement},
+      {"compute_jacobians_linalg_inplace", compute_jacobians_linalg_inplace}
+    };
+            
+  "compute_jabobians"_test = [](auto NamedFunction) {
+    given("I have a particle, features and a covariance matrix of observation") = [&] {
       // prepare particle
       Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
       Particle* particle = newParticle(5, xv);
@@ -26,13 +43,13 @@ int main() {
       }
       int idf[3] = {0,0,0};
       int N_z = 3;
-      Matrix2d R = {1,0,0,1};
-      when("I compute the jacobians") = [&] {
-        Vector2d zp[3] = {{0,0}, {0,0}, {0,0}}; // measurement (range, bearing)
-        Matrix23d Hv[3] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,0,0,0}}; // jacobians of function h (deriv of h wrt pose)
-        Matrix2d Hf[3] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // jacobians of function h (deriv of h wrt mean)
-        Matrix2d Sf[3] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // Measurement covariance of feature observation given the vehicle.
-        compute_jacobians(particle, idf, N_z, R, // in
+      Matrix2d R __attribute__((aligned(32))) = {1,0,0,1};
+      when("I compute the jacobians using " + NamedFunction.first) = [&] {
+        Vector2d zp[3] __attribute__((aligned(32))) = {{0,0}, {0,0}, {0,0}}; // measurement (range, bearing)
+        Matrix23d Hv[3] __attribute__((aligned(32))) = {{0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,0,0,0}}; // jacobians of function h (deriv of h wrt pose)
+        Matrix2d Hf[3] __attribute__((aligned(32))) = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // jacobians of function h (deriv of h wrt mean)
+        Matrix2d Sf[3] __attribute__((aligned(32))) = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // Measurement covariance of feature observation given the vehicle.
+        NamedFunction.second(particle, idf, N_z, R, // in
                 zp, Hv, Hf, Sf // out
                 );
         //std::cout << "returned " << Hv[0][0] << ", " << Hv[0][1] << ", " << Hv[0][2] << ", " << Hv[0][3] << ", " << Hv[0][4] << ", " << Hv[0][5] << std::endl;
@@ -81,6 +98,5 @@ int main() {
         };
       };
     };
-  };
-
-};
+  } | compute_jacobians_functions;
+}
