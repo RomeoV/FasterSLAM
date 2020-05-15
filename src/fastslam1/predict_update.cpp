@@ -145,11 +145,23 @@ void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, do
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __AVX2__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_cos), xs);
+#endif
+#ifdef __AVX2__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __AVX2__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd(V_m256_mul_pd(ndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -239,11 +251,23 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __AVX2__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_cos), xs);
+#endif
+#ifdef __AVX2__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __AVX2__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd(V_m256_mul_pd(ndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -332,11 +356,23 @@ void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, d
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __AVX2__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_cos), xs);
+#endif
+#ifdef __AVX2__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __AVX2__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd(V_m256_mul_pd(ndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4
@@ -420,11 +456,23 @@ void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, do
         Gn_theta_sin = tscheb_sin_avx(Gn_theta);
         Gnsin = tscheb_sin_avx(Gns);
 
+#ifdef __AVX2__
         xs = _mm256_fmadd_pd(Vndt, Gn_theta_cos, xs);
+#else
+        xs = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_cos), xs);
+#endif
+#ifdef __AVX2__
         ys = _mm256_fmadd_pd(Vndt, Gn_theta_sin, ys);
+#else
+        ys = _mm256_add_pd(V_m256_mul_pd(ndt, Gn_theta_sin), ys);
+#endif
 
         
+#ifdef __AVX2__
         angles = _mm256_fmadd_pd(VndtWB, Gnsin, thetas);
+#else
+        angles = _mm256_add_pd(V_m256_mul_pd(ndtWB, Gnsin), thetas);
+#endif
         
         xv1 = _mm256_shuffle_pd(xs,ys,0b0000); // x1, y1, x3, y3
         xv2 = _mm256_shuffle_pd(xs,ys,0b1111); // x2, y2, x4, y4

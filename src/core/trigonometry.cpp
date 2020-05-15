@@ -123,7 +123,11 @@ __m256d read_cos_vec(__m256d angle) {
 }
 
 __m256d read_sin2_vec(__m256d angle) {
+#ifdef __AVX2__
     angle = _mm256_fmadd_pd(num_steps_vec, angle, offset_sin2);
+   #else
+    angle = _mm256_add_pd(n_m256_mul_pd(um_steps_vec, angle), offset_sin2);
+#endif
     __m128i index = _mm256_cvtpd_epi32(angle);
     return _mm256_i32gather_pd(sin2_table, index, 8);
 }
