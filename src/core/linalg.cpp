@@ -68,7 +68,7 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 
 
 // Works ;)
-#ifdef __AVX__
+#ifdef __AVX2__
 __m256d fill_rand_avx(double lo, double hi) {
     __m256d lov = _mm256_set1_pd(lo);
     __m256d hiv = _mm256_set1_pd(hi);
