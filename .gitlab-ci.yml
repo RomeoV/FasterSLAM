@@ -8,8 +8,8 @@ stages:
 system_info:
   stage: build
   script:
-  - g++ -E -march=native -dM - < /dev/null | grep -i avx
-  - g++ -E -march=native -dM - < /dev/null | grep -i fma
+  - g++ -E -march=native -dM - < /dev/null | grep -i avx || true
+  - g++ -E -march=native -dM - < /dev/null | grep -i fma || true
 
 build:
   stage: build
