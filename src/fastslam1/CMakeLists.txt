@@ -29,6 +29,7 @@ target_compile_options(FasterSlamCore PRIVATE -march=skylake-avx512)
 target_compile_options(FasterSlamCore PRIVATE -std=c++11)
 target_compile_options(FasterSlamCore PRIVATE -std=c++17)
 target_compile_options(FasterSlamCore PRIVATE -mavx)
+target_compile_options(FasterSlamCore PRIVATE -mfma)
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamLib PRIVATE
