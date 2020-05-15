@@ -7,6 +7,7 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 #include <cmath>
 
 int main() {
+
   "jabobian_simple"_test = [] {
     given("I have a particle, features and a covariance matrix of observation") = [] {
       // prepare particle
@@ -81,6 +82,99 @@ int main() {
         };
       };
     };
+  };
+
+
+  "compute_jacobians_test"_test = [] {
+      given("I have the arguments x, P, v, R, H") = [] {
+
+          Vector3d xv = {1.293967823315060, -0.054066219251330, -0.012642858479510};
+          
+          Particle* particle = newParticle(5, xv);
+          
+          //Vector2d xf[2] = { {3.227460886446243, 25.57012884898359}, 
+          //                   {-25.613382543676146, 3.630650683089399} }; 
+          Vector2d xf[2] = { {3.227460886446243, -25.613382543676146}, 
+                             {25.57012884898359, 3.630650683089399} }; 
+         
+          Matrix2d Pf[2] = { {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843}, 
+                             {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
+
+          for(int i = 0; i < 3; i++){
+              set_xfi(particle, xf[i], i);
+              set_Pfi(particle, Pf[i], i);
+          }
+
+          int idf[2] = {0, 1};
+
+          int N_z = 2;
+          
+          Matrix2d R = {0.010000000000000, 0, 0, 0.000304617419787};
+
+          when("I call compute_jacobians()") = [&] {
+              Vector2d zp[2] = {};
+              Matrix23d Hv[2] = {};
+              Matrix2d Hf[2] = {};
+              Matrix2d Sf[2] = {};
+
+              compute_jacobians(/* in -> */ particle, idf, N_z, R, 
+                                /* out -> */ zp, Hv, Hf, Sf);
+
+              then("I get the updated values of x and P I want") = [=] {
+
+                  //Vector2d target_zp[2]= { {25.632343755442758, 24.554208046576935},
+                  //                         {-1.482649980501718, 0.163276449965079} };
+                  Vector2d target_zp[2]= { {25.632343755442758, -1.482649980501718},
+                                           {24.554208046576935, 0.163276449965079} };
+
+                  Matrix23d target_Hv[2] = { {-0.075431770172036, 0.997150965525639, 0, 
+                                              -0.038902059641499, -0.002942835461779, -1.000000000000000},
+                                             {-0.988676196748803, -0.150064579372757, 0,
+                                              0.006111562591964, -0.040265041123435, -1.000000000000000} };
+
+                  Matrix2d target_Hf[2] = { {0.075431770172036, -0.997150965525639,
+                                             0.038902059641499, 0.002942835461779}, 
+                                            {0.988676196748803, 0.150064579372757,
+                                             -0.006111562591964, 0.040265041123435} };
+
+                  Matrix2d target_Sf[2] = { {0.020121592762187, -0.000188340825409,
+                                             -0.000188340825409, 0.000611567807302},
+                                            {0.020006151561333, 0.000043250788361,
+                                             0.000043250788361, 0.000625294058576} }; 
+
+
+                  auto is_close = [](auto lhs, auto rhs) -> bool {return fabs(lhs - rhs) < 1e-8;};
+
+                  for(int i = 0; i < 2; i++){
+                      for(int j = 0; j < 2; j++){
+                          expect( is_close(zp[i][j], target_zp[i][j]) ) << zp[i][j] << " != " << target_zp[i][j];
+                      }
+                  }
+                  
+                  for(int i = 0; i < 2; i++){
+                      for(int j = 0; j < 6; j++){
+                          expect( is_close(Hv[i][j], target_Hv[i][j]) ) << Hv[i][j] << " != " << target_Hv[i][j];
+                      }
+                  }
+                  
+                  for(int i = 0; i < 2; i++){
+                      for(int j = 0; j < 4; j++){
+                          expect( is_close(Hf[i][j], target_Hf[i][j]) ) << Hf[i][j] << " != " << target_Hf[i][j];
+                      }
+                  }
+
+                  for(int i = 0; i < 2; i++){
+                      for(int j = 0; j < 4; j++){
+                          expect(is_close(Sf[i][j], target_Sf[i][j])) << Sf[i][j] << " != " << target_Sf[i][j];
+                      }
+                  }
+                  
+                  //! Delete Particle
+                  delParticleMembersAndFreePtr(particle);
+
+              };
+          };
+      };
   };
 
 };
