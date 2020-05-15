@@ -607,6 +607,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
 }
 
 // around 3.5 speedup
+#ifdef __AVX2__
 void compute_jacobians_advanced_optimisations(Particle* particle, 
         int idf[], 
         size_t N_z,
@@ -697,5 +698,5 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
       _mm256_store_pd(Sf[i], Hf_Pf_HfT_R_vec);
 
   };
-
 }
+#endif
