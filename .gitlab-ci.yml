@@ -36,8 +36,9 @@ valgrind:
 benchmarks:
   stage: test
   script:
-    - cd src/build
-    - make benchmarks
+    - mkdir src/build_release -p
+    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release
+    - make -C src/build_release benchmarks
 
 coverage:
   stage: coverage
