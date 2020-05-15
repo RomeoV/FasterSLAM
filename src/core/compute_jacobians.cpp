@@ -240,13 +240,15 @@ void compute_jacobians_fast(Particle* particle,
         Hf[i][1] = dy_dinv;
         Hf[i][2] = -dy_d2inv;
         Hf[i][3] = dx_d2inv;
+
         //copy(HvMat, 6, Hv[i]);
         //copy(HfMat, 4, Hf[i]);
         // innovation covariance of feature observation given the vehicle'
         // Eq. 60 in Thrun03g
         // MAt x Mat
         auto pf_vec =  _mm256_load_pd(particle->Pf + 4* idf[i]);
-        auto hf_vec = _mm256_load_pd(*(Hf+i));
+        auto hf_vec = _mm256_set_pd(dx_d2inv, -dy_d2inv, dy_dinv, dx_dinv);
+        _mm256_store_pd(Hf[i], hf_vec);
         auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
 
         auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1

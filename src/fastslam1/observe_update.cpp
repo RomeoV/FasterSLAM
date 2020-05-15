@@ -105,7 +105,7 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
             Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
             Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
             Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-            compute_jacobians_base(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+            compute_jacobians_fast(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
             double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
             w *= weights[i];
             weights[i] = w;
@@ -118,3 +118,54 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+
+
+
+void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    // Compute true data, then add noise
+    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+    for (size_t i = 0; i < N_features; i++) {
+        ftag_visible[i] = ftag[i];
+    }
+
+    //z is the range and bearing of the observed landmark
+    
+    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( *Nf_visible == 0 ) {
+        return;
+    }
+    
+    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = particles[0].Nfa; // >= Nf_visible -> idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+    Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+    // perform update
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            
+            compute_jacobians_fast(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+            double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
+            w *= weights[i];
+            weights[i] = w;
+            feature_update_active(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            add_feature(&particles[i], zn, count_zn, R);
+        }
+    }
+
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+}
+
+

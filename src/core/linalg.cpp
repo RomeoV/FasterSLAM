@@ -58,7 +58,7 @@ void copy(const double* ref, size_t N, double* target) {
 
 //! Fills an array with random values in the range [lo, hi]
 void fill_rand(double *x, size_t size, double lo, double hi) {
-    assert( x != NULL && hi > lo );
+    // assert( x != NULL && hi > lo );
     double range = hi - lo;
     for (size_t i = 0; i < size; i++) {
         x[i] = lo + range * ((double)rand())/((double)RAND_MAX);
