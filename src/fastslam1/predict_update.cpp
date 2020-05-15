@@ -299,6 +299,7 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
 }
 #endif
 
+#ifdef __AVX2__
 void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -401,7 +402,9 @@ void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, d
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
+#ifdef __AVX2__
 void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     compute_steering_base(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
@@ -501,6 +504,7 @@ void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, do
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
 void predict_update_sine(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {

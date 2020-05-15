@@ -43,7 +43,9 @@ target_compile_options(FasterSlamCore
 )
 
 add_subdirectory(tests)
+if(${BUILD_BENCHMARKS})
 add_subdirectory(benchmarks)
+endif()
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamCore PRIVATE

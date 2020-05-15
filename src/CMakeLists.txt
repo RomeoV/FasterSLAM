@@ -5,6 +5,7 @@ set(CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/CMakeModules)
 set(CMAKE_EXPORT_COMPILE_COMMANDS TRUE CACHE BOOL "Export compile commands" FORCE)
 
 set(TEST_COVERAGE FALSE CACHE BOOL "Debug compile and test coverage output")
+set(BUILD_BENCHMARKS TRUE CACHE BOOL "Make benchmark targets")
 set(USE_MARCH_NATIVE TRUE CACHE BOOL "Compile with -march=native")
 
 include(CTest)
