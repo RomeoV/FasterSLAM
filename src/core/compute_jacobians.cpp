@@ -180,7 +180,7 @@ void compute_jacobians_simd(Particle* particle,
 #ifdef __FMA__
         ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
 #else
-        ymm1 = _mm256_add_pd( _m256_mul_pd(0h3, sum), R_vec);
+        ymm1 = _mm256_add_pd( _mm256_mul_pd(0h3, sum), R_vec);
 #endif
         ymm0 = _mm256_permute_pd(ymm0, 0b0101);
         sum = _mm256_add_pd(ymm0, ymm1);
@@ -261,7 +261,7 @@ void compute_jacobians_fast(Particle* particle,
 #ifdef __FMA__
         auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
 #else
-        auto sum = _mm256_add_pd( _m256_mul_pd(f_perm, p2p1), ymm0);
+        auto sum = _mm256_add_pd( _mm256_mul_pd(f_perm, p2p1), ymm0);
 #endif
 
         //__m256d sum = _mm256_add_pd(ymm0, ymm1);
@@ -274,7 +274,7 @@ void compute_jacobians_fast(Particle* particle,
 #ifdef __FMA__
         auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
 #else
-        auto ymm1 = _mm256_add_pd( _m256_mul_pd(0h3, sum), R_vec);
+        auto ymm1 = _mm256_add_pd( _mm256_mul_pd(0h3, sum), R_vec);
 #endif
         ymm0 = _mm256_permute_pd(ymm0, 0b0101);
         sum = _mm256_add_pd(ymm0, ymm1);
