@@ -23,7 +23,12 @@ extern __inline void _mm256_store2_m128d (double *__PH, double *__PL, __m256d __
 
 void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+#ifdef __AVX2__
     predict_update_fast(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);                   
+#else
+#warning "Using predict_update_base because AVX2 is not supported!"
+    predict_update_base(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);                   
+#endif
 }
 
 
@@ -79,6 +84,7 @@ void predict_update_active(double* wp, size_t N_waypoints, double V, double* Q, 
     }
 }
 
+#ifdef __AVX2__
 void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -181,8 +187,10 @@ void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, do
         //particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
+#endif
 
 
+#ifdef __AVX2__
 void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
                         
@@ -289,6 +297,7 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
     }
 
 }
+#endif
 
 void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {

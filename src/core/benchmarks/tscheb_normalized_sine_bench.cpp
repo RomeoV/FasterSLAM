@@ -82,6 +82,7 @@ void read_sine(double* alphas) {
   }
 }
 
+#ifdef __AVX2__
 void read_sine_vec(double* alphas) {
   float result = 0;
   for (size_t i = 0; i < NR; i+=4) {
@@ -90,6 +91,7 @@ void read_sine_vec(double* alphas) {
   }
   sum += results[NR-1];
 }
+#endif
 
 int main() {
     // Initialize Input
@@ -115,7 +117,9 @@ int main() {
     bench.add_function(&calc_unrolled_normalized_dsines, "Unrld. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&calc_avx_normalized_dsines, "AVX. tscheb. sines on norm. doubles", 18*NR);
     bench.add_function(&read_sine, "read_sine", 6*NR);
+#ifdef __AVX2__
     bench.add_function(&read_sine_vec, "read_sine_vec", 6*NR);
+#endif
 
     // Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(alphas_d);

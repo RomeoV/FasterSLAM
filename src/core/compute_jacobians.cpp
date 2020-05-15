@@ -17,9 +17,13 @@
 void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
                        Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
                        Matrix2d Sf[]) {
-    //compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    compute_jacobians_basic_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+#ifdef __AVX2__
     //compute_jacobians_advanced_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    compute_jacobians_basic_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+#else
+#warning "Using compute_jacobians_base because AVX2 is not supported!"
+    compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+#endif
 
 }
 
