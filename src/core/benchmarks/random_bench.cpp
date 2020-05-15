@@ -87,6 +87,7 @@ std::function<void (int *, int)> random_vec32_lambda(func rand_func) {
 
 
 int main() {
+#ifdef __AVX2__
     const int N = 10000;
     int* recipient = static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
@@ -145,6 +146,6 @@ int main() {
     bench.add_function(avx2_pcg32_lambda, "avx2_pcg32", work);
     bench.run_benchmark(recipient, N);
 
+#endif
     return 0;
-
 }
