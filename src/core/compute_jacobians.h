@@ -46,7 +46,7 @@ void compute_jacobians_active(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]) ;
                        
-void compute_jacobians_basic_optimisations(Particle* particle, 
+void compute_jacobians_basic_optimizations(Particle* particle, 
         int idf[], 
         size_t N_z,
         Matrix2d R, 
@@ -56,7 +56,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
         Matrix2d* Sf) //measurement covariance
 ;
 
-void compute_jacobians_advanced_optimisations(Particle* particle, 
+void compute_jacobians_advanced_optimizations(Particle* particle, 
         int idf[], 
         size_t N_z,
         Matrix2d R, 

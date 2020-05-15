@@ -18,8 +18,8 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
                        Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
                        Matrix2d Sf[]) {
     //compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    compute_jacobians_basic_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    //compute_jacobians_advanced_optimisations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    compute_jacobians_basic_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    //compute_jacobians_advanced_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
 }
 
@@ -505,7 +505,7 @@ void compute_jacobians_nik(Particle* particle,
 }
 
 
-void compute_jacobians_basic_optimisations(Particle* particle,
+void compute_jacobians_basic_optimizations(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -513,7 +513,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-  //std::cout << "compute_jacobians_basic_optimisations" << std::endl;
+  //std::cout << "compute_jacobians_basic_optimizations" << std::endl;
   for (size_t i = 0; i < N_z; i++) {
       //std::cout << "Nzi " << i << std::endl;
 
@@ -535,7 +535,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
 
       // inlining of copy
       // predicted observation
-      // inline/optimise atan2 and pi_to_pi_base
+      // inline/optimize atan2 and pi_to_pi_base
       double zp_vec_1 = atan2(dy, dx) - particle_xv_2;
       zp_vec_1 = pi_to_pi_base(zp_vec_1);
       zp[i][0] = d;
@@ -578,7 +578,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
       // multiply 3 matrices
       // HfMat * Pf_i * HfMat_T
       // 2x2 * 2x2 * 2x2
-      // so there is not much to optimise
+      // so there is not much to optimize
       // this seemed to make the biggest difference
       Hf_Pf[0] = HfMat[0] * Pf_i[0] + HfMat[1] * Pf_i[2];
       Hf_Pf[1] = HfMat[0] * Pf_i[1] + HfMat[1] * Pf_i[3];
@@ -608,7 +608,7 @@ void compute_jacobians_basic_optimisations(Particle* particle,
 
 // around 3.5 speedup
 #ifdef __AVX2__
-void compute_jacobians_advanced_optimisations(Particle* particle, 
+void compute_jacobians_advanced_optimizations(Particle* particle, 
         int idf[], 
         size_t N_z,
         Matrix2d R, 
@@ -617,7 +617,7 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
         Matrix2d* Hf, // jacobians of function h (deriv of h wrt mean)
         Matrix2d* Sf) //measurement covariance
 {
-  // std::cout << "compute_jacobians_advanced_optimisations" << std::endl;
+  // std::cout << "compute_jacobians_advanced_optimizations" << std::endl;
   // iterate over the number of features (= N_z)
   // hard to do loop unrolling because not a power of 2
   // the loops are all independent
@@ -642,7 +642,7 @@ void compute_jacobians_advanced_optimisations(Particle* particle,
 
       // inlining of copy
       // predicted observation
-      // inline/optimise atan2 and pi_to_pi_base
+      // inline/optimize atan2 and pi_to_pi_base
       double zp_vec_1 = atan2(dy, dx) - particle_xv_2;
       zp_vec_1 = pi_to_pi_base(zp_vec_1);
       zp[i][0] = d;
