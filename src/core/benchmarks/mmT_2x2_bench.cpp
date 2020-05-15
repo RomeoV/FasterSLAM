@@ -29,7 +29,7 @@ int main() {
     data_loader(A, B, C);
     mmT_2x2(A, B, C);
     
-#ifdef __AVX2__
+#ifdef __FMA__
     data_loader(A, B, C1);
     mmT_2x2_avx_v1(A, B, C1);
     
@@ -54,7 +54,7 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&mmT_2x2, "base", work);
-#ifdef __AVX2__
+#ifdef __FMA__
     bench.add_function(&mmT_2x2_avx_v1, "avx_v1", work);
     bench.add_function(&mmT_2x2_avx_v2, "avx_v2", work);
     bench.add_function(&mmT_2x2_avx_v3, "avx_v3", work);

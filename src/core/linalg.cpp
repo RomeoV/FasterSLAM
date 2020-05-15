@@ -83,7 +83,7 @@ __m256d fill_rand_avx(double lo, double hi) {
     __m256d ymm1 = _mm256_div_pd(ymm0, uintmax);
 
     __m256d range = _mm256_sub_pd(hiv, lov);
-#ifdef __AVX2__
+#ifdef __FMA__
     return _mm256_fmadd_pd(range, ymm1, lov);
 #else
     return _mm256_add_pd(r_m256_mul_pd(ange, ymm1), lov);
@@ -103,7 +103,7 @@ __m256d fill_rand_avx_abs(double lo, double hi) {
     __m256d ymm1 = _mm256_div_pd(ymm0, intmax);
 
     __m256d range = _mm256_sub_pd(hiv, lov);
-#ifdef __AVX2__
+#ifdef __FMA__
     return _mm256_fmadd_pd(range, ymm1, lov);
 #else
     return _mm256_add_pd(r_m256_mul_pd(ange, ymm1), lov);
@@ -206,7 +206,7 @@ void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
     __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
     __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
 
-#ifdef __AVX2__
+#ifdef __FMA__
     __m256d c = _mm256_fmadd_pd( a1133, b2323, _mm256_mul_pd( a0022, b0101 ) );
 #else
     __m256d c = _mm256_add_pd( _m256_mul_pd(a1133, b2323), _mm256_mul_pd( a0022, b0101 ) );
@@ -246,7 +246,7 @@ void mm_2x2_avx_v3(const double *A, const double *B, double *C) {
     __m256d b0303 = _mm256_blend_pd( b0123, b2301, 0b0110 );
     __m256d b2121 = _mm256_blend_pd( b0123, b2301, 0b1001 );
 
-#ifdef __AVX2__
+#ifdef __FMA__
     __m256d c = _mm256_fmadd_pd( a1032, b2121, _mm256_mul_pd( a0123, b0303 ) );
 #else
     __m256d c = _mm256_add_pd( _m256_mul_pd(a1032, b2121), _mm256_mul_pd( a0123, b0303 ) );
@@ -278,7 +278,7 @@ void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
     __m256d b0202 = _mm256_permute4x64_pd( b, 0b10001000 );
     __m256d b1313 = _mm256_permute4x64_pd( b, 0b11011101 );
  
-#ifdef __AVX2__
+#ifdef __FMA__
     __m256d c = _mm256_fmadd_pd( a1133, b1313, _mm256_mul_pd( a0022, b0202 ) );
 #else
     __m256d c = _mm256_add_pd( _m256_mul_pd(a1133, b1313), _mm256_mul_pd( a0022, b0202 ) );
@@ -319,7 +319,7 @@ void mmT_2x2_avx_v3(const double *A, const double *B, double *C) {
     
     __m256d c0 = _mm256_mul_pd( a0123, b2121 );
     __m256d c0_perm = _mm256_permute_pd( c0, 0b0101 );
-#ifdef __AVX2__
+#ifdef __FMA__
     __m256d c = _mm256_fmadd_pd( a0123, b0303, c0_perm );
 #else
     __m256d c = _mm256_add_pd( _m256_mul_pd(a0123, b0303), c0_perm );
@@ -352,12 +352,12 @@ void mmadd_2x2_avx_v1(const double *A, const double *B, double *C) {
     __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
     __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
     
-#ifdef __AVX2__
+#ifdef __FMA__
     c = _mm256_fmadd_pd( a0022, b0101, c );
 #else
     c = _mm256_add_pd( _m256_mul_pd(a0022, b0101), c );
 #endif
-#ifdef __AVX2__
+#ifdef __FMA__
     c = _mm256_fmadd_pd( a1133, b2323, c );
 #else
     c = _mm256_add_pd( _m256_mul_pd(a1133, b2323), c );
@@ -379,7 +379,7 @@ void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
     __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
     __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
     
-#ifdef __AVX2__
+#ifdef __FMA__
     c = _mm256_fmadd_pd( a0022, b0101, c );
 #else
     c = _mm256_add_pd( _m256_mul_pd(a0022, b0101), c );
@@ -391,7 +391,7 @@ void mmadd_2x2_avx_v2(const double *A, const double *B, double *C) {
 }
 #endif
 
-#ifdef __AVX2__
+#ifdef __FMA__
 __m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c) {
 
     __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
@@ -399,7 +399,7 @@ __m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c) {
     __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
     __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
     
-#ifdef __AVX2__
+#ifdef __FMA__
     c = _mm256_fmadd_pd( a0022, b0101, c );
 #else
     c = _mm256_add_pd( _m256_mul_pd(a0022, b0101), c );
@@ -411,7 +411,7 @@ __m256d _mmadd_2x2_avx_v2(__m256d a, __m256d b, __m256d c) {
 }
 #endif
 
-#ifdef __AVX2__
+#ifdef __FMA__
 __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c) {
 
     __m256d b2301 = _mm256_permute2f128_pd( b0123, b0123, 0b00000001 );
@@ -419,7 +419,7 @@ __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c) {
     __m256d b2121 = _mm256_blend_pd( b0123, b2301, 0b1001 );
     
     __m256d c0 = _mm256_mul_pd( a0123, b2121 );
-#ifdef __AVX2__
+#ifdef __FMA__
     __m256d cc = _mm256_fmadd_pd( a0123, b0303, c );
 #else
     __m256d cc = _mm256_add_pd( _m256_mul_pd(a0123, b0303), c );

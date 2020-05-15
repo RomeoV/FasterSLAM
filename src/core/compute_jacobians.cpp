@@ -177,7 +177,7 @@ void compute_jacobians_simd(Particle* particle,
         __m256d sum = _mm256_add_pd(ymm0, ymm1);
 
         ymm0 = _mm256_mul_pd(h2h1, sum);
-#ifdef __AVX2__
+#ifdef __FMA__
         ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
 #else
         ymm1 = _mm256_add_pd(h_m256_mul_pd(0h3, sum), R_vec);
@@ -258,7 +258,7 @@ void compute_jacobians_fast(Particle* particle,
         auto p2p1 = _mm256_blend_pd(pf_vec, pmm0, 0b1001);
 
         auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
-#ifdef __AVX2__
+#ifdef __FMA__
         auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
 #else
         auto sum = _mm256_add_pd(h_m256_mul_pd(f_perm, p2p1), ymm0);
@@ -271,7 +271,7 @@ void compute_jacobians_fast(Particle* particle,
         auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
 
         ymm0 = _mm256_mul_pd(h2h1, sum);
-#ifdef __AVX2__
+#ifdef __FMA__
         auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
 #else
         auto ymm1 = _mm256_add_pd(h_m256_mul_pd(0h3, sum), R_vec);
@@ -489,7 +489,7 @@ void compute_jacobians_nik(Particle* particle,
       Matrix2d Hf_Pf_HfT __attribute__ ((aligned(32)));
       Matrix2d Hf_Pf_HfT_R;
 
-#ifdef __AVX2__
+#ifdef __FMA__
       mm_2x2_avx_v1(HfMat, Pf[i], Hf_Pf);
       mmT_2x2_avx_v1(Hf_Pf, HfMat, Hf_Pf_HfT); 
 #else      
