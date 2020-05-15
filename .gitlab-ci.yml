@@ -5,11 +5,17 @@ stages:
   - test
   - coverage
 
+system_info:
+  stage: build
+  script:
+  - g++ -E -march=native -dM - < /dev/null | grep -i avx || true
+  - g++ -E -march=native -dM - < /dev/null | grep -i fma || true
+
 build:
   stage: build
   script:
     - mkdir src/build -p
-    - cmake -S src -B src/build -DTEST_COVERAGE=On
+    - cmake -S src -B src/build -DTEST_COVERAGE=On -DBUILD_BENCHMARKS=Off -DUSE_MARCH_NATIVE=Off -DCMAKE_CXX_FLAGS="-march=sandybridge"
     - cmake --build src/build -j 2
   artifacts:
     paths:
@@ -22,18 +28,16 @@ unittests:
   artifacts:
     paths:
       - src/build
+  dependencies:
+    - build
 
 valgrind:
   stage: test
   script:
     - cd src/build
     - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
-
-benchmarks:
-  stage: test
-  script:
-    - cd src/build
-    - make benchmarks
+  dependencies:
+    - build
 
 coverage:
   stage: coverage

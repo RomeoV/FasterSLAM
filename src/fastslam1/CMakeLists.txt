@@ -21,9 +21,9 @@ target_link_libraries(FasterSlamExe PUBLIC
 )
 
 add_subdirectory(tests)
-add_subdirectory(benchmarks)
-
-target_compile_options(FasterSlamCore PRIVATE -march=native)
+if(${BUILD_BENCHMARKS})
+  add_subdirectory(benchmarks)
+endif()
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamLib PRIVATE

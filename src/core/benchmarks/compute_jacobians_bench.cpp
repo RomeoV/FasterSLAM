@@ -115,7 +115,9 @@ int main() {
 
     bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
     bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", work);
-    bench.add_function(&compute_jacobians_advanced_optimisations, "compute_jacobians_jonathan", work);
+#ifdef __AVX2__
+    bench.add_function(&compute_jacobians_advanced_optimizations, "compute_jacobians_jonathan", work);
+#endif
     //bench.add_function(&compute_jacobians, "compute_jacobians", work);
     
     int idf_4[1] = {5};

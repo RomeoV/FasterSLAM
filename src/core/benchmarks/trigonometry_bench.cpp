@@ -66,6 +66,7 @@ inline double tscheb_sine(double angle) {
 }
 
 int main() {
+#ifdef __AVX2__
     
     const int N = 10000;
     double angles[N];
@@ -122,10 +123,9 @@ int main() {
     bench.data_loader = loader;
 
     bench.run_benchmark(angles, N);
-
-
-
-
-
+#else
+#warning "Disabled trigonometry_bench because AVX2 is not supported!"
+#endif
+    return 0;
 }
 
