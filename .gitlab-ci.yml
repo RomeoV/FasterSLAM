@@ -55,6 +55,7 @@ benchmarks:
     - make -C src/build_release benchmarks
   dependencies:
     - build_release
+  allow_failure: true
 
 coverage:
   stage: coverage
