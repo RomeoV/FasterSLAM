@@ -5,9 +5,11 @@ stages:
   - test
   - coverage
 
-info:
+system_info:
   stage: build
-  script: g++ -E -march=native -dM - < /dev/null | grep -i avx
+  script:
+  - g++ -E -march=native -dM - < /dev/null | grep -i avx
+  - g++ -E -march=native -dM - < /dev/null | grep -i fma
 
 build:
   stage: build
@@ -19,6 +21,16 @@ build:
     paths:
       - src/build
 
+build_release:
+  stage: build
+  script:
+    - mkdir src/build_release -p
+    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release
+    - cmake --build src/build_release -j 2
+  artifacts:
+    paths:
+      - src/build_release
+
 unittests:
   stage: test
   script:
@@ -26,19 +38,23 @@ unittests:
   artifacts:
     paths:
       - src/build
+  dependencies:
+    - build
 
 valgrind:
   stage: test
   script:
     - cd src/build
     - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
+  dependencies:
+    - build
 
 benchmarks:
   stage: test
   script:
-    - mkdir src/build_release -p
-    - cmake -S src -B src/build_release -DCMAKE_BUILD_TYPE=Release
     - make -C src/build_release benchmarks
+  dependencies:
+    - build_release
 
 coverage:
   stage: coverage
