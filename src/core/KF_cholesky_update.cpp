@@ -9,9 +9,9 @@
  ****************************************************************************/
 
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
-    //KF_cholesky_update_base(x, P, v, R, H);
+    KF_cholesky_update_base(x, P, v, R, H);
     //KF_cholesky_update_v1(x, P, v, R, H);
-    KF_cholesky_update_v2(x, P, v, R, H);
+    //KF_cholesky_update_v2(x, P, v, R, H);
 }
 
 /*****************************************************************************
@@ -41,9 +41,15 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
     llt_2x2(S, SChol);                    //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv);             //! SCholInv = inv( SChol )
 
+#ifdef KF_YGLEE
     mul(PHt, SCholInv, 2, 2, 2, W1);     //! W1 = PHt * SCholInv;
     transpose(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
     mul(W1, SCholInvt, 2, 2, 2, W);        //! W = W1 * SCholInvt;
+#else
+    transpose(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
+    mul(PHt, SCholInvt, 2, 2, 2, W1);     //! W1 = PHt * SCholInvt;
+    mul(W1, SCholInv, 2, 2, 2, W);        //! W = W1 * SCholInv;
+#endif
 
     //! x = x + Wv;
     mul(W, v, 2, 2, 1, Wv);
@@ -55,7 +61,8 @@ void KF_cholesky_update_base(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, c
     sub(P, W1W1t, 4, P);
 }
 
-void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+// Fused Matrix Operations but no AVX
+void KF_cholesky_update_fused_ops(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
     double W1[4], W[4], W1W1t[4];
@@ -72,8 +79,13 @@ void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     llt_2x2(S, SChol);                  //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv);           //! SCholInv = inv( SChol )
 
+#ifdef KF_YGLEE
     mm_2x2(PHt, SCholInv, W1);          //! W1 = PHt * SCholInv
     mmT_2x2(W1, SCholInv, W);
+#else
+    mmT_2x2(PHt, SCholInv, W1);          //! W1 = PHt * SCholInvt
+    mm_2x2(W1, SCholInv, W);
+#endif
 
     mvadd_2x2(W, v, x);                 //! x = x + W*v
 
@@ -82,47 +94,37 @@ void KF_cholesky_update_v1(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMa
     sub(P, W1W1t, 4, P);
 }
 
-void KF_cholesky_update_v2(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+// ONLY `IF KF_YGLEE` IS NOT DEFINED
+// We can substantially reduce the FLOPs by rewritting the function as follows:
+/*****************************************************************************
+ * PERFORMANCE STATUS
+ * Work: 2 neg + 25 adds + 34 muls + 1 divs = 62 flops
+ * Memory moved: TBD
+ * Cycles: TBD
+ * Performance: TBD
+ * Optimal: TBD
+ * Status: TBD
+ ****************************************************************************/
+#ifndef KF_YGLEE
+void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
-    double      PHt[4] __attribute__ ((aligned(32)));
-    double        S[4] __attribute__ ((aligned(32))); 
-    double       St[4] __attribute__ ((aligned(32))); 
-    double    SChol[4] __attribute__ ((aligned(32)));
-    double SCholInv[4] __attribute__ ((aligned(32)));
-    double       W1[4] __attribute__ ((aligned(32)));
-    double        W[4] __attribute__ ((aligned(32)));
-    double    W1W1t[4] __attribute__ ((aligned(32)));
+    double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
 
-#ifdef __AVX2__
-    mmT_2x2_avx_v1(P, H, PHt);          //! PHt = P*Ht
-#else
-    mmT_2x2(P, H, PHt);          //! PHt = P*Ht
-#endif
-    copy(R, 4, S);                      //! S = R;
-    mmadd_2x2_avx_v1(H, PHt, S);        //! S += H*PHt ( S = H*P*H^T + R )
+    mmT_2x2(P, H, PHt);
+    copy(R, 4, S);        //! S = R;
+    mmadd_2x2(H, PHt, S); //! S += H*PHt ( S = H*P*H^T + R )
 
     // optimize or skip
-    transpose_2x2(S, St);               //! St = S^T
-    add(S, St, 4, S);                   //! S = S + St
-    scal(S, 4, 0.5, S);                 //! S = 0.5*S
- 
-    llt_2x2(S, SChol);                  //! S = SChol * SChol^T
-    inv_2x2(SChol, SCholInv);           //! SCholInv = inv( SChol )
+    //transpose_2x2(S, St); //! St = S^T
+    //add(S, St, 4, S);     //! S = S + St
+    //scal(S, 4, 0.5, S);   //! S = 0.5*S
 
-    mm_2x2_avx_v1(PHt, SCholInv, W1);   //! W1 = PHt * SCholInv
-#ifdef __AVX2__
-    mmT_2x2_avx_v1(W1, SCholInv, W);
-#else
-    mmT_2x2(W1, SCholInv, W);
-#endif
+    inv_2x2(S, Sinv);     //! Sinv = S^(-1)
+    mm_2x2(PHt, Sinv, W); //! W = PHt*Sinv
 
-    mvadd_2x2(W, v, x);                 //! x = x + W*v
+    mvadd_2x2(W, v, x);   //! x = x + W*v
 
-    //! P = P - W1*W1.transpose();
-#ifdef __AVX2__
-    mmT_2x2_avx_v1(W1, W1, W1W1t);
-#else
-    mmT_2x2(W1, W1, W1W1t);
-#endif
+    mmT_2x2(W, PHt, W1W1t);
     sub(P, W1W1t, 4, P);
 }
+#endif

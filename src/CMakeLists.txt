@@ -10,6 +10,8 @@ set(USE_MARCH_NATIVE TRUE CACHE BOOL "Compile with -march=native")
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -mavx2 -march=native")
 
+set(USE_YGLEE_KF_CHOLESKY TRUE CACHE BOOL "Use KF_cholesky_update() as in Yglee's C++ code.")
+
 include(CTest)
 enable_testing()
 add_subdirectory(core)
