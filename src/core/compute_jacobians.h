@@ -65,3 +65,39 @@ void compute_jacobians_advanced_optimizations(Particle* particle,
         Matrix2d* Hf, // jacobians of function h (deriv of h wrt mean)
         Matrix2d* Sf) //measurement covariance
 ;
+
+void compute_jacobians_simd(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+void compute_jacobians_nik(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+void compute_jacobians_scalar_replacement(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+void compute_jacobians_linalg_inplace(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
