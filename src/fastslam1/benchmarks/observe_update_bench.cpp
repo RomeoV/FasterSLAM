@@ -100,6 +100,9 @@ int main() {
     setup(particles, weights, Nf, xtrue, &ftag, &da_table, &z, &zf, &zn, &idf, &ftag_visible, xvs, Pvs);
 
     // data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
+    observe_update_base(lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn, particles, weights);
     observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
@@ -120,7 +123,9 @@ int main() {
     setup(particles_exact, weights_exact, Nf, xtrue, &ftag_exact, &da_table_exact, 
         &z_exact, &zf_exact, &zn_exact, &idf_exact, &ftag_visible_exact, xv_exact, Pv_exact);
 
-
+    observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
+            da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
+            zn_exact, particles_exact, weights_exact);
     observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
             zn_exact, particles_exact, weights_exact);
