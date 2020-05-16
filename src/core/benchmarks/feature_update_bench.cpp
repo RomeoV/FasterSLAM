@@ -42,21 +42,33 @@ int main() {
 
     // sanity check
     Particle p_base, p_new;
-    double xv_initial[3] = {1., 1., acos(4. / 5.)};
-    initParticle(&p_base, 3, xv_initial);
+    double xv[3] = {1., 1., acos(4. / 5.)};
+    initParticle(&p_base, 3, xv);
     (&p_base)->Nfa = 3;
-    initParticle(&p_new, 3, xv_initial);
+    initParticle(&p_new, 3, xv);
     (&p_new)->Nfa = 3;
+    // need to set before updating
+    Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
+    for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
+        set_xfi(&p_base, xf[i], i);
+        set_xfi(&p_new, xf[i], i);
+    }
+    Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
+    for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
+        set_Pfi(&p_base, Pf[i], i);
+        set_Pfi(&p_new, Pf[i], i);
+    }
     
     // not necessary to set xf and Pf 
     feature_update_base(&p_base, z, idf, N_idf, R, zp, Hv, Hf, Sf);
     feature_update(&p_new, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 
-    for (int i = 0; i<3; i++) {
-        double xfi_new = p_new.xf[i];
-        double xfi_base = p_base.xf[i];
+    // check one feature
+    for(int i=0; i<2; i++){
+        double xfi_new = p_new.xf[2*2+i];
+        double xfi_base = p_base.xf[2*2+i];
         expect(that % fabs(xfi_new - xfi_base) < 1.0e-10);
-    }
+    } 
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");

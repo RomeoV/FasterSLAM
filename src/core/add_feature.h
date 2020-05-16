@@ -8,6 +8,7 @@
     @param[out] particle Particle where the feature is added to.
     @param[in]  z        Landmark measurements / observations in robot
    coordinates [meter, radians].
+    @param[in]  N_z      Number of ladnmark measurements
     @param[in]  R        Covariance matrix of observation noises -> configfile.h
  */
 void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);

@@ -3,9 +3,9 @@
 
 /*!
     Computes Multivariate Gaussian for ONE sample.
-    @param[out] result   Sample set.
     @param[in]  x        Mean vector.
     @param[in]  P        Covariance matrix.
+    @param[out] result   Sample set.
  */
 
 void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result);

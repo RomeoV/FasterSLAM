@@ -10,7 +10,7 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 void data_loader(Particle *p, Vector2d *z, size_t N_z, double *R) {
     // Initialize Input
     double xv_initial[3] =  {0,0,0};
-    initParticle(p, 300000, xv_initial);
+    initParticle(p, 1230000, xv_initial); // the benchmark keeps adding features, so the maximum has to be set high
     Vector3d pos = {1., 1., acos(4. / 5.)};
     copy(pos, 3, p->xv);
     p->Nfa = 3;
@@ -27,14 +27,9 @@ int main() {
 
     // sanity check
     Particle p_base, p_new;
-    double xv_initial[3] =  {0,0,0};
     Vector3d pos = {1., 1., acos(4. / 5.)};
-    initParticle(&p_base, 3, xv_initial);
-    copy(pos, 3, (&p_base)->xv);
-    (&p_base)->Nfa = 3;
-    initParticle(&p_new, 3, xv_initial);
-    copy(pos, 3, (&p_new)->xv);
-    (&p_new)->Nfa = 3;
+    initParticle(&p_base, 3, pos);
+    initParticle(&p_new, 3, pos);
     add_feature_base(&p_base, landmarks, 2, R);
     add_feature(&p_new, landmarks, 2, R);
                 

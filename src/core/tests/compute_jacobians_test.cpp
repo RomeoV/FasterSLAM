@@ -45,7 +45,6 @@ int main() {
                                      {1.00499,0.0996687}};
             for(int j=0; j<3; j++){
                 for(int i=0; i<2; i++){
-                    //std::cout << "zp " << zp[j][i] << " target_zp " << target_zp[j][i] << std::endl;
                     expect(is_close(zp[j][i], target_zp[j][i]));
                 }
             }
@@ -54,7 +53,6 @@ int main() {
                                       {-0.995037,-0.0995037,0,0.0990099,-0.990099,-1}};
             for(int j=0; j<3; j++){
                 for(int i=0; i<6; i++){
-                    //std::cout << "Hv " << Hv[j][i] << " target_Hv " << target_Hv[j][i] << std::endl;
                     expect(is_close(Hv[j][i], target_Hv[j][i]));
                 }
             }
@@ -63,7 +61,6 @@ int main() {
                                        {0.995037,0.0995037,-0.0990099,0.990099}};
             for(int j=0; j<3; j++){
                 for(int i=0; i<4; i++){
-                    std::cout << "Hf " << Hf[j][i] << " target_Hf " << target_Hf[j][i] << std::endl;
                     expect(is_close(Hf[j][i], target_Hf[j][i]));
                 }
             }
@@ -72,7 +69,6 @@ int main() {
                                      {2.08911,-0.10837,0.886667,0.911773}};
             for(int j=0; j<3; j++){
                 for(int i=0; i<4; i++){
-                    //std::cout << "Sf " << Sf[j][i] << " target_Sf " << target_Sf[j][i] << std::endl;
                     expect(is_close(Sf[j][i], target_Sf[j][i]));
                 }
             }
