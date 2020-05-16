@@ -32,8 +32,11 @@ int main() {
     double exact_xv[3];
     data_loader(V, G, WB, dt, exact_xv); // Load exact_xv
 
+    // predict_true_base and predict_true is the same at the moment
+    predict_true_base(V, G, WB, dt, exact_xv);
+    predict_true(V, G, WB, dt, xv);
     for(int i = 0; i<3; i++){
-        expect(that % fabs(xv[i]-exact_xv[i]) <= 1.0e-10) <<i ;
+        expect(that % fabs(xv[i]-exact_xv[i]) <= 1.0e-10) << i;
     }
 
     Benchmark<decltype(&predict_true)> bench("predict_true Benchmark");
