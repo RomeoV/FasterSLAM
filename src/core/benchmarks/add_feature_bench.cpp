@@ -3,6 +3,10 @@
 #include "add_feature.h"
 #include "linalg.h"
 
+#include "ut.hpp"
+using namespace boost::ut;  // provides `expect`, `""_test`, etc
+using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+
 void data_loader(Particle *p, Vector2d *z, size_t N_z, double *R) {
     // Initialize Input
     double xv_initial[3] =  {0,0,0};
@@ -20,6 +24,13 @@ int main() {
 
     Matrix2d R = {pow(0.1, 2), 0,
                 0, pow(1.0 * M_PI / 180, 2)};  // this is from the yglee config
+
+    // sanity check
+    add_control_noise_base(V,G,Q,addnoise,VnGn_base);
+    add_control_noise(V,G,Q,addnoise,VnGn);
+
+    expect(that % fabs(VnGn[0] - VnGn_base[0]) < 1.0e-10) << "Speed+Noise";
+    expect(that % fabs(VnGn[1] - VnGn_base[1]) < 1.0e-10) << "SteeringAngle+Noise";
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&add_feature)> bench("add_feature Benchmark");

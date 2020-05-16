@@ -3,6 +3,10 @@
 #include "compute_weight.h"
 #include "compute_jacobians.h"
 
+#include "ut.hpp"
+using namespace boost::ut;  // provides `expect`, `""_test`, etc
+using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+
 int main() {
     // Initialize Input
     // prepare particle

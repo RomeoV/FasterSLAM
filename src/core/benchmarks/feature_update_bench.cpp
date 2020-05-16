@@ -3,6 +3,10 @@
 #include "feature_update.h"
 #include "particle.h"
 
+#include "ut.hpp"
+using namespace boost::ut;  // provides `expect`, `""_test`, etc
+using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
+
 void data_loader(Particle *p, Vector2d *z, int *idf, size_t N_idf, double *R, Vector2d *zp, Matrix23d *Hv, Matrix2d *Hf, Matrix2d *Sf) {
     // Initialize Input
     Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)

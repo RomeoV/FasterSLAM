@@ -15,6 +15,7 @@ int main() {
     double VnGn_base[2];
     double VnGn[2];
 
+    // sanity check
     add_control_noise_base(V,G,Q,addnoise,VnGn_base);
     add_control_noise(V,G,Q,addnoise,VnGn);
 
