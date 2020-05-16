@@ -8,7 +8,8 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-data = pd.read_csv('../src/build/core/benchmarks/benchmark.csv')
+#data = pd.read_csv('../src/build/core/benchmarks/benchmark.csv')
+data = pd.read_csv('./benchmark_sample.csv')
 print(data)
 
 sns.set(style="darkgrid")
