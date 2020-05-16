@@ -216,6 +216,23 @@ void mm_2x2_avx_v1(const double *A, const double *B, double *C) {
 }
 #endif
 
+#ifdef __AVX__
+__m256d _mm_2x2_avx_v1( __m256d a, __m256d b ) {
+
+    __m256d a0022 = _mm256_permute_pd( a, 0b0000 );
+    __m256d a1133 = _mm256_permute_pd( a, 0b1111 );
+    __m256d b0101 = _mm256_permute2f128_pd( b, b, 0b00000000 );
+    __m256d b2323 = _mm256_permute2f128_pd( b, b, 0b01010101 );
+
+#ifdef __FMA__
+    __m256d c = _mm256_fmadd_pd( a1133, b2323, _mm256_mul_pd( a0022, b0101 ) );
+#else
+    __m256d c = _mm256_add_pd( _mm256_mul_pd(a1133, b2323), _mm256_mul_pd( a0022, b0101 ) );
+#endif
+    return c;
+}
+#endif
+
 //! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
 #ifdef __AVX__
 void mm_2x2_avx_v2(const double *A, const double *B, double *C) {
@@ -329,6 +346,23 @@ void mmT_2x2_avx_v3(const double *A, const double *B, double *C) {
 }
 #endif
 
+#ifdef __AVX__
+__m256d _mmT_2x2_avx_v3( __m256d a0123, __m256d b0123 ) {
+ 
+    __m256d b2301 = _mm256_permute2f128_pd( b0123, b0123, 0b00000001 );
+    __m256d b0303 = _mm256_blend_pd( b0123, b2301, 0b0110 );
+    __m256d b2121 = _mm256_blend_pd( b0123, b2301, 0b1001 );
+
+    __m256d c0 = _mm256_mul_pd( a0123, b2121 );
+    __m256d c0_perm = _mm256_permute_pd( c0, 0b0101 );
+#ifdef __FMA__
+    __m256d c = _mm256_fmadd_pd( a0123, b0303, c0_perm );
+#else
+    __m256d c = _mm256_add_pd( _mm256_mul_pd(a0123, b0303), c0_perm );
+#endif
+    return c;
+}
+#endif
 
 
 //! C += A*B ( 2x2 )

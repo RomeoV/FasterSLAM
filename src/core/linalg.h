@@ -62,12 +62,14 @@ void mm_2x2(const double *A, const double *B, double *C);
 void mm_2x2_avx_v1(const double *A, const double *B, double *C);
 void mm_2x2_avx_v2(const double *A, const double *B, double *C);
 void mm_2x2_avx_v3(const double *A, const double *B, double *C);
+__m256d _mm_2x2_avx_v1( __m256d a, __m256d b );
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 )
 void mmT_2x2(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v2(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v3(const double *A, const double *B, double *C);
+__m256d _mmT_2x2_avx_v3( __m256d a0123, __m256d b0123 );
 
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C);
