@@ -5,8 +5,6 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 #include <cmath>
-#include <vector>
-#include <functional>
 
 int main() {
     std::vector<std::pair<std::string, std::function<void (Particle*, int[], size_t, Matrix2d, Vector2d[],
@@ -45,13 +43,13 @@ int main() {
       }
       int idf[3] = {0,0,0};
       int N_z = 3;
-      Matrix2d R __attribute__((aligned(32))) = {1,0,0,1};
-      when("I compute the jacobians using " + NamedFunction.first) = [&] {
-        Vector2d zp[3] __attribute__((aligned(32))) = {{0,0}, {0,0}, {0,0}}; // measurement (range, bearing)
-        Matrix23d Hv[3] __attribute__((aligned(32))) = {{0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,0,0,0}}; // jacobians of function h (deriv of h wrt pose)
-        Matrix2d Hf[3] __attribute__((aligned(32))) = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // jacobians of function h (deriv of h wrt mean)
-        Matrix2d Sf[3] __attribute__((aligned(32))) = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // Measurement covariance of feature observation given the vehicle.
-        NamedFunction.second(particle, idf, N_z, R, // in
+      Matrix2d R = {1,0,0,1};
+      when("I compute the jacobians") = [&] {
+        Vector2d zp[3] = {{0,0}, {0,0}, {0,0}}; // measurement (range, bearing)
+        Matrix23d Hv[3] = {{0,0,0,0,0,0}, {0,0,0,0,0,0}, {0,0,0,0,0,0}}; // jacobians of function h (deriv of h wrt pose)
+        Matrix2d Hf[3] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // jacobians of function h (deriv of h wrt mean)
+        Matrix2d Sf[3] = {{0,0,0,0}, {0,0,0,0}, {0,0,0,0}}; // Measurement covariance of feature observation given the vehicle.
+        compute_jacobians(particle, idf, N_z, R, // in
                 zp, Hv, Hf, Sf // out
                 );
         //std::cout << "returned " << Hv[0][0] << ", " << Hv[0][1] << ", " << Hv[0][2] << ", " << Hv[0][3] << ", " << Hv[0][4] << ", " << Hv[0][5] << std::endl;
@@ -100,5 +98,6 @@ int main() {
         };
       };
     };
-  } | compute_jacobians_functions;
-}
+  };
+
+};
