@@ -34,7 +34,29 @@ int main() {
     double R[4] = {0.010000000000000002, 0, 0, 0.00030461741909055634};
     const int addnoise = 1;
 
-    const size_t N = 1000;
+    Vector2d zp[3] __attribute__((aligned(32)));
+    Matrix23d Hv[3] __attribute__((aligned(32)));
+    Matrix2d Hf[3] __attribute__((aligned(32)));
+    Matrix2d Sf[3] __attribute__((aligned(32)));
+    compute_jacobians_base(&p, idf, 3, R, zp, Hv, Hf, Sf);
+
+    // sanity check
+    Particle p_base, p_new;
+    double xv_initial[3] = {1., 1., acos(4. / 5.)};
+    initParticle(&p_base, 3, xv_initial);
+    (&p_base)->Nfa = 3;
+    initParticle(&p_new, 3, xv_initial);
+    (&p_new)->Nfa = 3;
+    
+    // not necessary to set xf and Pf 
+    feature_update_base(&p_base, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    feature_update(&p_new, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+
+    for (int i = 0; i<3; i++) {
+        double xfi_new = p_new.xf[i];
+        double xfi_base = p_base.xf[i];
+        expect(that % fabs(xfi_new - xfi_base) < 1.0e-10);
+    }
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");
@@ -46,13 +68,7 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&feature_update_base, "feature_update_base", work);
     bench.add_function(&feature_update, "feature_update", work);
-    //bench.add_function(&feature_update_fmod, "feature_update_fmod", work);
 
-    Vector2d zp[3] __attribute__((aligned(32)));
-    Matrix23d Hv[3] __attribute__((aligned(32)));
-    Matrix2d Hf[3] __attribute__((aligned(32)));
-    Matrix2d Sf[3] __attribute__((aligned(32)));
-    compute_jacobians_base(&p, idf, 3, R, zp, Hv, Hf, Sf);
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 
