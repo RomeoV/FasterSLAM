@@ -34,24 +34,20 @@ int main() {
     Matrix2d Sf[3];
     compute_jacobians_base(particle, idf, 3, R, zp, Hv, Hf, Sf);
 
-    /*double(*lambda_fmod)(double* angles) = [](double* angles){
-        double sum = 0;
-        for (int i = 0; i<N;i++) {
-            sum+=compute_weight(angles[i]);
-        }
-        return sum;
-    };*/
+    // sanity check 
+    double weight_base = compute_weight(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    double weight_new = compute_weight(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    expect(that % fabs(weight_base - weight_new) < 1.0e-10) << "weight";
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&compute_weight)> bench("compute_weight Benchmark");
 
-    double work = 50000.0; // best-case in flops
+    double work = 500.0; // best-case in flops
 
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&compute_weight_base, "compute_weight_base", work);
     bench.add_function(&compute_weight, "compute_weight", work);
-    //bench.add_function(&compute_weight_fmod, "compute_weight_fmod", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
