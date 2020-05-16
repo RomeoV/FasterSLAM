@@ -35,7 +35,7 @@ int main() {
                 table_target[0] = 0;
                 table_target[21] = 1;
                 
-                const double zn_target[4] = {25.783699379426974, -1.4642259491817695, 
+                const Vector2d zn_target[2] = {25.783699379426974, -1.4642259491817695, 
                                              25.286434348683521, 0.14502450890426782};
 
                 // modifies table, zf, idf, zn and the count_zf, count_zh
@@ -47,11 +47,16 @@ int main() {
                     }
                 };
                 // zn needs to be allocated inside data_associate_known()
-//                then("This is equal with the actual result [zn]") = [&] {
-//                    for (size_t i = 0; i < 4; i++) {
-//                        expect(fabs(zn[i] - zn_target[i]) < 1e-10) << std::setprecision(12) << zn[i] << " != " << zn_target[i];
-//                    }
-//                };
+                then("This is equal with the actual result [zn]") = [&] {
+                    for (size_t i = 0; i < 2; i++) {
+                        double zni0 = zn[i][0];
+                        double zni1 = zn[i][1];
+                        double zn_target_i0 = zn[i][0];
+                        double zn_target_i1 = zn[i][1];
+                        expect(fabs(zni0 - zn_target_i0) < 1e-10) << std::setprecision(12) << zni0 << " != " << zn_target_i0;
+                        expect(fabs(zni1 - zn_target_i1) < 1e-10) << std::setprecision(12) << zni1 << " != " << zn_target_i1;
+                    }
+                };
                 // zf, idf still NULL in this case
             };
         };
