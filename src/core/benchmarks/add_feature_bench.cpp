@@ -26,8 +26,8 @@ int main() {
                 0, pow(1.0 * M_PI / 180, 2)};  // this is from the yglee config
 
     // sanity check
-    add_control_noise_base(V,G,Q,addnoise,VnGn_base);
-    add_control_noise(V,G,Q,addnoise,VnGn);
+    add_feature_base(&p, landmarks, 2, R);
+    add_feature(&p, landmarks, 2, R);
 
     expect(that % fabs(VnGn[0] - VnGn_base[0]) < 1.0e-10) << "Speed+Noise";
     expect(that % fabs(VnGn[1] - VnGn_base[1]) < 1.0e-10) << "SteeringAngle+Noise";
