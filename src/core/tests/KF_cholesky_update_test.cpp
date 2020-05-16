@@ -1,7 +1,5 @@
 #include "KF_cholesky_update.h"  // import file to test
 #include <cmath>
-#include <vector>
-#include <functional>
 
 #include "ut.hpp"
 using namespace boost::ut;
@@ -9,16 +7,11 @@ using namespace boost::ut::bdd;
 
 int main() {
 
-    std::vector<std::pair<std::string, std::function<void (Vector2d, Matrix2d, cVector2d, cMatrix2d, cMatrix2d)>>>
-    KF_functions = {
-        {"KF_cholesky_update", KF_cholesky_update},
-        {"KF_cholesky_update_base", KF_cholesky_update_base},
-        //{KF_cholesky_update_v1},
-        {"KF_cholesky_update_v2", KF_cholesky_update_v2}
-    };
-            
-    "KF_cholesky_update"_test = [] (auto NamedFunc) {
-        given("I have the arguments x, P, v, R, H") = [&] {
+    "KF_cholesky_update"_test = [] {
+        given("I have the arguments x, P, v, R, H") = [] {
+
+            double x[2] __attribute__((aligned(32))) = {3.2403905331533212, -25.689432087069857};
+            //double x[2] = {3.227460886446243, -25.613382543676146};
             double P[4] __attribute__((aligned(32))) = {0.20063369668655512, 0.018909593226709744, 0.018909593226709744, 0.011875705723671498};
             //double P[4] = {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843};
             double v[2] __attribute__((aligned(32))) = {-0.017001037783700212, -0.010645013219889199};
@@ -27,12 +20,10 @@ int main() {
             //double R[4] = {0.010000000000000, 0.0, 0.0, 0.000304617419787};
             double H[4] __attribute__((aligned(32))) = {0.073819203427568675, -0.99727164063023443, 0.038893076096335785, 0.0028789105989867826};
             //double H[4] = {0.075431770172036, -0.997150965525639, 0.038902059641499, 0.002942835461779};
-
-            when("I call " + NamedFunc.first + "(x, P, v, R, H)") = [&] {
+            
+            when("I call KF_cholesky_update(x, P, v, R, H)") = [&] {
                 
-                double x[2] __attribute__((aligned(32))) = {3.2403905331533212, -25.689432087069857};
-                //double x[2] = {3.227460886446243, -25.613382543676146};
-                NamedFunc.second(x, P, v, R, H);
+                KF_cholesky_update(x, P, v, R, H);
 
                 then("I get the updated values of x and P I want") = [=] {
                     double actual_x[2] = {3.1065907987134258, -25.693760147763445};
@@ -48,5 +39,5 @@ int main() {
                 };
             };
         };
-    } | KF_functions;
+    };
 };

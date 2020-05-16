@@ -67,12 +67,12 @@ void copyParticle(const Particle* p_ref, Particle* p_target) {
 
 Particle* newParticle(const int Nf, const double* xv_initial) {
 	// Try to allocate particle structure.
-	Particle* p = (Particle*) aligned_alloc(32, sizeof(Particle));
+	Particle* p = (Particle*) malloc(sizeof(Particle));
 	if (p == NULL) {
         return NULL;
 	}
 
-	initParticle(p, Nf, xv_initial);
+	initParticle(p,Nf, xv_initial);
 	
 	return p;
 }
