@@ -30,7 +30,7 @@ double Q[2][2]= {
 
 // observation parameters
 double MAX_RANGE = 30.0; // metres
-double DT_OBSERVE = /*8 **/ DT_CONTROLS; // seconds, time interval between observations
+double DT_OBSERVE = /*8 **/8 * DT_CONTROLS; // seconds, time interval between observations
 
 // observation noises
 double sigmaR = 0.1; // metres

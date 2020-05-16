@@ -25,8 +25,8 @@
 
 int main (int argc, char *argv[])
 {
-	std::string output_filename = "robot_trace.json";
-    std::string ground_truth_filename = "ground_truth.json";
+	std::string output_filename = "robot_trace_old.json";
+    std::string ground_truth_filename = "ground_truth_old.json";
 
     double *lm; // landmark positions
 	double *wp; // way points
@@ -112,7 +112,7 @@ int main (int argc, char *argv[])
         // Prediction
         //////////////////////////////////////////////////////////////////
 
-        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+        predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 
@@ -130,7 +130,7 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
-            observe_update(lm, N_features, xtrue, *R, ftag, 
+            observe_update_base(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
 

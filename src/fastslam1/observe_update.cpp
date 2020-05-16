@@ -158,7 +158,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
 
     //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
     double den, num;
-    S_inv;
+    Matrix2d S_inv;
     Vector2d S_inv_v;
     double vT_S_inv_v;
     for (size_t i = 0; i < NPARTICLES; i++) {
