@@ -32,7 +32,7 @@ int main() {
     data_loader(z, zlen, R, addnoise);
     add_observation_noise(z, zlen, R, addnoise);
     
-    // Check x
+    // Check that improved version and base version give the same result
     for (int i = 0; i < zlen; i++) {
         double error0 = fabs( z[i][0] - exact_z[i][0] );
         double error1 = fabs( z[i][1] - exact_z[i][1] );
