@@ -36,17 +36,19 @@ int main() {
     double R[4] = {0.010000000000000, 0.0, 0.0, 0.000304617419787};
     double H[4] = {0.075431770172036, -0.997150965525639, 0.038902059641499, 0.002942835461779};
 #endif
-    Vector2d exact_x, x, x_v1/*, x_v2*/;
-    Matrix2d exact_P, P, P_v1/*, P_v2*/;
+    Vector2d exact_x, x, x_v1, x_v2;
+    Matrix2d exact_P, P, P_v1, P_v2;
 
     data_loader(exact_x, exact_P, v, R, H);
     KF_cholesky_update_base(exact_x, exact_P, v, R, H);
     
     data_loader(x_v1, P_v1, v, R, H);
     KF_cholesky_update_fused_ops(x_v1, P_v1, v, R, H);
-    
-    //data_loader(x_v2, P_v2, v, R, H);
-    //KF_cholesky_update_v2(x_v2, P_v2, v, R, H);
+
+#ifndef KF_YGLEE    
+    data_loader(x_v2, P_v2, v, R, H);
+    KF_cholesky_update_reduced_flops(x_v2, P_v2, v, R, H);
+#endif
      
     data_loader(x, P, v, R, H);
     KF_cholesky_update(x, P, v, R, H);
@@ -71,8 +73,10 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&KF_cholesky_update_base, "base", work);
-    bench.add_function(&KF_cholesky_update_fused_ops, "fused-ops", work);
-    //bench.add_function(&KF_cholesky_update_v2, "v2", work);
+    bench.add_function(&KF_cholesky_update_fused_ops, "fused-ops-noAVX", work);
+#ifndef KF_YGLEE
+    bench.add_function(&KF_cholesky_update_reduced_flops, "reduced-flops-noAVX", 62);
+#endif
     bench.add_function(&KF_cholesky_update, "active", work);
 
     bench.run_benchmark(x, P, v, R, H);
