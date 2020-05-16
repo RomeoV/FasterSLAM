@@ -9,8 +9,8 @@
 - valgrind --tool=callgrind --callgrind-out-file=results_cache.txt --simulate-cache=yes ./build/fastslam1/FasterSlamExe ./input_data/example_webmap.mat
 
 ## results 
-- see results.txt
-- see results_cache.txt + output (below)
+- see src/results.txt
+- see src/results_cache.txt + output (below)
 ==23077== I   refs:      4,328,205,179
 ==23077== I1  misses:          175,961
 ==23077== LLi misses:            3,111

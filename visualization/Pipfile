@@ -7,6 +7,11 @@ verify_ssl = true
 
 [packages]
 seaborn = "*"
+pandas = "*"
+scipy = "*"
+numpy = "*"
+matplotlib = "*"
+statsmodels = "*"
 
 [requires]
 python_version = "3.7"

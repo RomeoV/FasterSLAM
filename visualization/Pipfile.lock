@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "994150af5d0525bd2316800dcc15f355c61073a8bc7b1b4a23846386fe9a93cf"
+            "sha256": "4382d2a191488d4a68755711b65c5ca6e200f68d58e6a61bd05648effb93ae6e"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -61,6 +61,7 @@
                 "sha256:f4412241e32d0f8d3713b68d3ca6430190a5e8a7c070f1c07d7833d8c5264398",
                 "sha256:ffe2f9cdcea1086fc414e82f42271ecf1976700b8edd16ca9d376189c6d93aee"
             ],
+            "index": "pypi",
             "version": "==3.2.1"
         },
         "numpy": {
@@ -87,6 +88,7 @@
                 "sha256:efdba339fffb0e80fcc19524e4fdbda2e2b5772ea46720c44eaac28096d60720",
                 "sha256:f22273dd6a403ed870207b853a856ff6327d5cbce7a835dfa0645b3fc00273ec"
             ],
+            "index": "pypi",
             "version": "==1.18.4"
         },
         "pandas": {
@@ -108,6 +110,7 @@
                 "sha256:ca84a44cf727f211752e91eab2d1c6c1ab0f0540d5636a8382a3af428542826e",
                 "sha256:d234bcf669e8b4d6cbcd99e3ce7a8918414520aeb113e2a81aeb02d0a533d7f7"
             ],
+            "index": "pypi",
             "version": "==1.0.3"
         },
         "pyparsing": {
@@ -155,6 +158,7 @@
                 "sha256:dc60bb302f48acf6da8ca4444cfa17d52c63c5415302a9ee77b3b21618090521",
                 "sha256:dee1bbf3a6c8f73b6b218cb28eed8dd13347ea2f87d572ce19b289d6fd3fbc59"
             ],
+            "index": "pypi",
             "version": "==1.4.1"
         },
         "seaborn": {

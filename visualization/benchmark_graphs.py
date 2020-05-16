@@ -1,11 +1,16 @@
 
-
+# go to src/visualizations
+# pipenv shell
+# python benchmark_graphs.py
+# benchmark.csv is at .src/build/core/benchmarks/benchmark.csv
 
 import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-# data = pd.read_csv('./benchmarks.csv')
+data = pd.read_csv('../src/build/core/benchmarks/benchmark.csv')
+print(data)
+
 sns.set(style="darkgrid")
 
 # Load an example dataset with long-form data
