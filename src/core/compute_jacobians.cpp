@@ -159,7 +159,7 @@ void compute_jacobians_simd(Particle* particle,
         Matrix2d Hf_Pf;
         Matrix2d Hf_Pf_HfT;
 
-        auto Pfi = *(Pf +i);
+        double* Pfi = Pf[i];
 
         auto pf_vec =  _mm256_load_pd(Pfi);
         auto hf_vec = _mm256_load_pd(HfMat);
@@ -254,7 +254,7 @@ void compute_jacobians_fast(Particle* particle,
         // Eq. 60 in Thrun03g
         // MAt x Mat
         auto pf_vec =  _mm256_load_pd(particle->Pf + 4* idf[i]);
-        auto hf_vec = _mm256_load_pd(*(Hf+i));
+        auto hf_vec = _mm256_load_pd(Hf[i]);
         auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
 
         auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
@@ -296,8 +296,8 @@ void compute_jacobians_linalg_inplace(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    Vector2d xf[N_z] __attribute__((aligned(32)));
-    Matrix2d Pf[N_z] __attribute__((aligned(32)));
+    Vector2d xf[N_z];
+    Matrix2d Pf[N_z];
 
     int r;
     for (size_t i = 0; i < N_z; i++) {

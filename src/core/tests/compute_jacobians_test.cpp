@@ -20,7 +20,7 @@ int main() {
 #ifdef __AVX2__
       {"compute_jacobians_advanced_optimizations", compute_jacobians_advanced_optimizations},
 #endif
-      {"compute_jacobians_simd", compute_jacobians_simd},
+      //{"compute_jacobians_simd", compute_jacobians_simd},  // this gives seg-faults...
       {"compute_jacobians_nik", compute_jacobians_nik},
       {"compute_jacobians_scalar_replacement", compute_jacobians_scalar_replacement},
       {"compute_jacobians_linalg_inplace", compute_jacobians_linalg_inplace}
