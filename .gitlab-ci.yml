@@ -24,7 +24,7 @@ build:
 unittests:
   stage: test
   script:
-    - make test -C src/build
+    - cmake --build src/build --target test -- ARGS="-V"
   artifacts:
     paths:
       - src/build
