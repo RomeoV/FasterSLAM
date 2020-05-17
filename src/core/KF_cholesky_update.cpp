@@ -110,10 +110,8 @@ void KF_cholesky_update_fused_ops(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d
 void KF_cholesky_update_fused_ops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double        S[4] __attribute__ ((aligned(32)));
-    double       St[4] __attribute__ ((aligned(32)));
     double    SChol[4] __attribute__ ((aligned(32)));
     double SCholInv[4] __attribute__ ((aligned(32)));
-    double        W[4] __attribute__ ((aligned(32)));
     
     __m256d p = _mm256_load_pd( P );
     __m256d h = _mm256_load_pd( H );
@@ -140,9 +138,7 @@ void KF_cholesky_update_fused_ops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatr
     __m256d w  = _mm_2x2_avx_v1(w1, scholinv);
 #endif
 
-    _mm256_store_pd( W, w ); 
-
-    mvadd_2x2(W, v, x); //! x = x + W*v ( TODO: AVX )
+    _mm_store_pd( x, _mvadd_2x2_avx_v1(w, _mm_load_pd(v), _mm_load_pd(x) ) ); //! x = x + W*v
 
     //! P = P - W1*W1.transpose();
     __m256d w1w1t = _mmT_2x2_avx_v3(w1, w1);
@@ -190,9 +186,7 @@ void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatr
 void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
 {
     double     S[4] __attribute__ ((aligned(32)));
-    //double    St[4] __attribute__ ((aligned(32)));
     double  Sinv[4] __attribute__ ((aligned(32)));
-    double     W[4] __attribute__ ((aligned(32)));
 
     __m256d p = _mm256_load_pd( P );
     __m256d h = _mm256_load_pd( H );
@@ -200,22 +194,18 @@ void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, c
     __m256d pht = _mmT_2x2_avx_v3(p, h);                        //! PHt = P*Ht
     __m256d s = _mmadd_2x2_avx_v2(h, pht, _mm256_load_pd( R )); //! S += H*PHt ( S = H*P*H^T + R )
 
+    // maybe skip
+    //s = _mm256_add_pd( s, _mm256_permute4x64_pd( s, 0b11011000 ) ); // S = S + S^T
+    //s = _mm256_mul_pd( _mm256_set1_pd( 0.5 ), s );                  // S = 0.5*S
     _mm256_store_pd(S, s);
-    
-    // optimize or skip
-    //transpose_2x2(S, St); //! St = S^T
-    //add(S, St, 4, S);     //! S = S + St
-    //scal(S, 4, 0.5, S);   //! S = 0.5*S
-
+ 
     inv_2x2(S, Sinv);     //! Sinv = S^(-1) ( TODO: AVX )
     
     __m256d sinv = _mm256_load_pd( Sinv );
     
     __m256d w = _mm_2x2_avx_v1(pht, sinv); //! W = PHt*Sinv
-    
-    _mm256_store_pd( W, w );    
 
-    mvadd_2x2(W, v, x);   //! x = x + W*v ( TODO: AVX )
+    _mm_store_pd( x, _mvadd_2x2_avx_v1(w, _mm_load_pd(v), _mm_load_pd(x) ) ); //! x = x + W*v
 
     __m256d w1w1t = _mmT_2x2_avx_v3(w, pht);
     _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
