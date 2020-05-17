@@ -84,6 +84,26 @@ double compute_jacobians_base_memory(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]);
 
+void compute_jacobians_simd(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+
+
+void compute_jacobians_nik(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
 
 // For fastest version, i.e. compute_jacobians_fast
 double compute_jacobians_active_flops(Particle* particle,
@@ -96,6 +116,26 @@ double compute_jacobians_active_flops(Particle* particle,
                        Matrix2d Sf[]);
 
 double compute_jacobians_active_memory(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+void compute_jacobians_scalar_replacement(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+
+
+void compute_jacobians_linalg_inplace(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,

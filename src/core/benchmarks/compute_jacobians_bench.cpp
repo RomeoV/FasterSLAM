@@ -138,6 +138,12 @@ int main() {
 #endif
     //bench.add_function(&compute_jacobians, "compute_jacobians", work);
     
+    
+    bench.add_function(&compute_jacobians_simd, "compute_jacobians_simd", work);
+    bench.add_function(&compute_jacobians_nik, "compute_jacobians_nik", work);
+    bench.add_function(&compute_jacobians_scalar_replacement, "compute_jacobians_scalar_replacement", work);
+    bench.add_function(&compute_jacobians_linalg_inplace, "compute_jacobians_linalg_inplace", work);
+
     int idf_4[1] = {5};
     set_work(bench, particle, idf_4, 1, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
