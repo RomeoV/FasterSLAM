@@ -526,3 +526,23 @@ void inv_2x2(const double *A, double *Ainv) {
 double determinant_2x2(const double* A) {
     return A[0] * A[3] - A[1] * A[2];
 }
+
+#ifdef __AVX2__
+void register_transpose(__m256d const r0,
+                        __m256d const r1,
+                        __m256d const r2,
+                        __m256d const r3,
+                        __m256d *t0, __m256d *t1, __m256d *t2, __m256d *t3)
+{
+    __m256d const lows_r0_r2 = _mm256_insertf128_pd( r0, _mm256_extractf128_pd(r2, 0), 1 );
+    __m256d const lows_r1_r3 = _mm256_insertf128_pd( r1, _mm256_extractf128_pd(r3, 0), 1 );
+    *t0 = _mm256_unpacklo_pd( lows_r0_r2, lows_r1_r3 );
+    *t1 = _mm256_unpackhi_pd( lows_r0_r2, lows_r1_r3 );
+
+    __m256d const highs_r0_r2 = _mm256_insertf128_pd( r2, _mm256_extractf128_pd(r0, 1), 0 );
+    __m256d const highs_r1_r3 = _mm256_insertf128_pd( r3, _mm256_extractf128_pd(r1, 1), 0 );
+    *t2 = _mm256_unpacklo_pd( highs_r0_r2, highs_r1_r3 );
+    *t3 = _mm256_unpackhi_pd( highs_r0_r2, highs_r1_r3 );
+}
+#endif
+

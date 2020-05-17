@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <algorithm>
+#include <immintrin.h>
 
 #include "typedefs.h"
 #include "ut.hpp"
@@ -330,5 +331,41 @@ int main() {
     };
 };
 
+#ifdef __AVX2__
+"register_transpose"_test = [] {
+    given("I have four registers") = [] {
+        double A[16] __attribute__ ((aligned(32)));
+        for (int i = 0; i < 16; i++) {
+            A[i] = i;
+        }
+        __m256d const r0 = _mm256_load_pd( A+0 );
+        __m256d const r1 = _mm256_load_pd( A+4 );
+        __m256d const r2 = _mm256_load_pd( A+8 );
+        __m256d const r3 = _mm256_load_pd( A+12 );
+
+        when("I call register_transpose()") = [&] {
+            double T[16] __attribute__ ((aligned(32)));
+            __m256d t0, t1, t2, t3;
+
+            register_transpose(r0, r1, r2, r3, &t0, &t1, &t2, &t3);
+
+            _mm256_store_pd( T+0, t0 );
+            _mm256_store_pd( T+4, t1 );
+            _mm256_store_pd( T+8, t2 );
+            _mm256_store_pd( T+12, t3 );
+
+            then("I get the correct transposed equivalents") = [=] {
+                double AT[16];
+                transpose(A, 4, 4, AT);
+                for (size_t i = 0; i < 4; i++) {
+                    for (size_t j = 0; j < 4; j++) {
+                        expect(fabs(T[i*4+j] - AT[i*4+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+};
+#endif
 }
 

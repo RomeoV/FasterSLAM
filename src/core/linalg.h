@@ -98,3 +98,11 @@ void inv_2x2(const double *A, double *Ainv);
 //! Determinant for 2x2 matrix
 //! @param A pointer to row major continuous memory
 double determinant_2x2(const double* A);
+
+//! Takes four registers and returns their transpose equivalents
+void register_transpose(__m256d const r0,
+                        __m256d const r1,
+                        __m256d const r2,
+                        __m256d const r3,
+                        __m256d *t0, __m256d *t1, __m256d *t2, __m256d *t3);
+
