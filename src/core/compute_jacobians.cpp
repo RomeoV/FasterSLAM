@@ -279,6 +279,97 @@ void compute_jacobians_fast(Particle* particle,
     };
 }
 
+void compute_jacobians_fast_4particles(
+        Particle* particle[4],
+        int idf[],
+        size_t N_z,
+        Matrix2d R,
+        Vector2d* zp[4],
+        Matrix23d* Hv[4],
+        Matrix2d* Hf[4],
+        Matrix2d* Sf[4])
+{
+    double dx[4], dy[4], d2[4], d[4], dinv[4], d2inv[4], dx_d2inv[4], dy_d2inv[4], dx_dinv[4], dy_dinv[4];
+    double px[4], py[4], ptheta[4];
+
+    for (size_t p = 0; p < 4; p++) {
+        px[p] = particle[p]->xv[0];
+        py[p] = particle[p]->xv[1];
+        ptheta[p] = particle[p]->xv[2];
+    }
+
+    auto R_vec =  _mm256_load_pd(R);
+
+    for (int i = 0; i < N_z; i++) {
+        double theta[4];
+        for (size_t p = 0; p < 4; p++) {
+            dx[p] = particle[p]->xf[2*idf[i]] - px[p];
+            dy[p] = particle[p]->xf[2*idf[i]+1] - py[p];
+            //d2[p] = pow(dx0, 2) + pow(dy0, 2);
+            d2[p] = dx[p] * dx[p] + dy[p] * dy[p];
+
+
+            d[p] = sqrt(d2[p]);
+            dinv[p] = 1.0/ d[p];
+            d2inv[p] = dinv[p] * dinv[p];
+
+
+            dx_dinv[p] = dx[p] * dinv[p];
+            dy_dinv[p] = dy[p] * dinv[p];
+            dx_d2inv[p] = dx[p] * d2inv[p];
+            dy_d2inv[p] = dy[p] * d2inv[p];
+
+            // predicted observation
+            zp[p][i][0] = d[p];
+            theta[p] = atan2(dy[p], dx[p]) - ptheta[p];
+            zp[p][i][1] = pi_to_pi(theta[p]);
+
+            //! Hv is unused in fastslam1 !!!
+            Hv[p][i][0] = -dx_dinv[p];
+            Hv[p][i][1] = -dy_dinv[p];
+            Hv[p][i][2] = 0.0;
+            Hv[p][i][3] = dy_d2inv[p];
+            Hv[p][i][4] = -dx_d2inv[p];
+            Hv[p][i][5] = -1.0;
+
+            // innovation covariance of feature observation given the vehicle'
+            // Eq. 60 in Thrun03g
+            // MAt x Mat
+            auto pf_vec =  _mm256_load_pd(particle[p]->Pf + 4* idf[i]);
+            auto hf_vec = _mm256_set_pd(dx_d2inv[p], -dy_d2inv[p], dy_dinv[p], dx_dinv[p]);
+            _mm256_store_pd(Hf[p][i], hf_vec);
+            auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
+
+            auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
+            auto p0p3 = _mm256_blend_pd(pf_vec, pmm0, 0b0110);
+            auto p2p1 = _mm256_blend_pd(pf_vec, pmm0, 0b1001);
+
+            auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
+#ifdef __FMA__
+            auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
+#else
+            auto sum = _mm256_add_pd( _mm256_mul_pd(hf_perm, p2p1), ymm0);
+#endif
+
+            auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001);
+            auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
+            auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
+
+            ymm0 = _mm256_mul_pd(h2h1, sum);
+#ifdef __FMA__
+            auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
+#else
+            auto ymm1 = _mm256_add_pd( _mm256_mul_pd(h0h3, sum), R_vec);
+#endif
+            ymm0 = _mm256_permute_pd(ymm0, 0b0101);
+            sum = _mm256_add_pd(ymm0, ymm1);
+            //print256d(sum);
+            _mm256_store_pd(Sf[p][i], sum);
+            //print(*Sf, 10, 2);
+        }
+    };
+}
+
 void compute_jacobians_linalg_inplace(Particle* particle,
                        int idf[],
                        size_t N_z,
