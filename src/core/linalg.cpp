@@ -482,6 +482,29 @@ void mvadd_2x2(const double *A, const double *b, double *c) {
     c[1] += A[2]*b[0] + A[3]*b[1];
 }
 
+//! Matrix x Vector Multiplication ( 2x2 ) [ AVX ]
+// a should be 32-byte aligned
+// b should be 16-byte aligned
+#ifdef __AVX2__
+__m128d _mv_2x2_avx_v1( __m256d const a, __m128d const b ) {
+    __m256d Ab = _mm256_mul_pd( a, _mm256_broadcast_pd( &b ) );
+    __m256d sum = _mm256_add_pd( Ab, _mm256_permute_pd(Ab, 0b0101) );
+    return _mm256_castpd256_pd128( _mm256_permute4x64_pd( sum, 0b00001000 ) );
+}
+#endif
+
+//! c += A*b ( 2x2 ) [ AVX ]
+// a should be 32-byte aligned
+// b should be 16-byte aligned
+#ifdef __AVX2__
+__m128d _mvadd_2x2_avx_v1( __m256d const a, __m128d const b, __m128d const c ) {
+    __m256d Ab = _mm256_mul_pd( a, _mm256_broadcast_pd( &b ) );
+    __m256d sum = _mm256_add_pd( Ab, _mm256_permute_pd(Ab, 0b0101) );
+    __m128d slo = _mm256_castpd256_pd128( _mm256_permute4x64_pd( sum, 0b00001000 ) );
+    return _mm_add_pd(c, slo); 
+}
+#endif
+
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
 void llt_2x2(const double *A, double *L) {
     assert( A != NULL && L != NULL );

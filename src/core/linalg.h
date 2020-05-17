@@ -83,9 +83,11 @@ __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c);
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);
+__m128d _mv_2x2_avx_v1( __m256d const a, __m128d const b );
 
 //! c += A*b ( 2x2 )
 void mvadd_2x2(const double *A, const double *b, double *c);
+__m128d _mvadd_2x2_avx_v1( __m256d const a, __m128d const b, __m128d const c );
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
 void llt_2x2(const double *A, double *L);
