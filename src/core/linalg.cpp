@@ -463,3 +463,42 @@ void inv_2x2(const double *A, double *Ainv) {
 double determinant_2x2(const double* A) {
     return A[0] * A[3] - A[1] * A[2];
 }
+
+#ifdef __AVX2__
+/** v.T @ M @ v subroutine
+ * @param m1 2x2 Matrix M1 in row major storage
+ * @param m2 2x2 Matrix M2 in row major storage
+ * @param v12 The 2x1 vectors V1 and V2 stored in order
+ *
+ * @returns AVX2[a, b , c, d] s.t. a + b = V1.T@M1@V1, c + d = V2.T@M2@V2
+ */
+__m256d produce_hvec(const __m256d& m1, const __m256d& m2, const __m256d& v12) {
+  __m256d v12_v12 = _mm256_mul_pd(v12, v12);  // [v1^2, v2^2, v3^2, v4^2]
+  __m256d v12_v21 = _mm256_mul_pd(v12, _mm256_permute_pd(v12, 0b0101));  // [v1v2, v1v2, v3v4, v3v4]
+
+  __m256d m1_perm = _mm256_permute4x64_pd(m1, 0b10011100);  // [a, d, b, c]
+  __m256d m2_perm = _mm256_permute4x64_pd(m2, 0b11001001);  // [e, h, f, g
+  __m256d m1_     = _mm256_permute2f128_pd(m1_perm, m2_perm, 0b00110000);  // [a, d, e, h]
+  __m256d m2_     = _mm256_permute2f128_pd(m1_perm, m2_perm, 0b00100001);  // [b, c, f, g]
+
+  __m256d lhs      = _mm256_mul_pd(v12_v12, m1_);  // [a11, d22, e33, h44]
+  __m256d rhs      = _mm256_mul_pd(v12_v21, m2_);  // [b12, c12, f34, g34]
+  __m256d res      = _mm256_add_pd(lhs, rhs);  // [a11+b12, c12+d22, e33+f34, g34+h44]
+                                               // ^ needs to be hsum'd to get final result
+
+  return res;
+};
+#endif
+
+#ifdef __AVX2__
+__m256d mm_vT_M_v_avx2(const __m256d& m1,  const __m256d& m2,
+                       const __m256d& m3,  const __m256d& m4,
+                       const __m256d& v12, const __m256d& v34) {
+  __m256d res1 = produce_hvec(m1, m2, v12);
+  __m256d res2 = produce_hvec(m3, m4, v34);
+
+  __m256d res_total = _mm256_hadd_pd(res1, res2);  // this gives [A, C, B, D] so we have to permute B and C
+  __m256d result = _mm256_permute4x64_pd(res_total, 0b11011000);
+  return result;
+}
+#endif

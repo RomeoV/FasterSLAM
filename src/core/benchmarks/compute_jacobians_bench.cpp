@@ -118,10 +118,10 @@ int main() {
 #ifdef __AVX2__
     bench.add_function(&compute_jacobians_advanced_optimizations, "compute_jacobians_jonathan", work);
 #endif
-    //bench.add_function(&compute_jacobians, "compute_jacobians", work);
-    
-    int idf_4[1] = {5};
-    bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
+    bench.add_function(&compute_jacobians_simd, "compute_jacobians_simd", work);
+    bench.add_function(&compute_jacobians_nik, "compute_jacobians_nik", work);
+    bench.add_function(&compute_jacobians_scalar_replacement, "compute_jacobians_scalar_replacement", work);
+    bench.add_function(&compute_jacobians_linalg_inplace, "compute_jacobians_linalg_inplace", work);
 
     bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
 
