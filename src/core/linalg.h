@@ -100,3 +100,33 @@ void inv_2x2(const double *A, double *Ainv);
 //! Determinant for 2x2 matrix
 //! @param A pointer to row major continuous memory
 double determinant_2x2(const double* A);
+
+
+// Instrumenting flops and memory count
+
+double copy_flops(const double* ref, size_t N, double* target);
+double copy_memory(const double* ref, size_t N, double* target);
+
+double fill_rand_flops(double *x, size_t size, double lo, double hi);
+double fill_rand_memory(double *x, size_t size, double lo, double hi);
+
+double transpose_flops(const double *A, size_t mA, size_t nA, double *T);
+double transpose_memory(const double *A, size_t mA, size_t nA, double *T);
+
+
+double add_flops(const double *x, const double *y, size_t size, double* z);
+double add_memory(const double *x, const double *y, size_t size, double* z);
+
+
+double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
+double mul_memory(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
+
+double llt_2x2_flops(const double *A, double *L);
+double llt_2x2_memory(const double *A, double *L);
+
+double inv_2x2_flops(const double *A, double *Ainv);
+double inv_2x2_memory(const double *A, double *Ainv);
+
+double determinant_2x2_flops(const double* A);
+double determinant_2x2_memory(const double* A);
+

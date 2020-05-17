@@ -16,4 +16,7 @@ void predict_true(const double V,const double G,const double WB,
 void predict_true_base(const double V,const double G,const double WB,
                 const double dt, Vector3d xv);
     
-
+double predict_true_base_flops(const double V,const double G,const double WB,
+                const double dt, Vector3d xv);
+double predict_true_base_memory(const double V,const double G,const double WB,
+                const double dt, Vector3d xv);

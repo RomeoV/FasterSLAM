@@ -83,7 +83,6 @@ __m256d exp_avx2_pd (__m256d x)
     r = _mm256_castsi256_pd (_mm256_add_epi64 (j, _mm256_castpd_si256 (p))); /* r = p * 2^i */
 
     //Philipp L. : Function breaks at super negative exponents -> yields negative numbers. This check prevents this.
-    
     r = _mm256_blendv_pd( r, zeros,  r);
 
     return r;
@@ -191,6 +190,9 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+
+
+
 void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -314,10 +316,13 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 _mm256_store2_m128d(feat_diff2[j], feat_diff[j], fdiff1);
                 _mm256_store2_m128d(feat_diff3[j], feat_diff1[j], fdiff2);
 
-                s_zeros = _mm256_i64gather_pd(Sf[j], sf_mask,8); //3 1 2 0
-                s_ones = _mm256_i64gather_pd(Sf[j]+1, sf_mask,8);
+                //INV and determinant simultaneously
+                s_zeros = _mm256_i64gather_pd(Sf[j], sf_mask,8); //Sfp0_0, Sf1_0 ..: Sf_0, Sf1_0, Sf2_0, Sf3_0
+                s_ones = _mm256_i64gather_pd(Sf[j]+1, sf_mask,8); //Sf1_0, Sf1_1
                 s_twos = _mm256_i64gather_pd(Sf[j]+2, sf_mask,8);
                 s_threes = _mm256_i64gather_pd(Sf[j]+3, sf_mask,8);
+
+
 
                 ymm0 = _mm256_mul_pd(s_zeros, s_threes);
                 ymm1 = _mm256_mul_pd(s_twos, s_ones);
@@ -341,6 +346,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 _mm256_store_pd(S_inv2,_mm256_permute2f128_pd(ymm6, ymm8, 0b00110001));
                 _mm256_store_pd(S_inv1, _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000));
                 _mm256_store_pd(S_inv3, _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001));
+                //END: Inv and determinants sim.
 
                 // mv_2x2(S_inv, feat_diff[j], S_inv_v);
                 // mv_2x2(S_inv1, feat_diff1[j], S_inv_v1);
@@ -366,11 +372,14 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 // mul(feat_diff1[j], S_inv_v_al[2], 1, 2, 1, &vT_S_inv_v[1]); // TODO in linalg
                 // mul(feat_diff2[j], S_inv_v_al[1], 1, 2, 1, &vT_S_inv_v[2]); // TODO in linalg
                 // mul(feat_diff3[j], S_inv_v_al[3], 1, 2, 1, &vT_S_inv_v[3]); // TODO in linalg
+                // 
+
+                // KF_cholesky_update(__m256d* xfp0p2, __m256d* xfp1p3, __m256d* Pf0, __m256d* Pf1, __m256d* Pf2, __m256d* Pf3,
+                //                    fdiffp0p2, fdiffp1p3, __m256d R_vec, __m256d Hfp0, __m256d Hfp1,__m256d Hfp2,__m256d Hfp3) 
 
                 KF_cholesky_update(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
                                 feat_diff[j], R, 
                                 Hf[j]);
-
                 KF_cholesky_update(particles[i+1].xf + 2 * idf[j], particles[i+1].Pf + 4 * idf[j], 
                                 feat_diff1[j], R, 
                                 Hf1[j]);
@@ -430,6 +439,8 @@ void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double*
     size_t count_zf = 0;
     size_t count_zn = 0;
     data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    
+    
     //Vector2d zp[count_zf] __attribute__ ((aligned(32)));
     Matrix23d Hv[4* count_zf] __attribute__ ((aligned(32))); //Unused in whole code
     Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));

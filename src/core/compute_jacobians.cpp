@@ -24,9 +24,55 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
 #warning "Using compute_jacobians_base because AVX2 is not supported!"
     compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 #endif
-
 }
 
+double compute_jacobians_base_flops(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    double flop_count = N_z * (5*tp.add + 2*tp.pow + tp.sqrt + tp.atan2 + pi_to_pi_base(3.0) + 2*mul_flops(R,R,2,2,2,R) + add_flops(R,R,2*2,R));
+    return flop_count;
+}
+
+double compute_jacobians_base_memory(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    double memory_moved = N_z * (2*2 + 2*4 + 2*6 + 2*4 + 2*mul_memory(R,R,2,2,2,R) + transpose_memory(R,2,2,R)+ add_memory(R,R,2*2,R));
+    return memory_moved;
+}
+
+
+// For fastest version, i.e. compute_jacobians_fast
+double compute_jacobians_active_flops(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    return compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+}
+
+double compute_jacobians_active_memory(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    return compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+}
 
 
 

@@ -174,16 +174,16 @@ int main() {
         expect(that % da_table[i] == da_table_exact[i])  << "da_table" << i;
     }
 
-    auto ymm0 = _mm256_set_pd(3,2,1,0);
-    auto ymm1 = _mm256_set_pd(7,6,5,4);
+    // auto ymm0 = _mm256_set_pd(3,2,1,0);
+    // auto ymm1 = _mm256_set_pd(7,6,5,4);
 
-    print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b0001));
-    print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b00100000));
+    // print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b0001));
+    // print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b00100000));
 
 
-    print256d(exp_avx2_pd(_mm256_set_pd(3.0,2.0,-63.4411f,-207.536f)));
+    // print256d(exp_avx2_pd(_mm256_set_pd(3.0,2.0,-63.4411f,-207.536f)));
 
-    std::cout<<exp(-207.536)<<", "<<exp(-63.4411)<<", "<<exp(2.0)<<", "<<exp(3.0)<<std::endl;
+    // std::cout<<exp(-207.536)<<", "<<exp(-63.4411)<<", "<<exp(2.0)<<", "<<exp(3.0)<<std::endl;
 
     Benchmark<decltype(&observe_update_base)> bench("observe_update Benchmark");
 
