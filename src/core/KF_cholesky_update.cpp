@@ -11,9 +11,17 @@
 void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     // KF_cholesky_update_base(x, P, v, R, H);
 #ifdef KF_YGLEE
-    KF_cholesky_update_fused_ops(x, P, v, R, H);
+    #ifdef __AVX2__
+        KF_cholesky_update_fused_ops_avx(x, P, v, R, H);
+    #else
+        KF_cholesky_update_fused_ops(x, P, v, R, H);
+    #endif
 #else
-    KF_cholesky_update_reduced_flops(x, P, v, R, H);
+    #ifdef __AVX2__
+        KF_cholesky_update_reduced_flops_avx(x, P, v, R, H);
+    #else
+        KF_cholesky_update_reduced_flops(x, P, v, R, H);
+    #endif
 #endif
 }
 
@@ -97,6 +105,52 @@ void KF_cholesky_update_fused_ops(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d
     sub(P, W1W1t, 4, P);
 }
 
+// Fused Matrix Operations and AVX
+#if __AVX2__
+void KF_cholesky_update_fused_ops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+{
+    double        S[4] __attribute__ ((aligned(32)));
+    double       St[4] __attribute__ ((aligned(32)));
+    double    SChol[4] __attribute__ ((aligned(32)));
+    double SCholInv[4] __attribute__ ((aligned(32)));
+    double        W[4] __attribute__ ((aligned(32)));
+    
+    __m256d p = _mm256_load_pd( P );
+    __m256d h = _mm256_load_pd( H );
+
+    __m256d pht = _mmT_2x2_avx_v3(p, h);                        //! PHt = P*Ht
+    __m256d s = _mmadd_2x2_avx_v2(h, pht, _mm256_load_pd( R )); //! S += H*PHt ( S = H*P*H^T + R )
+
+    _mm256_store_pd(S, s);
+
+    // TODO: AVX
+    transpose_2x2(S, St); //! St = S^T
+    add(S, St, 4, S);     //! S = S + St
+    scal(S, 4, 0.5, S);   //! S = 0.5*S
+ 
+    llt_2x2(S, SChol);        //! S = SChol * SChol^T
+    inv_2x2(SChol, SCholInv); //! SCholInv = inv( SChol )
+
+    __m256d scholinv = _mm256_load_pd( SCholInv );
+
+#ifdef KF_YGLEE
+    __m256d w1 = _mm_2x2_avx_v1(pht, scholinv);  //! W1 = PHt * SCholInv
+    __m256d w  = _mmT_2x2_avx_v3(w1, scholinv);
+#else
+    __m256d w1 = _mmT_2x2_avx_v3(pht, scholinv); //! W1 = PHt * SCholInvt
+    __m256d w  = _mm_2x2_avx_v1(w1, scholinv);
+#endif
+
+    _mm256_store_pd( W, w ); 
+
+    mvadd_2x2(W, v, x); //! x = x + W*v ( TODO: AVX )
+
+    //! P = P - W1*W1.transpose();
+    __m256d w1w1t = _mmT_2x2_avx_v3(w1, w1);
+    _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
+}
+#endif
+
 // ONLY `IF KF_YGLEE` IS NOT DEFINED
 // We can substantially reduce the FLOPs by rewritting the function as follows:
 /*****************************************************************************
@@ -130,4 +184,42 @@ void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatr
     mmT_2x2(W, PHt, W1W1t);
     sub(P, W1W1t, 4, P);
 }
+#endif
+
+#ifndef KF_YGLEE
+    #ifdef __AVX2__
+void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+{
+    double     S[4] __attribute__ ((aligned(32)));
+    //double    St[4] __attribute__ ((aligned(32)));
+    double  Sinv[4] __attribute__ ((aligned(32)));
+    double     W[4] __attribute__ ((aligned(32)));
+
+    __m256d p = _mm256_load_pd( P );
+    __m256d h = _mm256_load_pd( H );
+
+    __m256d pht = _mmT_2x2_avx_v3(p, h);                        //! PHt = P*Ht
+    __m256d s = _mmadd_2x2_avx_v2(h, pht, _mm256_load_pd( R )); //! S += H*PHt ( S = H*P*H^T + R )
+
+    _mm256_store_pd(S, s);
+    
+    // optimize or skip
+    //transpose_2x2(S, St); //! St = S^T
+    //add(S, St, 4, S);     //! S = S + St
+    //scal(S, 4, 0.5, S);   //! S = 0.5*S
+
+    inv_2x2(S, Sinv);     //! Sinv = S^(-1) ( TODO: AVX )
+    
+    __m256d sinv = _mm256_load_pd( Sinv );
+    
+    __m256d w = _mm_2x2_avx_v1(pht, sinv); //! W = PHt*Sinv
+    
+    _mm256_store_pd( W, w );    
+
+    mvadd_2x2(W, v, x);   //! x = x + W*v ( TODO: AVX )
+
+    __m256d w1w1t = _mmT_2x2_avx_v3(w, pht);
+    _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
+}
+    #endif
 #endif

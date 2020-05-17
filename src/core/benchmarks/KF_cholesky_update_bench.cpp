@@ -36,18 +36,24 @@ int main() {
     double R[4] = {0.010000000000000, 0.0, 0.0, 0.000304617419787};
     double H[4] = {0.075431770172036, -0.997150965525639, 0.038902059641499, 0.002942835461779};
 #endif
-    Vector2d exact_x, x, x_v1, x_v2;
-    Matrix2d exact_P, P, P_v1, P_v2;
+    Vector2d exact_x, x, x_v10, x_v11, x_rf, x_rf2;
+    Matrix2d exact_P, P, P_v10, P_v11, P_rf, P_rf2;
 
     data_loader(exact_x, exact_P, v, R, H);
     KF_cholesky_update_base(exact_x, exact_P, v, R, H);
     
-    data_loader(x_v1, P_v1, v, R, H);
-    KF_cholesky_update_fused_ops(x_v1, P_v1, v, R, H);
+    data_loader(x_v10, P_v10, v, R, H);
+    KF_cholesky_update_fused_ops(x_v10, P_v10, v, R, H);
+    
+    data_loader(x_v11, P_v11, v, R, H);
+    KF_cholesky_update_fused_ops_avx(x_v11, P_v11, v, R, H);
 
 #ifndef KF_YGLEE    
-    data_loader(x_v2, P_v2, v, R, H);
-    KF_cholesky_update_reduced_flops(x_v2, P_v2, v, R, H);
+    data_loader(x_rf, P_rf, v, R, H);
+    KF_cholesky_update_reduced_flops(x_rf, P_rf, v, R, H);
+    
+    data_loader(x_rf2, P_rf2, v, R, H);
+    KF_cholesky_update_reduced_flops_avx(x_rf2, P_rf2, v, R, H);
 #endif
      
     data_loader(x, P, v, R, H);
@@ -57,14 +63,22 @@ int main() {
     double error = 0.0;
     for (int i = 0; i < 2; i++) {
         error = fabs(        x[i] - exact_x[i] ); expect(that % error < 1e-10) << i;
-        error = fabs(     x_v1[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 10;
-        //error = fabs(     x_v2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     x_v10[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 10;
+        error = fabs(     x_v11[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 11;
+    #ifndef KF_YGLEE
+        error = fabs(     x_rf[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     x_rf2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 21;
+    #endif
     }
     // Check P 
     for (int i = 0; i < 4; i++) {
         error = fabs(        P[i] - exact_P[i] ); expect(that % error < 1e-10) << i;
-        error = fabs(     P_v1[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
-        //error = fabs(     P_v2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     P_v10[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
+        error = fabs(     P_v11[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 11;
+    #ifndef KF_YGLEE
+        error = fabs(     P_rf[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 20;
+        error = fabs(     P_rf2[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 21;
+    #endif
     }
 
     Benchmark<decltype(&KF_cholesky_update)> bench("KF_cholesky_update benchmark");
@@ -74,8 +88,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&KF_cholesky_update_base, "base", work);
     bench.add_function(&KF_cholesky_update_fused_ops, "fused-ops-noAVX", work);
+    bench.add_function(&KF_cholesky_update_fused_ops_avx, "fused-ops-AVX", work);
 #ifndef KF_YGLEE
     bench.add_function(&KF_cholesky_update_reduced_flops, "reduced-flops-noAVX", 62);
+    bench.add_function(&KF_cholesky_update_reduced_flops_avx, "reduced-flops-AVX", 62);
 #endif
     bench.add_function(&KF_cholesky_update, "active", work);
 
