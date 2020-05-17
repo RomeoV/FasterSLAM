@@ -45,8 +45,14 @@ for index, benchmark in enumerate(plot_arrays):
                 index=range(0, len(plot_arrays[index])),
                 columns=['function','flops','cycles','performance','speedup',''])
     print(titanic)
-    sns.catplot(x="function", y="cycles", hue="cycles", kind="bar", data=titanic);
+    sns.catplot(x="function", y="cycles", hue="cycles", kind="bar", data=titanic)
     plt.show()
+
+titanic = pd.DataFrame(data=plot_arrays[0].insert(0,benchmark_names[0]),
+            index=range(0, len(plot_arrays[index])),
+            columns=['bench','function','flops','cycles','performance','speedup',''])
+sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=titanic)
+plt.show()
 
 # Load an example dataset with long-form data
 fmri = sns.load_dataset("fmri")
