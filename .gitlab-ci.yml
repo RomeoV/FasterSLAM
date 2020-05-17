@@ -24,7 +24,7 @@ build:
 unittests:
   stage: test
   script:
-    - make test -C src/build
+    - cmake --build src/build --target test -- ARGS="-V"
   artifacts:
     paths:
       - src/build
@@ -35,7 +35,10 @@ valgrind:
   stage: test
   script:
     - cd src/build
-    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1"
+    - ctest . -T memcheck --overwrite MemoryCheckCommandOptions="--leak-check=full --error-exitcode=1" --exclude-regex "full"
+  artifacts:
+    paths:
+      - src/build
   dependencies:
     - build
 
