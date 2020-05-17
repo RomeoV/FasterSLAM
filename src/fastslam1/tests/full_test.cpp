@@ -1,5 +1,3 @@
-#include "example.hpp"  // import file to test
-
 #include <vector>  // used for test input
 #include "ut.hpp"  // import functionality and namespaces from single header file
 
@@ -20,7 +18,7 @@ int main (int argc, char *argv[])
         double *wp; // way points
         size_t lm_rows, wp_rows;
 
-        std::string input_file_path = "inputfiles_test/example_webmap.mat";
+        std::string input_file_path = "inputfiles_test/test_webmap.mat";
         read_input_file(input_file_path, &lm, &wp, lm_rows, wp_rows);
 
 

@@ -18,8 +18,9 @@ foreach(file ${testfiles})
   )
 endforeach()
 
+file(MAKE_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test)
 configure_file(
-    example_webmap.mat
-    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/example_webmap.mat
+    test_webmap.mat
+    ${CMAKE_CURRENT_BINARY_DIR}/inputfiles_test/test_webmap.mat
     COPYONLY
 )
