@@ -100,10 +100,13 @@ int main() {
     setup(particles, weights, Nf, xtrue, &ftag, &da_table, &z, &zf, &zn, &idf, &ftag_visible, xvs, Pvs);
 
     // data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
-    observe_update_base(lm,Nf, xtrue, *R, ftag, 
+    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
-    observe_update_fast(lm,Nf, xtrue, *R, ftag, 
+    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn, particles, weights);
+    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
 
@@ -123,6 +126,9 @@ int main() {
     setup(particles_exact, weights_exact, Nf, xtrue, &ftag_exact, &da_table_exact, 
         &z_exact, &zf_exact, &zn_exact, &idf_exact, &ftag_visible_exact, xv_exact, Pv_exact);
 
+    observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
+            da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
+            zn_exact, particles_exact, weights_exact);
     observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
             zn_exact, particles_exact, weights_exact);
@@ -167,6 +173,17 @@ int main() {
         expect(that % ftag[i] == ftag_exact[i])  << "ftag" << i;
         expect(that % da_table[i] == da_table_exact[i])  << "da_table" << i;
     }
+
+    auto ymm0 = _mm256_set_pd(3,2,1,0);
+    auto ymm1 = _mm256_set_pd(7,6,5,4);
+
+    print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b0001));
+    print256d(_mm256_permute2f128_pd(ymm0,ymm1,0b00100000));
+
+
+    print256d(exp_avx2_pd(_mm256_set_pd(3.0,2.0,-63.4411f,-207.536f)));
+
+    std::cout<<exp(-207.536)<<", "<<exp(-63.4411)<<", "<<exp(2.0)<<", "<<exp(3.0)<<std::endl;
 
     Benchmark<decltype(&observe_update_base)> bench("observe_update Benchmark");
 

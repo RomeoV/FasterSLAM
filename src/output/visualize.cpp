@@ -61,16 +61,11 @@ int main (int argc, char *argv[])
     Vector2d *zn;
     int *idf, *ftag_visible;
     setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
- 
-    if ( SWITCH_SEED_RANDOM ) {
-        srand( SWITCH_SEED_RANDOM );
-    }	
+
+    srand( SWITCH_SEED_RANDOM );
+
 #ifdef __AVX2__
-    uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
-    avx_xorshift128plus_init(1,1);
-    uint64_t init_seq[8] = {1,3,5,7,9,11,13,15};
-    pcg32_srand(1,1);
-    avx2_pcg32_srand(init_state, init_seq);
+    // avx_xorshift128plus_init(1,1);
 #endif
 
     double dt        = DT_CONTROLS; // change in time btw predicts
@@ -85,9 +80,11 @@ int main (int argc, char *argv[])
     bool observe=true;
 	int id=0;
     int observe_id =0;
+
     nlohmann::json particle_trace = {{"timesteps", nlohmann::json::array()}};
 	nlohmann::json ground_truth = {{"timesteps", nlohmann::json::array()}};
 	ground_truth.update(ground_truth_keypoints_json(wp, lm, N_waypoints, N_features));
+
 
     // Main loop
     while ( iwp != -1 ) {
@@ -130,7 +127,7 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
-            observe_update_base(lm, N_features, xtrue, *R, ftag, 
+            observe_update_fast(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
 
@@ -141,7 +138,6 @@ int main (int argc, char *argv[])
     // Write JSON
     std::ofstream of(output_filename);
     of << particle_trace;
-
 
 	std::ofstream of_gt(ground_truth_filename);
     of_gt << ground_truth;

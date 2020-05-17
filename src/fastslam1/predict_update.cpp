@@ -13,13 +13,8 @@
 #include "tscheb_sine.h"
 #include "linalg.h"
 
-//HACK: My compiler could not find this function even though its listed in intrinsics.
-// Source: https://github.com/gcc-mirror/gcc/blob/master/gcc/config/i386/avxintrin.h
-extern __inline void _mm256_store2_m128d (double *__PH, double *__PL, __m256d __A)
-{
-  _mm_storeu_pd (__PL, _mm256_castpd256_pd128 (__A));
-  _mm_storeu_pd (__PH, _mm256_extractf128_pd (__A, 1));
-}
+
+
 
 void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {

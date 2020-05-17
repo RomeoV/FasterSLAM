@@ -58,5 +58,5 @@ int SWITCH_SAMPLE_PROPOSAL = 1; // sample from proposal (no effect on fastslam1.
 int SWITCH_HEADING_KNOWN = 0;
 int SWITCH_RESAMPLE = 1; 
 int SWITCH_PROFILE = 1;
-int SWITCH_SEED_RANDOM = 1; // if not 0, seed the randn() with its value at beginning of simulation (for repeatability)
+int SWITCH_SEED_RANDOM = 1994; // if not 0, seed the randn() with its value at beginning of simulation (for repeatability)
 
