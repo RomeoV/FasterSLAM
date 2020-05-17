@@ -193,6 +193,7 @@ int main() {
     bench.add_function(&observe_update_base, "observe_update_base", work);
     bench.add_function(&observe_update_active, "observe_update_actve", work);
     bench.add_function(&observe_update_fast, "observe_update_fast", work);
+    bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", work);
 
     bench.run_benchmark(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 

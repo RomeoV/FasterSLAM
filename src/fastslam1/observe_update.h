@@ -37,3 +37,7 @@ void observe_update_inplace(double * lm, int N_features, Vector3d xtrue, double*
             Vector2d* zn, Particle* particles, double* weights);
 
 __m256d exp_avx2_pd (__m256d x);
+
+void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights);

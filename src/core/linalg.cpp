@@ -573,3 +573,33 @@ __m256d mm_vT_M_v_avx2(const __m256d& m1,  const __m256d& m2,
   return result;
 }
 #endif
+
+
+#ifdef __AVX2__
+__m256d mm_vT_M_v_avx2_phil(const __m256d m1,  const __m256d m2,
+                       const __m256d m3,  const __m256d m4,
+                       const __m256d v12, const __m256d v34) {
+    __m256d ymm0, ymm1, ymm2, ymm3, result;
+    ymm0 = _mm256_permute2f128_pd(m1, m2, 0b00100000);
+    ymm2 = _mm256_permute2f128_pd(m1, m2, 0b00110001);
+
+    ymm1 = _mm256_permute2f128_pd(m3, m4, 0b00100000);
+    ymm3 = _mm256_permute2f128_pd(m3, m4, 0b00110001);
+
+    ymm0 = _mm256_mul_pd(v12, ymm0);
+    ymm2 = _mm256_mul_pd(v12, ymm2);
+    
+    ymm1 = _mm256_mul_pd(v34, ymm1);
+    ymm3 = _mm256_mul_pd(v34, ymm3);
+
+    ymm0 = _mm256_hadd_pd(ymm0, ymm2);
+    ymm1 = _mm256_hadd_pd(ymm1, ymm3);
+
+    ymm2 = _mm256_mul_pd(v12, ymm0);
+    ymm3 = _mm256_mul_pd(v34, ymm1);
+
+    result =  _mm256_hadd_pd(ymm2, ymm3);
+    result = _mm256_permute4x64_pd(result, 0b11011000);
+    return result;
+}
+#endif

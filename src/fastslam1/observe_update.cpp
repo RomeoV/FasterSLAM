@@ -342,37 +342,49 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 ymm8 = _mm256_unpacklo_pd(s_twos, s_zeros);
                 ymm9 = _mm256_unpackhi_pd(s_twos, s_zeros);
 
-                _mm256_store_pd(S_inv, _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000));
-                _mm256_store_pd(S_inv2,_mm256_permute2f128_pd(ymm6, ymm8, 0b00110001));
-                _mm256_store_pd(S_inv1, _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000));
-                _mm256_store_pd(S_inv3, _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001));
-                //END: Inv and determinants sim.
+                // _mm256_store_pd(S_inv, _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000));
+                // _mm256_store_pd(S_inv2,_mm256_permute2f128_pd(ymm6, ymm8, 0b00110001));
+                // _mm256_store_pd(S_inv1, _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000));
+                // _mm256_store_pd(S_inv3, _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001));
 
-                // mv_2x2(S_inv, feat_diff[j], S_inv_v);
-                // mv_2x2(S_inv1, feat_diff1[j], S_inv_v1);
-                // mv_2x2(S_inv2, feat_diff2[j], S_inv_v2);
-                // mv_2x2(S_inv3, feat_diff3[j], S_inv_v3);
+                sinv0 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000);
+                sinv1 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000);
+                sinv2 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00110001);
+                sinv3 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001);
 
-                mv_2x2(S_inv, feat_diff[j], S_inv_v_al[0]);
-                mv_2x2(S_inv1, feat_diff1[j], S_inv_v_al[2]);
-                mv_2x2(S_inv2, feat_diff2[j], S_inv_v_al[1]);
-                mv_2x2(S_inv3, feat_diff3[j], S_inv_v_al[3]);
 
-                ymm0 = _mm256_load_pd(*S_inv_v_al);
-                ymm1 = _mm256_load_pd(*S_inv_v_al + 4);
+                //vTMv
+
+                ymm0 = _mm256_permute2f128_pd(sinv0, sinv2, 0b00100000);
+                ymm2 = _mm256_permute2f128_pd(sinv0, sinv2, 0b00110001);
+
+                ymm1 = _mm256_permute2f128_pd(sinv1, sinv3, 0b00100000);
+                ymm3 = _mm256_permute2f128_pd(sinv1, sinv3, 0b00110001);
+
+                ymm0 = _mm256_mul_pd(fdiff1, ymm0);
+                ymm2 = _mm256_mul_pd(fdiff1, ymm2);
+                
+                ymm1 = _mm256_mul_pd(fdiff2, ymm1);
+                ymm3 = _mm256_mul_pd(fdiff2, ymm3);
+
+                ymm0 = _mm256_hadd_pd(ymm0, ymm2);
+                ymm1 = _mm256_hadd_pd(ymm1, ymm3);
 
                 ymm2 = _mm256_mul_pd(fdiff1, ymm0);
                 ymm3 = _mm256_mul_pd(fdiff2, ymm1);
 
-                _mm256_store_pd(vT_S_inv_v, _mm256_hadd_pd(ymm2, ymm3));
+                vec_vSv =  _mm256_hadd_pd(ymm2, ymm3);
+                //vTMv
 
+                
+                //Weights
+                ymm0 = _mm256_sqrt_pd(determinants);
+                den_v = _mm256_mul_pd(ymm0, two_pi_vec);
+                num_v = exp_avx2_pd(_mm256_mul_pd(minus_half, vec_vSv));
 
+                weights_v = _mm256_mul_pd(weights_v, _mm256_div_pd(num_v, den_v));
 
-                // mul(feat_diff[j], S_inv_v_al[0], 1, 2, 1, &vT_S_inv_v[0]); // TODO in linalg   
-                // mul(feat_diff1[j], S_inv_v_al[2], 1, 2, 1, &vT_S_inv_v[1]); // TODO in linalg
-                // mul(feat_diff2[j], S_inv_v_al[1], 1, 2, 1, &vT_S_inv_v[2]); // TODO in linalg
-                // mul(feat_diff3[j], S_inv_v_al[3], 1, 2, 1, &vT_S_inv_v[3]); // TODO in linalg
-                // 
+                //KF Cholesky
 
                 // KF_cholesky_update(__m256d* xfp0p2, __m256d* xfp1p3, __m256d* Pf0, __m256d* Pf1, __m256d* Pf2, __m256d* Pf3,
                 //                    fdiffp0p2, fdiffp1p3, __m256d R_vec, __m256d Hfp0, __m256d Hfp1,__m256d Hfp2,__m256d Hfp3) 
@@ -390,14 +402,6 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                                 feat_diff3[j], R, 
                                 Hf3[j]);
 
-                //Weights
-                ymm0 = _mm256_sqrt_pd(determinants);
-                den_v = _mm256_mul_pd(ymm0, two_pi_vec);
-
-                vec_vSv = _mm256_load_pd(vT_S_inv_v);
-                num_v = exp_avx2_pd(_mm256_mul_pd(minus_half, vec_vSv));
-
-                weights_v = _mm256_mul_pd(weights_v, _mm256_div_pd(num_v, den_v));
                 
             }
             _mm256_store_pd(weights+i, weights_v);
@@ -414,6 +418,215 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 
+
+void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    // Compute true data, then add noise
+    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+    for (size_t i = 0; i < N_features; i++) {
+        ftag_visible[i] = ftag[i];
+    }
+
+    //z is the range and bearing of the observed landmark
+    
+    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( *Nf_visible == 0 ) {
+        return;
+    }
+    
+    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    //Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+    Matrix23d Hv[4* count_zf] __attribute__ ((aligned(32))); //Unused in whole code
+    Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+    
+    
+
+    //Vector2d zp1[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Hf1[count_zf] __attribute__ ((aligned(32)));
+    // Matrix2d Sf1[count_zf] __attribute__ ((aligned(32)));
+    //Vector2d feat_diff1[count_zf] __attribute__ ((aligned(32)));
+
+    // Vector2d zp2[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Hf2[count_zf] __attribute__ ((aligned(32)));
+    // Matrix2d Sf2[count_zf] __attribute__ ((aligned(32)));
+    //Vector2d feat_diff2[count_zf] __attribute__ ((aligned(32)));
+
+    // Vector2d zp3[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Hf3[count_zf] __attribute__ ((aligned(32)));
+    // Matrix2d Sf3[count_zf] __attribute__ ((aligned(32)));
+    // Vector2d feat_diff3[count_zf] __attribute__ ((aligned(32)));
+
+    Vector2d feat_diff[4*count_zf] __attribute__ ((aligned(32)));
+    Vector2d zp[4*count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Sf[4*count_zf] __attribute__ ((aligned(32)));
+
+    Vector2d* zp1 = zp+ 1*count_zf;
+    Vector2d* zp2 = zp+ 2*count_zf;
+    Vector2d* zp3 = zp+ 3*count_zf;
+
+    Vector2d* feat_diff1 = feat_diff+ 1*count_zf;
+    Vector2d* feat_diff2 = feat_diff+ 2*count_zf;
+    Vector2d* feat_diff3 = feat_diff+ 3*count_zf;
+
+    Matrix2d* Sf1 = Sf + 1*count_zf;
+    Matrix2d* Sf2 = Sf + 2 *count_zf;
+    Matrix2d* Sf3 = Sf + 3*count_zf;
+
+    Vector2d S_inv_v_al[4] __attribute__ ((aligned(32))); //Order: 0,2,1,3 !!!
+    
+
+    //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
+    //double den, num;
+    Matrix2d S_inv __attribute__ ((aligned(32)));
+    Vector2d S_inv_v  __attribute__ ((aligned(32)));
+
+    Matrix2d S_inv1 __attribute__ ((aligned(32)));
+    Vector2d S_inv_v1  __attribute__ ((aligned(32)));
+
+    Matrix2d S_inv2 __attribute__ ((aligned(32)));
+    Vector2d S_inv_v2  __attribute__ ((aligned(32)));
+
+    Matrix2d S_inv3 __attribute__ ((aligned(32)));
+    Vector2d S_inv_v3  __attribute__ ((aligned(32)));
+
+
+    double den[4]  __attribute__ ((aligned(32))), num[4]  __attribute__ ((aligned(32)));
+
+    double vT_S_inv_v[4]  __attribute__ ((aligned(32)));
+
+    __m256d den_v, num_v, vec_vSv, w_vec, zp_dist, zp_angle, z_dist, z_angle, fdiff_dist, fdiff_angle, fdiff1, fdiff2;
+
+    __m256d ymm0, ymm1, ymm2, ymm3, ymm4, ymm5, ymm6, ymm7, ymm8, ymm9, sinv0, sinv1, sinv2, sinv3, s_zeros, s_ones, s_twos, s_threes;
+
+    __m256d determinants, inv_det, neg_inv_det, weights_v;
+
+    __m256i zp_load_mask = _mm256_set_epi64x(2*3*count_zf,2*2*count_zf,2*1*count_zf,0); ///!!!!! Order here
+    __m256i sf_mask = _mm256_set_epi64x(4*3*count_zf,4*2*count_zf,4*1*count_zf,0);
+    
+    for (size_t i = 0; i < NPARTICLES; i+=4) {
+        if ( count_zf != 0 ) { 
+            //COMPUTE JACOBIANS
+            compute_jacobians_fast(particles + i, idf, count_zf, R, zp, Hv, Hf, Sf);
+            compute_jacobians_fast(particles + i +1, idf, count_zf, R, zp1, Hv + 1* count_zf, Hf1, Sf1);
+            compute_jacobians_fast(particles + i +2, idf, count_zf, R, zp2, Hv + 2* count_zf, Hf2, Sf2);
+            compute_jacobians_fast(particles + i +3, idf, count_zf, R, zp3, Hv + 3* count_zf, Hf3, Sf3);
+            //END COMPUTE_JACOBIANS
+
+            weights_v = _mm256_load_pd(weights+i);
+
+            for (size_t j = 0; j < count_zf; j++) {
+                // Particle 0
+                z_dist = _mm256_set1_pd(zf[j][0]);
+                z_angle = _mm256_set1_pd(zf[j][1]);
+
+                zp_dist = _mm256_i64gather_pd(*(zp+j), zp_load_mask,8);
+                zp_angle = _mm256_i64gather_pd(*(zp+j)+1, zp_load_mask,8);
+
+                fdiff_dist = _mm256_sub_pd(z_dist, zp_dist);
+                fdiff_angle = _mm256_sub_pd(z_angle, zp_angle);
+
+                fdiff_angle = simple_pi_to_pi_avx(fdiff_angle);
+                
+                fdiff1 = _mm256_shuffle_pd(fdiff_dist, fdiff_angle, 0b0000);
+                fdiff2 = _mm256_shuffle_pd(fdiff_dist, fdiff_angle, 0b1111);
+
+                _mm256_store2_m128d(feat_diff2[j], feat_diff[j], fdiff1);
+                _mm256_store2_m128d(feat_diff3[j], feat_diff1[j], fdiff2);
+
+                //INV and determinant simultaneously
+                s_zeros = _mm256_i64gather_pd(Sf[j], sf_mask,8); //Sfp0_0, Sf1_0 ..: Sf_0, Sf1_0, Sf2_0, Sf3_0
+                s_ones = _mm256_i64gather_pd(Sf[j]+1, sf_mask,8); //Sf1_0, Sf1_1
+                s_twos = _mm256_i64gather_pd(Sf[j]+2, sf_mask,8);
+                s_threes = _mm256_i64gather_pd(Sf[j]+3, sf_mask,8);
+
+
+
+                ymm0 = _mm256_mul_pd(s_zeros, s_threes);
+                ymm1 = _mm256_mul_pd(s_twos, s_ones);
+                
+                determinants = _mm256_sub_pd(ymm0, ymm1); //dets0, dets1, dets2, dets3
+
+                inv_det = _mm256_div_pd(_mm256_set1_pd(1.0), determinants);
+                neg_inv_det = _mm256_mul_pd(_mm256_set1_pd(-1.0), inv_det);
+
+                s_threes  = _mm256_mul_pd(inv_det, s_threes); //s * A[3]
+                s_ones = _mm256_mul_pd(neg_inv_det, s_ones);
+                s_twos = _mm256_mul_pd(neg_inv_det, s_twos);
+                s_zeros = _mm256_mul_pd(inv_det, s_zeros);
+
+                ymm6 = _mm256_unpacklo_pd(s_threes , s_ones);
+                ymm7 = _mm256_unpackhi_pd(s_threes , s_ones);
+                ymm8 = _mm256_unpacklo_pd(s_twos, s_zeros);
+                ymm9 = _mm256_unpackhi_pd(s_twos, s_zeros);
+
+                // _mm256_store_pd(S_inv, _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000));
+                // _mm256_store_pd(S_inv2,_mm256_permute2f128_pd(ymm6, ymm8, 0b00110001));
+                // _mm256_store_pd(S_inv1, _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000));
+                // _mm256_store_pd(S_inv3, _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001));
+
+                sinv0 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000);
+                sinv1 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000);
+                sinv2 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00110001);
+                sinv3 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001);
+
+
+                //vTMv
+
+                vec_vSv=mm_vT_M_v_avx2(sinv0,  sinv2,
+                       sinv1, sinv3,
+                       fdiff1, fdiff2);
+                //vTMv
+
+                
+                //Weights
+                ymm0 = _mm256_sqrt_pd(determinants);
+                den_v = _mm256_mul_pd(ymm0, two_pi_vec);
+                num_v = exp_avx2_pd(_mm256_mul_pd(minus_half, vec_vSv));
+
+                weights_v = _mm256_mul_pd(weights_v, _mm256_div_pd(num_v, den_v));
+
+                //KF Cholesky
+
+                // KF_cholesky_update(__m256d* xfp0p2, __m256d* xfp1p3, __m256d* Pf0, __m256d* Pf1, __m256d* Pf2, __m256d* Pf3,
+                //                    fdiffp0p2, fdiffp1p3, __m256d R_vec, __m256d Hfp0, __m256d Hfp1,__m256d Hfp2,__m256d Hfp3) 
+
+                KF_cholesky_update(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
+                                feat_diff[j], R, 
+                                Hf[j]);
+                KF_cholesky_update(particles[i+1].xf + 2 * idf[j], particles[i+1].Pf + 4 * idf[j], 
+                                feat_diff1[j], R, 
+                                Hf1[j]);
+                KF_cholesky_update(particles[i+2].xf + 2 * idf[j], particles[i+2].Pf + 4 * idf[j], 
+                                feat_diff2[j], R, 
+                                Hf2[j]);
+                KF_cholesky_update(particles[i+3].xf + 2 * idf[j], particles[i+3].Pf + 4 * idf[j], 
+                                feat_diff3[j], R, 
+                                Hf3[j]);
+
+                
+            }
+            _mm256_store_pd(weights+i, weights_v);
+                
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            add_feature(particles+i, zn, count_zn, R);
+            add_feature(particles+i+1, zn, count_zn, R);
+            add_feature(particles+i+2, zn, count_zn, R);
+            add_feature(particles+i+3, zn, count_zn, R);
+        }
+    }
+
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+}
 void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
