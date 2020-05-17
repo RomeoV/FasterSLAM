@@ -42,6 +42,8 @@ void transpose_2x2(const double *A, double *T);
 //! Matrix Self Transpose ( 2x2, in place )
 void stranspose_2x2(double *A);
 
+__m256d _transpose_2x2_avx( __m256d A );
+
 //! Adds two arrays
 void add(const double *x, const double *y, size_t size, double* z); 
 

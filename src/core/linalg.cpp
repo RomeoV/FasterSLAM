@@ -141,6 +141,12 @@ void transpose_2x2(const double *A, double *T) {
     T[3] = A[3];
 }
 
+#ifdef __AVX2__
+__m256d _transpose_2x2_avx( __m256d A ) {
+    return _mm256_permute4x64_pd( A, 0b11011000 );
+}
+#endif
+
 void stranspose_2x2(double *A) {
     const double tmp = A[1];
     A[1] = A[2];
