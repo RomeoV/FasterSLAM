@@ -253,6 +253,9 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     Matrix2d* Sf2 = Sf + 2 *count_zf;
     Matrix2d* Sf3 = Sf + 3*count_zf;
 
+    Vector2d S_inv_v_al[4] __attribute__ ((aligned(32))); //Order: 0,2,1,3 !!!
+    
+
     //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
     //double den, num;
     Matrix2d S_inv __attribute__ ((aligned(32)));
@@ -339,15 +342,30 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 _mm256_store_pd(S_inv1, _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000));
                 _mm256_store_pd(S_inv3, _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001));
 
-                mv_2x2(S_inv, feat_diff[j], S_inv_v);
-                mv_2x2(S_inv1, feat_diff1[j], S_inv_v1);
-                mv_2x2(S_inv2, feat_diff2[j], S_inv_v2);
-                mv_2x2(S_inv3, feat_diff3[j], S_inv_v3);
+                // mv_2x2(S_inv, feat_diff[j], S_inv_v);
+                // mv_2x2(S_inv1, feat_diff1[j], S_inv_v1);
+                // mv_2x2(S_inv2, feat_diff2[j], S_inv_v2);
+                // mv_2x2(S_inv3, feat_diff3[j], S_inv_v3);
 
-                mul(feat_diff[j], S_inv_v, 1, 2, 1, &vT_S_inv_v[0]); // TODO in linalg   
-                mul(feat_diff1[j], S_inv_v1, 1, 2, 1, &vT_S_inv_v[1]); // TODO in linalg
-                mul(feat_diff2[j], S_inv_v2, 1, 2, 1, &vT_S_inv_v[2]); // TODO in linalg
-                mul(feat_diff3[j], S_inv_v3, 1, 2, 1, &vT_S_inv_v[3]); // TODO in linalg
+                mv_2x2(S_inv, feat_diff[j], S_inv_v_al[0]);
+                mv_2x2(S_inv1, feat_diff1[j], S_inv_v_al[2]);
+                mv_2x2(S_inv2, feat_diff2[j], S_inv_v_al[1]);
+                mv_2x2(S_inv3, feat_diff3[j], S_inv_v_al[3]);
+
+                ymm0 = _mm256_load_pd(*S_inv_v_al);
+                ymm1 = _mm256_load_pd(*S_inv_v_al + 4);
+
+                ymm2 = _mm256_mul_pd(fdiff1, ymm0);
+                ymm3 = _mm256_mul_pd(fdiff2, ymm1);
+
+                _mm256_store_pd(vT_S_inv_v, _mm256_hadd_pd(ymm2, ymm3));
+
+
+
+                // mul(feat_diff[j], S_inv_v_al[0], 1, 2, 1, &vT_S_inv_v[0]); // TODO in linalg   
+                // mul(feat_diff1[j], S_inv_v_al[2], 1, 2, 1, &vT_S_inv_v[1]); // TODO in linalg
+                // mul(feat_diff2[j], S_inv_v_al[1], 1, 2, 1, &vT_S_inv_v[2]); // TODO in linalg
+                // mul(feat_diff3[j], S_inv_v_al[3], 1, 2, 1, &vT_S_inv_v[3]); // TODO in linalg
 
                 KF_cholesky_update(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
                                 feat_diff[j], R, 
