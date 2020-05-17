@@ -82,7 +82,7 @@ int main() {
     
     
     srand(0);
-    fill_rand(lm, 2*Nf, -1.0,1.0);
+    fill_rand(lm, 2*Nf, -MAX_RANGE,MAX_RANGE);
 
     srand(0);
     size_t Nf_visible;
