@@ -23,7 +23,7 @@ double DT_CONTROLS = 0.025; // seconds, time interval between control signals
 double sigmaV = 0.3; // m/s
 double sigmaG = (3.0 * pi / 180); // radians
 
-double Q[2][2]= {
+double Q[2][2] __attribute__((aligned(32))) = {
     {0, 0},
     {0, 0}
 };
@@ -36,7 +36,7 @@ double DT_OBSERVE = /*8 **/ DT_CONTROLS; // seconds, time interval between obser
 double sigmaR = 0.1; // metres
 double sigmaB = (1.0 * pi / 180); // radians
 
-double R[2][2] = {
+double R[2][2] __attribute__((aligned(32))) = {
     {0, 0},
     {0, 0}
 };
