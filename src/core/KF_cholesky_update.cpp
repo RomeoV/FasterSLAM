@@ -121,13 +121,12 @@ void KF_cholesky_update_fused_ops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatr
     __m256d pht = _mmT_2x2_avx_v3(p, h);                        //! PHt = P*Ht
     __m256d s = _mmadd_2x2_avx_v2(h, pht, _mm256_load_pd( R )); //! S += H*PHt ( S = H*P*H^T + R )
 
+    s = _mm256_add_pd( s, _mm256_permute4x64_pd( s, 0b11011000 ) ); // S = S + S^T
+    s = _mm256_mul_pd( _mm256_set1_pd( 0.5 ), s );                  // S = 0.5*S
+
     _mm256_store_pd(S, s);
 
     // TODO: AVX
-    transpose_2x2(S, St); //! St = S^T
-    add(S, St, 4, S);     //! S = S + St
-    scal(S, 4, 0.5, S);   //! S = 0.5*S
- 
     llt_2x2(S, SChol);        //! S = SChol * SChol^T
     inv_2x2(SChol, SCholInv); //! SCholInv = inv( SChol )
 
