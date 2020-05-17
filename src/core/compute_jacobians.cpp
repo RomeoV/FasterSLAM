@@ -234,9 +234,7 @@ void compute_jacobians_fast(Particle* particle,
         double theta = atan2(dy, dx) - ptheta;
         zp[i][1] = pi_to_pi(theta);
 
-        // Jacobian wrt vehicle states
-        //Matrix23d HvMat = {-dx_dinv, -dy_dinv, 0, dy_d2inv, -dx_d2inv, -1};
-
+        //! Hv is unused in fastslam1 !!!
         Hv[i][0] = -dx_dinv;
         Hv[i][1] = -dy_dinv;
         Hv[i][2] = 0.0;
@@ -244,13 +242,6 @@ void compute_jacobians_fast(Particle* particle,
         Hv[i][4] = -dx_d2inv;
         Hv[i][5] = -1.0;
 
-        Hf[i][0] = dx_dinv;
-        Hf[i][1] = dy_dinv;
-        Hf[i][2] = -dy_d2inv;
-        Hf[i][3] = dx_d2inv;
-
-        //copy(HvMat, 6, Hv[i]);
-        //copy(HfMat, 4, Hf[i]);
         // innovation covariance of feature observation given the vehicle'
         // Eq. 60 in Thrun03g
         // MAt x Mat
@@ -269,8 +260,6 @@ void compute_jacobians_fast(Particle* particle,
 #else
         auto sum = _mm256_add_pd( _mm256_mul_pd(hf_perm, p2p1), ymm0);
 #endif
-
-        //__m256d sum = _mm256_add_pd(ymm0, ymm1);
 
         auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001); 
         auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);

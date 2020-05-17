@@ -27,27 +27,38 @@ __m256d minus_half = _mm256_set1_pd(-0.5);
 
 __m256i z_load_mask = _mm256_set_epi64x(6,4,2,0);
 
+
+//For exponential
+const __m256d c0 =  _mm256_set1_pd (0.041944388f);
+const __m256d c1 =  _mm256_set1_pd (0.168006673f);
+const __m256d c2 =  _mm256_set1_pd (0.499999940f);
+const __m256d c3 =  _mm256_set1_pd (0.999956906f);
+const __m256d c4 =  _mm256_set1_pd (0.999999642f);
+
+const __m256d l2e = _mm256_set1_pd (1.442695041); /* log2(e) */
+const __m256d l2h = _mm256_set1_pd (-6.93145752e-1); /* -log(2)_hi */
+const __m256d l2l = _mm256_set1_pd (-1.42860677e-6); /* -log(2)_lo */
+
+__m256d zeros = _mm256_set1_pd(0.0);
+
+
 __m256d exp_avx2_pd (__m256d x)
 {
     //Source: https://stackoverflow.com/questions/48863719/fastest-implementation-of-exponential-function-using-avx
+
+    // Philipp L.: Adapted to double-precision and added a check that the result is non-negative
     __m256d t, f, p, r;
     __m256i i, j;
 
-    const __m256d l2e = _mm256_set1_pd (1.442695041); /* log2(e) */
-    const __m256d l2h = _mm256_set1_pd (-6.93145752e-1); /* -log(2)_hi */
-    const __m256d l2l = _mm256_set1_pd (-1.42860677e-6); /* -log(2)_lo */
     /* coefficients for core approximation to exp() in [-log(2)/2, log(2)/2] */
-    // const __m256d c0 =  _mm256_set1_pd (0.041944388f);
-    // const __m256d c1 =  _mm256_set1_pd (0.168006673f);
-    // const __m256d c2 =  _mm256_set1_pd (0.499999940f);
-    // const __m256d c3 =  _mm256_set1_pd (0.999956906f);
-    // const __m256d c4 =  _mm256_set1_pd (0.999999642f);
-    const __m256d c0 =  _mm256_set1_pd (0.008301110);
-    const __m256d c1 =  _mm256_set1_pd (0.041906696);
-    const __m256d c2 =  _mm256_set1_pd (0.166674897);
-    const __m256d c3 =  _mm256_set1_pd (0.499990642);
-    const __m256d c4 =  _mm256_set1_pd (0.999999762);
-    const __m256d c5 =  _mm256_set1_pd (1.000000000);
+
+    // Swap to these coefficients for slighly higher accuracy
+    // const __m256d c0 =  _mm256_set1_pd (0.008301110);
+    // const __m256d c1 =  _mm256_set1_pd (0.041906696);
+    // const __m256d c2 =  _mm256_set1_pd (0.166674897);
+    // const __m256d c3 =  _mm256_set1_pd (0.499990642);
+    // const __m256d c4 =  _mm256_set1_pd (0.999999762);
+    // const __m256d c5 =  _mm256_set1_pd (1.000000000);
 
     /* exp(x) = 2^i * e^f; i = rint (log2(e) * x), f = x - log(2) * i */
     t = _mm256_mul_pd (x, l2e);      /* t = log2(e) * x */
@@ -65,12 +76,14 @@ __m256d exp_avx2_pd (__m256d x)
     p = _mm256_fmadd_pd (p, f, c2);  /* (c0*f+c1)*f+c2 */
     p = _mm256_fmadd_pd (p, f, c3);  /* ((c0*f+c1)*f+c2)*f+c3 */
     p = _mm256_fmadd_pd (p, f, c4);  /* (((c0*f+c1)*f+c2)*f+c3)*f+c4 ~= exp(f) */
-    p = _mm256_fmadd_pd (p, f, c5);
+    // p = _mm256_fmadd_pd (p, f, c5); // Swap to these coefficients for slighly higher accuracy
 
     /* exp(x) = 2^i * p */
     j = _mm256_slli_epi64 (i, 52); /* i << 23 (on epi32, <<52 on epi64 (Philipp L., tested ^^)*/
     r = _mm256_castsi256_pd (_mm256_add_epi64 (j, _mm256_castpd_si256 (p))); /* r = p * 2^i */
-    __m256d zeros = _mm256_set1_pd(0.0);
+
+    //Philipp L. : Function breaks at super negative exponents -> yields negative numbers. This check prevents this.
+    
     r = _mm256_blendv_pd( r, zeros,  r);
 
     return r;
