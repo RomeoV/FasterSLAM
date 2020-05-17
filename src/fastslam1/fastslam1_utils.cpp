@@ -59,15 +59,16 @@ void cleanup_particles_and_pose(Particle** p_, double** w_, double** xv_, double
 }
 
 void setup_initial_particles(Particle **p_, double **w_, const size_t N_features, const Vector3d xv_initial) {
-    *p_ = (Particle *) malloc( NPARTICLES * sizeof(Particle) );
+    const int N_particles = NPARTICLES;
+    *p_ = (Particle *) malloc( N_particles * sizeof(Particle) );
     Particle *p = *p_;
-    for (size_t i = 0; i < NPARTICLES; i++) {
+    for (size_t i = 0; i < N_particles; i++) {
         initParticle(&p[i], N_features, xv_initial);
     }
-    const double uniform_w = 1.0 / NPARTICLES; 
-    *w_ = (double *) malloc( NPARTICLES * sizeof(double) );
+    const double uniform_w = 1.0 / N_particles; 
+    *w_ = (double *) malloc( N_particles * sizeof(double) );
     double *w = *w_;
-    for (size_t i = 0; i < NPARTICLES; i++) {
+    for (size_t i = 0; i < N_particles; i++) {
         w[i] = uniform_w;
         p[i].w = &w[i];
     }

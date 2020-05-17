@@ -14,6 +14,8 @@ if(${WITHOUT_AVX2})
   set(CMAKE_CXX_FLAGS "-mno-avx2 -mno-fma ${CMAKE_CXX_FLAGS}")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native")
+
 include(CTest)
 enable_testing()
 add_subdirectory(core)

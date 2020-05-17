@@ -6,6 +6,14 @@
 //! ---------- Linear Algebra Utility Functions ----------- //
 //! ------------------------------------------------------- //
 
+//HACK: My compiler could not find this function even though its listed in intrinsics.
+// Source: https://github.com/gcc-mirror/gcc/blob/master/gcc/config/i386/avxintrin.h
+extern __inline void _mm256_store2_m128d (double *__PH, double *__PL, __m256d __A)
+{
+  _mm_storeu_pd (__PL, _mm256_castpd256_pd128 (__A));
+  _mm_storeu_pd (__PH, _mm256_extractf128_pd (__A, 1));
+}
+
 //! Prints an array
 void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout);
 

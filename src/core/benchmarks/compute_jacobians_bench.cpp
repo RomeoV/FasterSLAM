@@ -106,6 +106,8 @@ int main() {
         }
     };
 
+    auto ymm0 = _mm256_set_pd(3,2,1,0);
+
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&compute_jacobians)> bench("compute_jacobians Benchmark");

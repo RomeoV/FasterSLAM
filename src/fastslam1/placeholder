@@ -1,0 +1,72 @@
+INLINED COMPUTE_JACOBIANS:
+            double px = particles[i].xv[0];
+            double py = particles[i].xv[1];
+            double ptheta = particles[i].xv[2];
+
+            auto R_vec =  _mm256_load_pd(R);
+
+            for (int i = 0; i < count_zf; i++) {
+                dx = particles[i].xf[2*idf[i]] - px;
+                dy = particles[i].xf[2*idf[i]+1] - py;
+                //d2 = pow(dx, 2) + pow(dy, 2);
+                d2 = dx * dx + dy * dy;
+                d = sqrt(d2);
+                dinv = 1.0/ d;
+                d2inv = dinv * dinv;
+
+
+                dx_dinv = dx * dinv;
+                dy_dinv = dy * dinv;
+                dx_d2inv = dx * d2inv;
+                dy_d2inv = dy * d2inv;
+
+                // predicted observation
+                zp[i][0] = d;
+                double theta = atan2(dy, dx) - ptheta;
+                zp[i][1] = pi_to_pi(theta);
+
+                // Jacobian wrt vehicle states
+                //Matrix23d HvMat = {-dx_dinv, -dy_dinv, 0, dy_d2inv, -dx_d2inv, -1};
+
+                Hv[i][0] = -dx_dinv;
+                Hv[i][1] = -dy_dinv;
+                Hv[i][2] = 0.0;
+                Hv[i][3] = dy_d2inv;
+                Hv[i][4] = -dx_d2inv;
+                Hv[i][5] = -1.0;
+
+                Hf[i][0] = dx_dinv;
+                Hf[i][1] = dy_dinv;
+                Hf[i][2] = -dy_d2inv;
+                Hf[i][3] = dx_d2inv;
+
+                //copy(HvMat, 6, Hv[i]);
+                //copy(HfMat, 4, Hf[i]);
+                // innovation covariance of feature observation given the vehicle'
+                // Eq. 60 in Thrun03g
+                // MAt x Mat
+                auto pf_vec =  _mm256_load_pd(particles[i].Pf + 4* idf[i]);
+                auto hf_vec = _mm256_set_pd(dx_d2inv, -dy_d2inv, dy_dinv, dx_dinv);
+                _mm256_store_pd(Hf[i], hf_vec);
+                auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
+
+                auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
+                auto p0p3 = _mm256_blend_pd(pf_vec, pmm0, 0b0110);
+                auto p2p1 = _mm256_blend_pd(pf_vec, pmm0, 0b1001);
+
+                auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
+                auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
+
+                //__m256d sum = _mm256_add_pd(ymm0, ymm1);
+
+                auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001); 
+                auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
+                auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
+
+                ymm0 = _mm256_mul_pd(h2h1, sum);
+                auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
+
+                ymm0 = _mm256_permute_pd(ymm0, 0b0101);
+                sum = _mm256_add_pd(ymm0, ymm1);
+
+                _mm256_store_pd(Sf[i], sum);
