@@ -217,23 +217,23 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     size_t count_zn = 0;
     data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
     //Vector2d zp[count_zf] __attribute__ ((aligned(32)));
-    Matrix23d Hv[4* count_zf] __attribute__ ((aligned(32))); //Unused in whole code
-    Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+    Matrix23d Hv[4*count_zf] __attribute__ ((aligned(32))); //Unused in whole code
+    Matrix2d Hf[4*count_zf] __attribute__ ((aligned(32)));
     
     
 
     //Vector2d zp1[count_zf] __attribute__ ((aligned(32)));
-    Matrix2d Hf1[count_zf] __attribute__ ((aligned(32)));
+    // Matrix2d Hf1[count_zf] __attribute__ ((aligned(32)));
     // Matrix2d Sf1[count_zf] __attribute__ ((aligned(32)));
     //Vector2d feat_diff1[count_zf] __attribute__ ((aligned(32)));
 
     // Vector2d zp2[count_zf] __attribute__ ((aligned(32)));
-    Matrix2d Hf2[count_zf] __attribute__ ((aligned(32)));
+    //Matrix2d Hf2[count_zf] __attribute__ ((aligned(32)));
     // Matrix2d Sf2[count_zf] __attribute__ ((aligned(32)));
     //Vector2d feat_diff2[count_zf] __attribute__ ((aligned(32)));
 
     // Vector2d zp3[count_zf] __attribute__ ((aligned(32)));
-    Matrix2d Hf3[count_zf] __attribute__ ((aligned(32)));
+    //Matrix2d Hf3[count_zf] __attribute__ ((aligned(32)));
     // Matrix2d Sf3[count_zf] __attribute__ ((aligned(32)));
     // Vector2d feat_diff3[count_zf] __attribute__ ((aligned(32)));
 
@@ -241,17 +241,9 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     Vector2d zp[4*count_zf] __attribute__ ((aligned(32)));
     Matrix2d Sf[4*count_zf] __attribute__ ((aligned(32)));
 
-    Vector2d* zp1 = zp+ 1*count_zf;
-    Vector2d* zp2 = zp+ 2*count_zf;
-    Vector2d* zp3 = zp+ 3*count_zf;
-
     Vector2d* feat_diff1 = feat_diff+ 1*count_zf;
     Vector2d* feat_diff2 = feat_diff+ 2*count_zf;
     Vector2d* feat_diff3 = feat_diff+ 3*count_zf;
-
-    Matrix2d* Sf1 = Sf + 1*count_zf;
-    Matrix2d* Sf2 = Sf + 2 *count_zf;
-    Matrix2d* Sf3 = Sf + 3*count_zf;
 
     //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
     //double den, num;
@@ -281,13 +273,21 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     __m256i zp_load_mask = _mm256_set_epi64x(2*3*count_zf,2*2*count_zf,2*1*count_zf,0); ///!!!!! Order here
     __m256i sf_mask = _mm256_set_epi64x(4*3*count_zf,4*2*count_zf,4*1*count_zf,0);
     
-    for (size_t i = 0; i < NPARTICLES; i+=4) {
+    for (size_t i = 0; i+3 < NPARTICLES; i+=4) {  // Assumes NPARTICLES is div. by 4, won't process remainder
         if ( count_zf != 0 ) { 
             //COMPUTE JACOBIANS
-            compute_jacobians_fast(particles + i, idf, count_zf, R, zp, Hv, Hf, Sf);
+            /*
+            compute_jacobians_fast(particles + i   , idf, count_zf, R, zp , Hv + 0* count_zf, Hf , Sf );
             compute_jacobians_fast(particles + i +1, idf, count_zf, R, zp1, Hv + 1* count_zf, Hf1, Sf1);
             compute_jacobians_fast(particles + i +2, idf, count_zf, R, zp2, Hv + 2* count_zf, Hf2, Sf2);
             compute_jacobians_fast(particles + i +3, idf, count_zf, R, zp3, Hv + 3* count_zf, Hf3, Sf3);
+            */
+            Particle* particles4[4] = {particles+i, particles+i+1, particles+i+2, particles+i+3 };
+            Vector2d* zp4[4] = {zp+0*count_zf, zp+1*count_zf, zp+2*count_zf, zp+3*count_zf};
+            Matrix23d*Hv4[4] = {Hv+0*count_zf, Hv+1*count_zf, Hv+2*count_zf, Hv+3*count_zf};
+            Matrix2d* Hf4[4] = {Hf+0*count_zf, Hf+1*count_zf, Hf+2*count_zf, Hf+3*count_zf};
+            Matrix2d* Sf4[4] = {Sf+0*count_zf, Sf+1*count_zf, Sf+2*count_zf, Sf+3*count_zf};
+            compute_jacobians_fast_4particles(particles4, idf, count_zf, R, zp4, Hv4, Hf4, Sf4);
             //END COMPUTE_JACOBIANS
 
             weights_v = _mm256_load_pd(weights+i);
@@ -352,16 +352,15 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 KF_cholesky_update(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
                                 feat_diff[j], R, 
                                 Hf[j]);
-
                 KF_cholesky_update(particles[i+1].xf + 2 * idf[j], particles[i+1].Pf + 4 * idf[j], 
                                 feat_diff1[j], R, 
-                                Hf1[j]);
+                                Hf[j+1*count_zf]);
                 KF_cholesky_update(particles[i+2].xf + 2 * idf[j], particles[i+2].Pf + 4 * idf[j], 
                                 feat_diff2[j], R, 
-                                Hf2[j]);
+                                Hf[j+2*count_zf]);
                 KF_cholesky_update(particles[i+3].xf + 2 * idf[j], particles[i+3].Pf + 4 * idf[j], 
                                 feat_diff3[j], R, 
-                                Hf3[j]);
+                                Hf[j+3*count_zf]);
 
                 //Weights
                 ymm0 = _mm256_sqrt_pd(determinants);
