@@ -354,7 +354,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                                 feat_diff3[j], R, 
                                 Hf3[j]);
 #endif
-/*
+
                 __m256d xfp0p2 = _mm256_loadu2_m128d_(particles[i+2].xf + 2 * idf[j], particles[i].xf + 2 * idf[j]);
                 __m256d xfp1p3 = _mm256_loadu2_m128d_(particles[i+3].xf + 2 * idf[j], particles[i+1].xf + 2 * idf[j]);
 
@@ -378,7 +378,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                 _mm256_store_pd(particles[i+1].Pf + 4 * idf[j], Pf1);
                 _mm256_store_pd(particles[i+2].Pf + 4 * idf[j], Pf2);
                 _mm256_store_pd(particles[i+3].Pf + 4 * idf[j], Pf3);     
-*/
+
             }
             _mm256_store_pd(weights+i, weights_v); 
         }
