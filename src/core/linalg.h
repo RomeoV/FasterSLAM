@@ -50,6 +50,8 @@ void transpose_2x2(const double *A, double *T);
 //! Matrix Self Transpose ( 2x2, in place )
 void stranspose_2x2(double *A);
 
+__m256d _transpose_2x2_avx( __m256d A );
+
 //! Adds two arrays
 void add(const double *x, const double *y, size_t size, double* z); 
 
@@ -70,12 +72,14 @@ void mm_2x2(const double *A, const double *B, double *C);
 void mm_2x2_avx_v1(const double *A, const double *B, double *C);
 void mm_2x2_avx_v2(const double *A, const double *B, double *C);
 void mm_2x2_avx_v3(const double *A, const double *B, double *C);
+__m256d _mm_2x2_avx_v1( __m256d a, __m256d b );
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 )
 void mmT_2x2(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v2(const double *A, const double *B, double *C);
 void mmT_2x2_avx_v3(const double *A, const double *B, double *C);
+__m256d _mmT_2x2_avx_v3( __m256d a0123, __m256d b0123 );
 
 //! C += A*B ( 2x2 )
 void mmadd_2x2(const double *A, const double *B, double *C);
@@ -87,9 +91,11 @@ __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c);
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);
+__m128d _mv_2x2_avx_v1( __m256d const a, __m128d const b );
 
 //! c += A*b ( 2x2 )
 void mvadd_2x2(const double *A, const double *b, double *c);
+__m128d _mvadd_2x2_avx_v1( __m256d const a, __m128d const b, __m128d const c );
 
 //! Cholesky Factorization of a 2x2 SPD Matrix A = L * L^T, L lower triangular
 void llt_2x2(const double *A, double *L);
@@ -101,6 +107,35 @@ void inv_2x2(const double *A, double *Ainv);
 //! @param A pointer to row major continuous memory
 double determinant_2x2(const double* A);
 
+
+// Instrumenting flops and memory count
+
+double copy_flops(const double* ref, size_t N, double* target);
+double copy_memory(const double* ref, size_t N, double* target);
+
+double fill_rand_flops(double *x, size_t size, double lo, double hi);
+double fill_rand_memory(double *x, size_t size, double lo, double hi);
+
+double transpose_flops(const double *A, size_t mA, size_t nA, double *T);
+double transpose_memory(const double *A, size_t mA, size_t nA, double *T);
+
+
+double add_flops(const double *x, const double *y, size_t size, double* z);
+double add_memory(const double *x, const double *y, size_t size, double* z);
+
+
+double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
+double mul_memory(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C);
+
+double llt_2x2_flops(const double *A, double *L);
+double llt_2x2_memory(const double *A, double *L);
+
+double inv_2x2_flops(const double *A, double *Ainv);
+double inv_2x2_memory(const double *A, double *Ainv);
+
+double determinant_2x2_flops(const double* A);
+double determinant_2x2_memory(const double* A);
+
 /** Executes four v.T @ M @ v.T calculations
  * @param m1 - m4 Row major matrices
  * @param v12 vector v1 and v2 in order
@@ -111,3 +146,25 @@ double determinant_2x2(const double* A);
 __m256d mm_vT_M_v_avx2(const __m256d& m1,  const __m256d& m2,
                        const __m256d& m3,  const __m256d& m4,
                        const __m256d& v12, const __m256d& v34);
+
+__m256d mm_vT_M_v_avx2_phil(const __m256d m1,  const __m256d m2,
+                       const __m256d m3,  const __m256d m4,
+                       const __m256d v12, const __m256d v34);
+//! Takes four registers and returns their transpose equivalents
+void register_transpose(__m256d const r0,
+                        __m256d const r1,
+                        __m256d const r2,
+                        __m256d const r3,
+                        __m256d *t0, __m256d *t1, __m256d *t2, __m256d *t3);
+
+//! Takes four registers each of which holds a matrix 2x2 (row-major),
+//! and returns their inverses
+void batch_inverse_2x2(__m256d const r0,
+                       __m256d const r1,
+                       __m256d const r2,
+                       __m256d const r3,
+                       __m256d *inv0,
+                       __m256d *inv1,
+                       __m256d *inv2,
+                       __m256d *inv3);
+

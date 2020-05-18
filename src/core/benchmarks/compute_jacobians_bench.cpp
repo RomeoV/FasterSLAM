@@ -41,6 +41,22 @@ void enforce_symmetry_Pf(Matrix2d Pf[], const size_t Nfa) {
     }
 }
 
+// I will try to add this as smooth as possible to the benchmark, but for now do this
+void set_work(Benchmark<decltype(&compute_jacobians)>& bench, Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]) {
+    bench.funcFlops[0] = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    for (int i = 1; i < bench.numFuncs; i++) {
+        bench.funcFlops[i] = compute_jacobians_active_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    }
+}
+
+
 int main() {
     // Initialize Input
     // prepare particle
@@ -120,18 +136,28 @@ int main() {
 #ifdef __AVX2__
     bench.add_function(&compute_jacobians_advanced_optimizations, "compute_jacobians_jonathan", work);
 #endif
+    //bench.add_function(&compute_jacobians, "compute_jacobians", work);
+    
+    
     bench.add_function(&compute_jacobians_simd, "compute_jacobians_simd", work);
     bench.add_function(&compute_jacobians_nik, "compute_jacobians_nik", work);
     bench.add_function(&compute_jacobians_scalar_replacement, "compute_jacobians_scalar_replacement", work);
     bench.add_function(&compute_jacobians_linalg_inplace, "compute_jacobians_linalg_inplace", work);
 
+    int idf_4[1] = {5};
+    set_work(bench, particle, idf_4, 1, R, zp, Hv, Hf, Sf);
+    bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
+
+    set_work(bench, particle, idf, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
 
     int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,18, 20, 22};
+    set_work(bench, particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
 
 
     int idf_3[20] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
+    set_work(bench, particle, idf_3, 20, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_3, 20, R, zp, Hv, Hf, Sf);
 
     

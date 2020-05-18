@@ -25,6 +25,9 @@ add_library(FasterSlamCore
   trigonometry.cpp
   compute_weight_and_feature_update.cpp
 )
+if (USE_YGLEE_KF_CHOLESKY)
+    target_compile_options(FasterSlamCore PUBLIC -DKF_YGLEE)
+endif()
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )

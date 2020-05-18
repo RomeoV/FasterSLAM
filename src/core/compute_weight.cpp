@@ -130,7 +130,7 @@ double compute_weight_active(Particle* particle,
 
     
     mv_2x2(S_inv, v[i], S_inv_v);
-    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
+    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO use the AVX v.T @ M @ v implementation for this
 
     
 

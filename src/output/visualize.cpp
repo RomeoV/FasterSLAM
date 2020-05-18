@@ -65,7 +65,7 @@ int main (int argc, char *argv[])
     srand( SWITCH_SEED_RANDOM );
 
 #ifdef __AVX2__
-    // avx_xorshift128plus_init(1,1);
+    avx_xorshift128plus_init(1,1);
 #endif
 
     double dt        = DT_CONTROLS; // change in time btw predicts
@@ -109,7 +109,7 @@ int main (int argc, char *argv[])
         // Prediction
         //////////////////////////////////////////////////////////////////
 
-        predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 

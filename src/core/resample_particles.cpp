@@ -28,8 +28,9 @@ void count_occurences(const size_t* indices, size_t N, int* count);
 
 
 void resample_particles(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
-    resample_particles_base(particles, N, weights, Nmin, doresample);
+    resample_particles_orig(particles, N, weights, Nmin, doresample);
 }
+
 void resample_particles_base(Particle* particles, size_t N, double* weights,int Nmin, int doresample)
 { 
     normalize_weights(weights, N);
@@ -79,30 +80,35 @@ void resample_particles_base(Particle* particles, size_t N, double* weights,int 
 
 void resample_particles_orig(Particle* particles, size_t N, double* weights,int Nmin, int doresample)
 { 
-    int Nf = particles[0].Nf;
-    Particle old_particles[N];
-
-    for (int i = 0; i<N; i++) {
-        initParticle(old_particles+i, Nf, particles[i].xv);
-        copyParticle(particles+i, old_particles+i);
-    }
+    
 
     normalize_weights(weights, N);
 
+    
     double Neff;  // discard this? NO!
     size_t keep_indices[N];  // can be seen as dependencies   
     stratified_resample_base(weights, N, &Neff, keep_indices);
 
-    for (int i = 0; i< N; i++) {
-        copyParticle(old_particles+keep_indices[i], particles+i);
-    }
-    
-    for (int i = 0; i<N; i++) {
+
+    if ((Neff < Nmin) && (doresample == 1)) {
+        int Nf = particles[0].Nf;
+        Particle old_particles[N];
+
+        for (int i = 0; i<N; i++) {
+            initParticle(old_particles+i, Nf, particles[i].xv);
+            copyParticle(particles+i, old_particles+i);
+        }
+
+        for (int i = 0; i< N; i++) {
+            copyParticle(old_particles+keep_indices[i], particles+i);
+        }
+        
+        for (int i = 0; i<N; i++) {
             weights[i] = 1.0f/N;
             particles[i].w = weights+i;
             delParticleMembers(old_particles+i);
+        }
     }
-
 }
 
 /* Basically finds a 0 */
