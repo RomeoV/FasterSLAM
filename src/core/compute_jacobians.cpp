@@ -301,28 +301,62 @@ void compute_jacobians_fast_4particles(
     auto R_vec =  _mm256_load_pd(R);
 
     for (int i = 0; i < N_z; i++) {
+        dx[0] = particle[0]->xf[2*idf[i]] - px[0];  // [0]
+        dy[0] = particle[0]->xf[2*idf[i]+1] - py[0];
+        //d2[0] = pow(dx0, 2) + pow(dy0, 2);
+        d2[0] = dx[0] * dx[0] + dy[0] * dy[0];
+
+        dx[1] = particle[1]->xf[2*idf[i]] - px[1];  // [1]
+        dy[1] = particle[1]->xf[2*idf[i]+1] - py[1];
+        //d2[1] = pow(dx0, 2) + pow(dy0, 2);
+        d2[1] = dx[1] * dx[1] + dy[1] * dy[1];
+
+        dx[2] = particle[2]->xf[2*idf[i]] - px[2];  // [2]
+        dy[2] = particle[2]->xf[2*idf[i]+1] - py[2];
+        //d2[2] = pow(dx0, 2) + pow(dy0, 2);
+        d2[2] = dx[2] * dx[2] + dy[2] * dy[2];
+
+        dx[3] = particle[3]->xf[2*idf[i]] - px[3];  // [3]
+        dy[3] = particle[3]->xf[2*idf[i]+1] - py[3];
+        //d2[3] = pow(dx0, 2) + pow(dy0, 2);
+        d2[3] = dx[3] * dx[3] + dy[3] * dy[3];
+
+
+        d[0] = sqrt(d2[0]);  // [0]
+        dinv[0] = 1.0/ d[0];
+        d2inv[0] = dinv[0] * dinv[0];
+        d[1] = sqrt(d2[1]);  // [1]
+        dinv[1] = 1.0/ d[1];
+        d2inv[1] = dinv[1] * dinv[1];
+        d[2] = sqrt(d2[2]);  // [2]
+        dinv[2] = 1.0/ d[2];
+        d2inv[2] = dinv[2] * dinv[2];
+        d[3] = sqrt(d2[3]);  // [3]
+        dinv[3] = 1.0/ d[3];
+        d2inv[3] = dinv[3] * dinv[3];
+
+        // predicted observation
+        // I hope the compiler vectorizes the atan2 here, otherwise we could do it...
         double theta[4];
+        zp[0][i][0] = d[0];  // [0]
+        theta[0] = atan2(dy[0], dx[0]) - ptheta[0];
+        zp[0][i][1] = pi_to_pi(theta[0]);
+        zp[1][i][0] = d[1];  // [1]
+        theta[1] = atan2(dy[1], dx[1]) - ptheta[1];
+        zp[1][i][1] = pi_to_pi(theta[1]);
+        zp[2][i][0] = d[2];  // [2]
+        theta[2] = atan2(dy[2], dx[2]) - ptheta[2];
+        zp[2][i][1] = pi_to_pi(theta[2]);
+        zp[3][i][0] = d[3];  // [3]
+        theta[3] = atan2(dy[3], dx[3]) - ptheta[3];
+        zp[3][i][1] = pi_to_pi(theta[3]);
+
         for (size_t p = 0; p < 4; p++) {
-            dx[p] = particle[p]->xf[2*idf[i]] - px[p];
-            dy[p] = particle[p]->xf[2*idf[i]+1] - py[p];
-            //d2[p] = pow(dx0, 2) + pow(dy0, 2);
-            d2[p] = dx[p] * dx[p] + dy[p] * dy[p];
-
-
-            d[p] = sqrt(d2[p]);
-            dinv[p] = 1.0/ d[p];
-            d2inv[p] = dinv[p] * dinv[p];
-
-
             dx_dinv[p] = dx[p] * dinv[p];
             dy_dinv[p] = dy[p] * dinv[p];
             dx_d2inv[p] = dx[p] * d2inv[p];
             dy_d2inv[p] = dy[p] * d2inv[p];
 
-            // predicted observation
-            zp[p][i][0] = d[p];
-            theta[p] = atan2(dy[p], dx[p]) - ptheta[p];
-            zp[p][i][1] = pi_to_pi(theta[p]);
 
             //! Hv is unused in fastslam1 !!!
             Hv[p][i][0] = -dx_dinv[p];

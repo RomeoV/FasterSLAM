@@ -72,8 +72,8 @@ int main() {
     //static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
     //Input -> Change this as you like
-    const size_t Nfz = 10; // Nfz <= Nfa
-    int idf[Nfz] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9}; //Unique
+    const size_t Nfz = 12; // Nfz <= Nfa
+    int idf[Nfz] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11}; //Unique
 
     // Compare two methods
     "functional equality"_test = [&] {
@@ -127,7 +127,7 @@ int main() {
 
     bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
 
-    int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,18};
+    int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,18, 20, 22};
     bench.run_benchmark(particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
 
 
