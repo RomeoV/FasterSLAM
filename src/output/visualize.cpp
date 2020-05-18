@@ -127,9 +127,15 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
+#ifdef __AVX2__
             observe_update_fast(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
+#else
+            observe_update(lm, N_features, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn, particles, weights);
+#endif
 
             //////////////////////////////////////////////////////////////
         }

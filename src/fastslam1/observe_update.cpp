@@ -42,6 +42,7 @@ const __m256d l2l = _mm256_set1_pd (-1.42860677e-6); /* -log(2)_lo */
 __m256d zeros = _mm256_set1_pd(0.0);
 
 
+#ifdef __AVX2__
 __m256d exp_avx2_pd (__m256d x)
 {
     //Source: https://stackoverflow.com/questions/48863719/fastest-implementation-of-exponential-function-using-avx
@@ -88,12 +89,19 @@ __m256d exp_avx2_pd (__m256d x)
 
     return r;
 }
+#endif
 
 void observe_update(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
+#ifdef __AVX2__
     observe_update_fast(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
                         zn, particles, weights);
+#else
+#warning "Using observe_update_base because AVX2 is not supported!";
+    observe_update_base(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
+                        zn, particles, weights);
+#endif
 }
 
 void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
@@ -191,6 +199,8 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+
+#ifdef __AVX2__j
 void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -385,7 +395,9 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+#endif
 
+#ifdef __AVX2__
 void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -639,6 +651,7 @@ void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double*
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+#endif
 
 void observe_update_unrolled4x_plain(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
