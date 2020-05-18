@@ -226,7 +226,8 @@ void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, c
 // H1 holds 1 Matrix2d
 // H2 holds 1 Matrix2d
 // H3 holds 1 Matrix2d
-/*
+#ifndef KF_YGLEE
+    #ifdef __AVX2__
 void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
                                       __m256d *x1x3,
                                       __m256d *P0,
@@ -253,11 +254,9 @@ void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
     __m256d const S2 = _mmadd_2x2_avx_v2( H2, P2H2t, R );
     __m256d const S3 = _mmadd_2x2_avx_v2( H3, P3H3t, R );
 
-    // TODO: AVX -> Transpose first then compute then back transpose
-    inv_2x2(S0, S0inv); //! Sinv = S^(-1)
-    inv_2x2(S1, S1inv); //! Sinv = S^(-1)
-    inv_2x2(S2, S2inv); //! Sinv = S^(-1)
-    inv_2x2(S3, S3inv); //! Sinv = S^(-1)
+    //! Sinv = S^(-1)
+    __m256d S0inv, S1inv, S2inv, S3inv;
+    batch_inverse_2x2(S0, S1, S2, S3, &S0inv, &S1inv, &S2inv, &S3inv);
 
     //! W = PHt*Sinv
     __m256d const W0 = _mm_2x2_avx_v1(P0H0t, S0inv);
@@ -287,9 +286,10 @@ void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
     __m256d const Z2 = _mmT_2x2_avx_v3( W2, P2H2t );
     __m256d const Z3 = _mmT_2x2_avx_v3( W3, P3H3t );
 
-    _mm256_store_pd( *P0, _mm256_sub_pd( *P0, Z0 ) );
-    _mm256_store_pd( *P1, _mm256_sub_pd( *P1, Z1 ) );
-    _mm256_store_pd( *P2, _mm256_sub_pd( *P2, Z2 ) );
-    _mm256_store_pd( *P3, _mm256_sub_pd( *P3, Z3 ) );
+    *P0 = _mm256_sub_pd( *P0, Z0 );
+    *P1 = _mm256_sub_pd( *P1, Z1 );
+    *P2 = _mm256_sub_pd( *P2, Z2 );
+    *P3 = _mm256_sub_pd( *P3, Z3 );
 }
-*/
+    #endif
+#endif
