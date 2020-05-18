@@ -32,18 +32,18 @@ target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# if(${USE_MARCH_NATIVE})
-# target_compile_options(FasterSlamCore
-#   PUBLIC
-#   -march=native
-# )
-# endif()
+if(${USE_MARCH_NATIVE})
+target_compile_options(FasterSlamCore
+  PUBLIC
+  -march=native
+)
+endif()
 
-# target_compile_options(FasterSlamCore
-#   PUBLIC
-#   -Wall
-#   -Wno-sign-compare
-# )
+target_compile_options(FasterSlamCore
+  PUBLIC
+  -Wall
+  -Wno-sign-compare
+)
 
 add_subdirectory(tests)
 if(${BUILD_BENCHMARKS})
