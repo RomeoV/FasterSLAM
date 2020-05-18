@@ -402,6 +402,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
 }
 #endif
 
+#ifdef __AVX2__
 void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -566,6 +567,7 @@ void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vecto
     }
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+#endif
 
 
 #ifdef __AVX2__
