@@ -18,8 +18,7 @@ int main (int argc, char *argv[])
         double *wp; // way points
         size_t lm_rows, wp_rows;
 
-        std::string input_file_path = "inputfiles_test/test_webmap.mat";
-        read_input_file(input_file_path, &lm, &wp, lm_rows, wp_rows);
+        read_input_file("inputfiles_test/test_webmap.mat", &lm, &wp, lm_rows, wp_rows);
 
 
         when("We run the full sim_base") = [&] {
