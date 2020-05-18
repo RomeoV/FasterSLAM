@@ -68,8 +68,10 @@ struct Benchmark {
     std::vector<std::string> funcNames;
 
     int numFuncs = 0;
-    std::vector<int> funcFlops; //Work W
+    std::vector<double> funcFlops; //Work W
+    std::vector<double> funcBytes; // Memory Moved Q [Bytes!]
     std::vector<double> flops_sum; //Sum of Work W for each function over all runs
+    std::vector<double> bytes_sum; //Sum of Memory Moved Q for each function over all runs
     std::vector<double> cycles; // Sum of runtimes over all runs T
     std::vector<double> min_cycles; // Minimum t over all runs
     std::vector<double> max_cycles; // Maximum t over all runs
@@ -80,6 +82,7 @@ struct Benchmark {
 
     std::vector<std::vector<double>> cycles_capture;
     std::vector<std::vector<double>> flops_capture;
+    std::vector<std::vector<double>> bytes_capture;
     
     int num_runs = 0;
     std::string run_name = std::to_string(num_runs);
@@ -94,10 +97,17 @@ struct Benchmark {
     Benchmark(std::string title) {
         name = title;
     }
+
     void add_function(comp_func f, std::string name, int flop){
+        double _nan = nan("1");
+        add_function(f, name, flop, _nan);
+    }
+
+    void add_function(comp_func f, std::string name, int flop, double bytes){
         userFuncs.push_back(f);
         funcNames.emplace_back(name);
         funcFlops.push_back(flop);
+        funcBytes.push_back(bytes);
         numFuncs++;
     }
 
@@ -110,9 +120,10 @@ struct Benchmark {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
             flops_sum.resize(numFuncs,0.0);
+            bytes_sum.resize(numFuncs,0.0);
             cycles_capture.resize(numFuncs,{});
             flops_capture.resize(numFuncs,{});
-            std::vector<std::vector<double>> flops_capture;
+            bytes_capture.resize(numFuncs,{});
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -130,10 +141,10 @@ struct Benchmark {
 
             flops_capture[i].push_back(funcFlops[i]);
             flops_sum[i] += funcFlops[i];
-            
-            
-            
 
+            bytes_capture[i].push_back(funcBytes[i]);
+            bytes_sum[i] += funcBytes[i];
+            
             performances[i] = flops_sum[i] / T ;
 
             if (i > 0) {
@@ -153,9 +164,10 @@ struct Benchmark {
             performances.resize(numFuncs, 0.0);
             cycles.resize(numFuncs, 0.0);
             flops_sum.resize(numFuncs,0.0);
+            bytes_sum.resize(numFuncs,0.0);
             cycles_capture.resize(numFuncs,{});
             flops_capture.resize(numFuncs,{});
-            std::vector<std::vector<double>> flops_capture;
+            bytes_capture.resize(numFuncs,{});
             speedups.resize(numFuncs, 0.0);
             speedups[0] = 1.0 ; //Reference function at index 0
         }
@@ -176,6 +188,9 @@ struct Benchmark {
 
             flops_capture[i].push_back(funcFlops[i]);
             flops_sum[i] += funcFlops[i];
+
+            bytes_capture[i].push_back(funcBytes[i]);
+            bytes_sum[i] += funcBytes[i];
 
             performances[i] = flops_sum[i] / T ;
 
@@ -200,8 +215,9 @@ struct Benchmark {
         const char* underline = "\033[4m";
         const char* no_underline = "\033[0m";
         fout<<underline<<separator<<right("i",2)
-                            <<separator<<left("Name",30)
+                            <<separator<<left("Name",40)
                             <<separator<<right("Work [flops]",cell_width) 
+                            <<separator<<right("Memory [bytes]",cell_width) 
                             <<separator<<right("Time [cyc]",cell_width) 
                             <<separator<<right("Perf. [flops/cyc]",cell_width) 
                             <<separator<<right("Speedup [-]",cell_width) 
@@ -209,8 +225,9 @@ struct Benchmark {
         
         for (int i = 0; i<numFuncs;i++){
             fout<<no_underline<<separator<<prd(i, 0,2)
-                                    <<separator<<left(funcNames[i],30)
+                                    <<separator<<left(funcNames[i],40)
                                     <<separator<<prd(flops_sum[i] / num_runs, 0, cell_width)
+                                    <<separator<<prd(bytes_sum[i] / num_runs, 0, cell_width)
                                     <<separator<<prd(cycles[i] / num_runs, 4, cell_width) 
                                     <<separator<<prd(performances[i], 4, cell_width) 
                                     <<separator<<prd(speedups[i], 4, cell_width) 
@@ -228,8 +245,9 @@ struct Benchmark {
         const char* underline = "\033[4m";
         const char* no_underline = "\033[0m";
         fout<<underline<<separator<<right("i",2)
-                            <<separator<<left("Name",30)
+                            <<separator<<left("Name",40)
                             <<separator<<right("Work [flops]",cell_width) 
+                            <<separator<<right("Memory [bytes]",cell_width) 
                             <<separator<<right("Time [cyc]",cell_width) 
                             <<separator<<right("min. t [cyc]",cell_width)
                             <<separator<<right("max. t [cyc]",cell_width)
@@ -239,8 +257,9 @@ struct Benchmark {
         
         for (int i = 0; i<numFuncs;i++){
             fout<<no_underline<<separator<<prd(i, 0,2)
-                                    <<separator<<left(funcNames[i],30)
+                                    <<separator<<left(funcNames[i],40)
                                     <<separator<<prd(flops_sum[i] / num_runs, 0, cell_width)
+                                    <<separator<<prd(bytes_sum[i] / num_runs, 0, cell_width)
                                     <<separator<<prd(cycles[i] / num_runs, 4, cell_width)
                                     <<separator<<prd(*std::min_element(cycles_capture[i].begin(),
                                                      cycles_capture[i].end()), 4, cell_width) 
@@ -267,9 +286,10 @@ struct Benchmark {
         const char* underline = "\033[4m";
         const char* no_underline = "\033[0m";
         fout<<underline<<separator<<right("i",2)
-                            <<separator<<left("Name",30)
+                            <<separator<<left("Name",40)
                             <<separator<<right("Run",run_name_size)
                             <<separator<<right("Work [flops]",cell_width) 
+                            <<separator<<right("Memory [bytes]",cell_width) 
                             <<separator<<right("Time [cyc]",cell_width) 
                             <<separator<<right("Perf. [flops/cyc]",cell_width) 
                             <<separator<<right("Gap [cyc/flop]",cell_width)  //Cheat
@@ -280,10 +300,12 @@ struct Benchmark {
             for (int j = 0; j<num_runs; j++) {
                 double cyc = cycles_capture[i][j];
                 double flops = flops_capture[i][j];
+                double bytes = bytes_capture[i][j];
                 fout<<no_underline<<separator<<((j==0) ? prd(i, 0,2) : "  ")
-                        <<separator<<left((j==0) ? funcNames[i] : "  ",30)
+                        <<separator<<left((j==0) ? funcNames[i] : "  ",40)
                         <<separator<<right(run_names[j],run_name_size)
                         <<separator<<prd(flops, 0, cell_width)
+                        <<separator<<prd(bytes, 0, cell_width)
                         <<separator<<prd(cyc, 4, cell_width) 
                         <<separator<<prd(flops/cyc, 4, cell_width) 
                         <<separator<<prd(cyc/flops, 4, cell_width) 
@@ -291,7 +313,6 @@ struct Benchmark {
                         <<separator<<std::endl;
             }
         }
-
     }
 
     void write_csv() {
@@ -304,6 +325,7 @@ struct Benchmark {
                 fstream<<name
                         <<separator<<left(funcNames[i], cell_width)
                         <<separator<<prd(flops_sum[i] / num_runs, 0,  cell_width)
+                        <<separator<<prd(bytes_sum[i] / num_runs, 0,  cell_width)
                         <<separator<<prd(cycles[i] / num_runs, 4,  cell_width) 
                         <<separator<<prd(performances[i], 4,  cell_width) 
                         <<separator<<prd(speedups[i], 4,  cell_width) 

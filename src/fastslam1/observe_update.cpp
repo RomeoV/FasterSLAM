@@ -156,7 +156,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
         }
     }
 
-    resample_particles_orig(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles_dag(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 
 void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
@@ -363,7 +363,6 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                                 feat_diff3[j], R, 
                                 Hf3[j]);
 #else
-
                 __m256d xfp0p2 = _mm256_load2_m128d(particles[i+2].xf + 2 * idf[j], particles[i].xf + 2 * idf[j]);
                 __m256d xfp1p3 = _mm256_load2_m128d(particles[i+3].xf + 2 * idf[j], particles[i+1].xf + 2 * idf[j]);
 
@@ -398,7 +397,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
             add_feature(particles+i+3, zn, count_zn, R);
         }
     }
-    resample_particles_base(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 #endif
 

@@ -35,7 +35,7 @@ double compute_jacobians_base_flops(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    double flop_count = N_z * (5*tp.add + 2*tp.pow + tp.sqrt + tp.atan2 + pi_to_pi_base(3.0) + 2*mul_flops(R,R,2,2,2,R) + add_flops(R,R,2*2,R));
+    double flop_count = N_z * (5*tp.add + 2*tp.pow + tp.sqrt + tp.atan2 + pi_to_pi_base_flops(3.0) + 2*mul_flops(R,R,2,2,2,R) + add_flops(R,R,2*2,R));
     return flop_count;
 }
 
