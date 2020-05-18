@@ -45,6 +45,15 @@ void compute_jacobians_fast_4particles(Particle* particle[4],
                        Matrix23d* Hv[4],
                        Matrix2d* Hf[4],
                        Matrix2d* Sf[4]);
+
+void compute_jacobians_fast_4particles_fullavx(Particle* particle[4],
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d* zp[4],
+                       Matrix23d* Hv[4],
+                       Matrix2d* Hf[4],
+                       Matrix2d* Sf[4]);
                        
 void compute_jacobians_active(Particle* particle, 
                        int idf[],

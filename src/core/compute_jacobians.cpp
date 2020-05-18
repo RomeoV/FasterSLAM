@@ -5,6 +5,7 @@
 
 #include "linalg.h"
 #include "pi_to_pi.h"
+#include "tscheb_sine.h"
 #include "trigonometry.h"
 #include <immintrin.h>
 
@@ -417,6 +418,116 @@ void compute_jacobians_fast_4particles(
             // MAt x Mat
             auto pf_vec =  _mm256_load_pd(particle[p]->Pf + 4* idf[i]);
             auto hf_vec = _mm256_set_pd(dx_d2inv[p], -dy_d2inv[p], dy_dinv[p], dx_dinv[p]);
+            _mm256_store_pd(Hf[p][i], hf_vec);
+            auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
+
+            auto pmm0 = _mm256_permute2f128_pd(pf_vec,pf_vec, 0b00000001); // 2 3 0 1
+            auto p0p3 = _mm256_blend_pd(pf_vec, pmm0, 0b0110);
+            auto p2p1 = _mm256_blend_pd(pf_vec, pmm0, 0b1001);
+
+            auto ymm0 = _mm256_mul_pd(hf_vec, p0p3);
+#ifdef __FMA__
+            auto sum = _mm256_fmadd_pd(hf_perm, p2p1, ymm0);
+#else
+            auto sum = _mm256_add_pd( _mm256_mul_pd(hf_perm, p2p1), ymm0);
+#endif
+
+            auto hmm0 = _mm256_permute2f128_pd(hf_vec,hf_vec, 0b00000001);
+            auto h0h3 = _mm256_blend_pd(hf_vec, hmm0, 0b0110);
+            auto h2h1 = _mm256_blend_pd(hf_vec, hmm0, 0b1001);
+
+            ymm0 = _mm256_mul_pd(h2h1, sum);
+#ifdef __FMA__
+            auto ymm1 = _mm256_fmadd_pd(h0h3, sum, R_vec);
+#else
+            auto ymm1 = _mm256_add_pd( _mm256_mul_pd(h0h3, sum), R_vec);
+#endif
+            ymm0 = _mm256_permute_pd(ymm0, 0b0101);
+            sum = _mm256_add_pd(ymm0, ymm1);
+            //print256d(sum);
+            _mm256_store_pd(Sf[p][i], sum);
+            //print(*Sf, 10, 2);
+        }
+    };
+}
+
+void compute_jacobians_fast_4particles_fullavx(
+        Particle* particle[4],
+        int idf[],
+        size_t N_z,
+        Matrix2d R,
+        Vector2d* zp[4],
+        Matrix23d* Hv[4],
+        Matrix2d* Hf[4],
+        Matrix2d* Sf[4])
+{
+    __m256d dx_intr, dy_intr, d2_intr, d_intr, dx_d2inv_intr, dy_d2inv_intr, dx_dinv_intr, dy_dinv_intr;
+    __m256d px_intr, py_intr, ptheta_intr;
+    __m256d d2inv_intr, dinv_intr;
+
+    px_intr = _mm256_set_pd(particle[3]->xv[0], particle[2]->xv[0], particle[1]->xv[0], particle[0]->xv[0]);
+    py_intr = _mm256_set_pd(particle[3]->xv[1], particle[2]->xv[1], particle[1]->xv[1], particle[0]->xv[1]);
+    ptheta_intr = _mm256_set_pd(particle[3]->xv[2], particle[2]->xv[2], particle[1]->xv[2], particle[0]->xv[2]);
+
+    auto R_vec =  _mm256_load_pd(R);
+    __m256d ones_intr = _mm256_set1_pd(1.);
+
+    for (int i = 0; i < N_z; i++) {
+        __m256d xfi_intr = _mm256_set_pd(particle[3]->xf[2*idf[1]  ], particle[2]->xf[2*idf[1]  ], particle[1]->xf[2*idf[1]  ], particle[0]->xf[2*idf[1]  ]);
+        __m256d yfi_intr = _mm256_set_pd(particle[3]->xf[2*idf[1]+1], particle[2]->xf[2*idf[1]+1], particle[1]->xf[2*idf[1]+1], particle[0]->xf[2*idf[1]+1]);
+        dx_intr = _mm256_sub_pd(xfi_intr, px_intr);
+        dy_intr = _mm256_sub_pd(yfi_intr, py_intr);
+        __m256d d2_intr  = _mm256_add_pd(_mm256_mul_pd(dx_intr, dx_intr),
+                                         _mm256_mul_pd(dy_intr, dy_intr));
+
+        d_intr = _mm256_sqrt_pd(d2_intr);
+        dinv_intr = _mm256_div_pd(ones_intr, d_intr);  // _mm256_rsqrt_ps(_mm256_castpd_ps(d2_intr));
+        d2inv_intr = _mm256_mul_pd(dinv_intr, dinv_intr);
+
+        // predicted observation
+        // I hope the compiler vectorizes the atan2 here, otherwise we could do it...
+
+        auto atan2_intr_placeholder = [](__m256d& ys, __m256d& xs) -> __m256d {
+            __m256d result;
+            for (size_t i = 0; i < 4; i++) {
+                result[i] = atan2(ys[i], xs[i]);
+            }
+            return result;
+        };
+        __m256d theta_intr;
+        zp[0][i][0] = d_intr[0];  // [0]
+        zp[1][i][0] = d_intr[1];  // [1]
+        zp[2][i][0] = d_intr[2];  // [2]
+        zp[3][i][0] = d_intr[3];  // [3]
+        theta_intr = _mm256_sub_pd(atan2_intr_placeholder(dy_intr, dx_intr),
+                                   ptheta_intr);
+        theta_intr = simple_pi_to_pi_avx(theta_intr);
+        zp[0][i][1] = theta_intr[0];
+        zp[1][i][1] = theta_intr[1];
+        zp[2][i][1] = theta_intr[2];
+        zp[3][i][1] = theta_intr[3];
+
+        dx_dinv_intr = _mm256_mul_pd(dx_intr, dinv_intr);
+        dy_dinv_intr = _mm256_mul_pd(dy_intr, dinv_intr);
+        dx_d2inv_intr = _mm256_mul_pd(dx_intr, d2inv_intr);
+        dy_d2inv_intr = _mm256_mul_pd(dy_intr, d2inv_intr);
+
+        for (size_t p = 0; p < 4; p++) {
+            //! Hv is unused in fastslam1 !!!
+            Hv[p][i][0] = -dx_dinv_intr[p];
+            Hv[p][i][1] = -dy_dinv_intr[p];
+            Hv[p][i][2] = 0.0;
+            Hv[p][i][3] = dy_d2inv_intr[p];
+            Hv[p][i][4] = -dx_d2inv_intr[p];
+            Hv[p][i][5] = -1.0;
+        }
+
+        for (size_t p = 0; p < 4; p++) {
+            // innovation covariance of feature observation given the vehicle'
+            // Eq. 60 in Thrun03g
+            // MAt x Mat
+            auto pf_vec =  _mm256_load_pd(particle[p]->Pf + 4* idf[i]);
+            auto hf_vec = _mm256_set_pd(dx_d2inv_intr[p], -dy_d2inv_intr[p], dy_dinv_intr[p], dx_dinv_intr[p]);
             _mm256_store_pd(Hf[p][i], hf_vec);
             auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
 
