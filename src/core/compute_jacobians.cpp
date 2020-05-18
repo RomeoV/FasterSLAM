@@ -520,7 +520,7 @@ void compute_jacobians_nik(Particle* particle,
       Matrix23d HvMat = {-dx / d, -dy / d, 0, dy / d2, -dx / d2, -1};
 
       // Jacobian wrt feature states
-      Matrix2d HfMat = {dx / d, dy / d, -dy / d2, dx / d2};
+      Matrix2d HfMat __attribute__ ((aligned(32))) = {dx / d, dy / d, -dy / d2, dx / d2};
 
       copy(HvMat, 6, Hv[i]);
       copy(HfMat, 4, Hf[i]);
