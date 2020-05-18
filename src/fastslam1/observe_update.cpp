@@ -148,7 +148,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
         }
     }
 
-    resample_particles_base(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles_orig(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 
 void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
