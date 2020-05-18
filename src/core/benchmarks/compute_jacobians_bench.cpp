@@ -51,8 +51,10 @@ void set_work(Benchmark<decltype(&compute_jacobians)>& bench, Particle* particle
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
     bench.funcFlops[0] = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = 8* compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
     for (int i = 1; i < bench.numFuncs; i++) {
         bench.funcFlops[i] = compute_jacobians_active_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+        bench.funcBytes[i] = 8* compute_jacobians_active_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
     }
 }
 
