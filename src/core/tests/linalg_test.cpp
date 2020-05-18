@@ -367,5 +367,42 @@ int main() {
     };
 };
 #endif
+
+#ifdef __AVX2__
+"batch_inverse_2x2"_test = [] {
+    given("I have four registers") = [] {
+        double A[16] __attribute__ ((aligned(32)));
+        for (int i = 0; i < 16; i++) {
+            A[i] = i;
+        }
+        __m256d const r0 = _mm256_load_pd( A+0 );
+        __m256d const r1 = _mm256_load_pd( A+4 );
+        __m256d const r2 = _mm256_load_pd( A+8 );
+        __m256d const r3 = _mm256_load_pd( A+12 );
+
+        when("I call batch_inverse_2x2()") = [&] {
+            double Inv[16] __attribute__ ((aligned(32)));
+            __m256d inv0, inv1, inv2, inv3;
+            batch_inverse_2x2(r0, r1, r2, r3, &inv0, &inv1, &inv2, &inv3);
+
+            _mm256_store_pd( Inv+0, inv0 );
+            _mm256_store_pd( Inv+4, inv1 );
+            _mm256_store_pd( Inv+8, inv2 );
+            _mm256_store_pd( Inv+12, inv3 );
+
+            then("I get the correct inverses equivalents") = [=] {
+                double AInv[16]; 
+                for (size_t i = 0; i < 4; i++) {
+                    inv_2x2(A+i*4, AInv+i*4);
+                    for (size_t j = 0; j < 4; j++) {
+                        expect(fabs(Inv[i*4+j] - AInv[i*4+j]) < 1e-10) << Inv[i*4+j] << " != " << AInv[i*4+j]; 
+                    }
+                }
+            };
+        };
+    };
+};
+#endif
+
 }
 

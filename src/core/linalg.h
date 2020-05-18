@@ -106,3 +106,14 @@ void register_transpose(__m256d const r0,
                         __m256d const r3,
                         __m256d *t0, __m256d *t1, __m256d *t2, __m256d *t3);
 
+//! Takes four registers each of which holds a matrix 2x2 (row-major),
+//! and returns their inverses
+void batch_inverse_2x2(__m256d const r0,
+                       __m256d const r1,
+                       __m256d const r2,
+                       __m256d const r3,
+                       __m256d *inv0,
+                       __m256d *inv1,
+                       __m256d *inv2,
+                       __m256d *inv3);
+

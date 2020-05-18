@@ -546,3 +546,36 @@ void register_transpose(__m256d const r0,
 }
 #endif
 
+#ifdef __AVX2__
+void batch_inverse_2x2(__m256d const r0,
+                       __m256d const r1,
+                       __m256d const r2,
+                       __m256d const r3,
+                       __m256d *inv0,
+                       __m256d *inv1,
+                       __m256d *inv2,
+                       __m256d *inv3) {
+
+    __m256d t0, t1, t2, t3;
+    register_transpose(r0, r1, r2, r3, &t0, &t1, &t2, &t3);
+
+    __m256d det = _mm256_sub_pd( _mm256_mul_pd(t0,t3), _mm256_mul_pd(t1,t2) );
+    __m256d     inv_det = _mm256_div_pd( _mm256_set1_pd( 1.0), det );
+    __m256d neg_inv_det = _mm256_mul_pd( _mm256_set1_pd(-1.0), inv_det );
+
+    t3 = _mm256_mul_pd( inv_det, t3 );
+    t1 = _mm256_mul_pd( neg_inv_det, t1 );
+    t2 = _mm256_mul_pd( neg_inv_det, t2 );
+    t0 = _mm256_mul_pd( inv_det, t0 );
+
+    __m256d ymm6 = _mm256_unpacklo_pd(t3, t1);
+    __m256d ymm7 = _mm256_unpackhi_pd(t3, t1);
+    __m256d ymm8 = _mm256_unpacklo_pd(t2, t0);
+    __m256d ymm9 = _mm256_unpackhi_pd(t2, t0);
+
+    *inv0 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00100000);
+    *inv1 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00100000);
+    *inv2 = _mm256_permute2f128_pd(ymm6, ymm8, 0b00110001);
+    *inv3 = _mm256_permute2f128_pd(ymm7, ymm9, 0b00110001);
+}
+#endif
