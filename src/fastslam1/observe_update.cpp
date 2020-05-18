@@ -207,7 +207,6 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
 }
 
 #ifdef __AVX2__
-=======
 void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -569,6 +568,7 @@ void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vecto
 }
 
 
+#ifdef __AVX2__
 void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
@@ -623,8 +623,6 @@ void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue,
     Vector2d* feat_diff2 = feat_diff+ 2*count_zf;
     Vector2d* feat_diff3 = feat_diff+ 3*count_zf;
 
-<<<<<<< HEAD
-=======
     Matrix2d* Sf1 = Sf + 1*count_zf;
     Matrix2d* Sf2 = Sf + 2 *count_zf;
     Matrix2d* Sf3 = Sf + 3*count_zf;
@@ -632,7 +630,6 @@ void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue,
     Vector2d S_inv_v_al[4] __attribute__ ((aligned(32))); //Order: 0,2,1,3 !!!
     
 
->>>>>>> philipp_observe_update
     //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
     //double den, num;
     Matrix2d S_inv __attribute__ ((aligned(32)));
@@ -784,12 +781,9 @@ void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue,
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
-<<<<<<< HEAD
 #endif
 
 #ifdef __AVX2__
-=======
->>>>>>> philipp_observe_update
 void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
