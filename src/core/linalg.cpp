@@ -605,7 +605,7 @@ double determinant_2x2(const double* A) {
  *
  * @returns AVX2[a, b , c, d] s.t. a + b = V1.T@M1@V1, c + d = V2.T@M2@V2
  */
-__m256d produce_hvec(const __m256d& m1, const __m256d& m2, const __m256d& v12) {
+__m256d produce_hvec(const __m256d m1, const __m256d m2, const __m256d v12) {
   __m256d v12_v12 = _mm256_mul_pd(v12, v12);  // [v1^2, v2^2, v3^2, v4^2]
   __m256d v12_v21 = _mm256_mul_pd(v12, _mm256_permute_pd(v12, 0b0101));  // [v1v2, v1v2, v3v4, v3v4]
 
@@ -624,9 +624,9 @@ __m256d produce_hvec(const __m256d& m1, const __m256d& m2, const __m256d& v12) {
 #endif
 
 #ifdef __AVX2__
-__m256d mm_vT_M_v_avx2(const __m256d& m1,  const __m256d& m2,
-                       const __m256d& m3,  const __m256d& m4,
-                       const __m256d& v12, const __m256d& v34) {
+__m256d mm_vT_M_v_avx2(const __m256d m1,  const __m256d m2,
+                       const __m256d m3,  const __m256d m4,
+                       const __m256d v12, const __m256d v34) {
   __m256d res1 = produce_hvec(m1, m2, v12);
   __m256d res2 = produce_hvec(m3, m4, v34);
 
