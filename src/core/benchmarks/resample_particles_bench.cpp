@@ -44,7 +44,7 @@ int main() {
     bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particles, 3, weights,0, true);
+    bench.run_benchmark(particles, 3, weights,5, true);
 
 
 
