@@ -89,7 +89,7 @@ __m256d exp_avx2_pd (__m256d x)
 }
 
 extern __inline __m256d __attribute__((__gnu_inline__, __always_inline__, __artificial__))
-_mm256_loadu2_m128d (double const *__PH, double const *__PL)
+_mm256_loadu2_m128d_ (double const *__PH, double const *__PL)
 {
   return _mm256_insertf128_pd (_mm256_castpd128_pd256 (_mm_loadu_pd (__PL)),
 			       _mm_loadu_pd (__PH), 1);
@@ -355,8 +355,8 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
                                 Hf3[j]);
 #endif
 /*
-                __m256d xfp0p2 = _mm256_loadu2_m128d(particles[i+2].xf + 2 * idf[j], particles[i].xf + 2 * idf[j]);
-                __m256d xfp1p3 = _mm256_loadu2_m128d(particles[i+3].xf + 2 * idf[j], particles[i+1].xf + 2 * idf[j]);
+                __m256d xfp0p2 = _mm256_loadu2_m128d_(particles[i+2].xf + 2 * idf[j], particles[i].xf + 2 * idf[j]);
+                __m256d xfp1p3 = _mm256_loadu2_m128d_(particles[i+3].xf + 2 * idf[j], particles[i+1].xf + 2 * idf[j]);
 
                 __m256d Pf0 = _mm256_load_pd(particles[i].Pf + 4 * idf[j]);
                 __m256d Pf1 = _mm256_load_pd(particles[i+1].Pf + 4 * idf[j]);
