@@ -2,18 +2,91 @@
 #include "pi_to_pi.h"
 #include "stdio.h"
 #include <math.h>
+#include "typedefs.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base implementation, unit test
  * ToDo: Start optimizing
  ****************************************************************************/
-void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD, 
-                      const double rateG, const double maxG, const double dt, 
+void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD,
+                      const double rateG, const double maxG, const double dt,
                       int* iwp, double* G) {
-    compute_steering_base(x,wp,N_wp,minD,rateG,maxG,dt,iwp,G);
+    compute_steering_base(x, wp, N_wp, minD, rateG, maxG, dt, iwp, G);
 }
 
+double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
+                                   const double minD, const double rateG,
+                                   const double maxG, const double dt,
+                                   int* iwp, double* G) {
+    double flops = 0.0;
+    //determine if current waypoint reached
+    double cwp[2];
+    cwp[0] = wp[2*(*iwp)+0];
+    cwp[1] = wp[2*(*iwp)+1];
+
+    flops += 2*tp.pow + 3*tp.add;
+    double d2 = pow((cwp[0]-x[0]),2) + pow((cwp[1]-x[1]),2);  
+
+    flops += tp.doublecomp + tp.mul;
+    if (d2 < minD*minD) {
+        *iwp += 1; //switch to next
+        if (*iwp >= N_wp) {
+                *iwp = -1;
+                return flops;
+        }
+
+        cwp[0] = wp[2*(*iwp)+0];   
+        cwp[1] = wp[2*(*iwp)+1];
+    }
+
+    //compute change in G to point towards current waypoint
+    double deltaG = atan2(cwp[1]-x[1], cwp[0]-x[0]) - x[2] - *G;
+    deltaG = pi_to_pi_base(deltaG);
+    flops += tp.atan2 + 4*tp.add + pi_to_pi_base_flops(deltaG);
+
+    //limit rate
+    flops += tp.mul + tp.abs + tp.doublecomp;
+    double maxDelta = rateG*dt;
+    if (abs(deltaG) > maxDelta) {
+        flops += (1 + (deltaG <= 0))*tp.doublecomp + tp.mul;
+        int sign = (deltaG > 0) ? 1 : ((deltaG < 0) ? -1 : 0);
+        deltaG = sign*maxDelta;	
+    }	
+
+    //limit angle
+    flops += tp.add + tp.abs + tp.doublecomp;
+    double G_new = *G+deltaG;
+    if (abs(G_new) > maxG) {
+        flops += (1 + (G_new <= 0))*tp.doublecomp + tp.mul;
+        int sign2 = (G_new > 0) ? 1 : ((G_new < 0) ? -1 : 0);
+        G_new = sign2*maxG;
+    }
+    *G = G_new;
+
+    return flops;
+}
+
+double compute_steering_active_flops(cVector3d x, double* wp, const size_t N_wp,
+                                   const double minD, const double rateG,
+                                   const double maxG, const double dt,
+                                   int* iwp, double* G) {
+    return compute_steering_base_flops(x, wp, N_wp, minD, rateG, maxG, dt, iwp, G);
+}
+
+double compute_steering_base_memory(cVector3d x, double* wp, const size_t N_wp,
+                                    const double minD, const double rateG,
+                                    const double maxG, const double dt,
+                                    int* iwp, double* G) {
+    return ( 13 /* reads */ + 2*4 /* writes */ );
+}
+
+double compute_steering_active_memory(cVector3d x, double* wp, const size_t N_wp,
+                                    const double minD, const double rateG,
+                                    const double maxG, const double dt,
+                                    int* iwp, double* G) {
+    return ( 13 /* reads */ + 2*4 /* writes */ );
+}
 
 /*****************************************************************************
  * PERFORMANCE STATUS
@@ -36,12 +109,12 @@ void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const dou
     cwp[0] = wp[2*(*iwp)+0];
     cwp[1] = wp[2*(*iwp)+1];
 
-    double d2 = pow((cwp[0] - x[0]),2) + pow((cwp[1]-x[1]),2);  
+    double d2 = pow((cwp[0]-x[0]),2) + pow((cwp[1]-x[1]),2);  
 
     if (d2 < minD*minD) {
-        *iwp+=1; //switch to next
+        *iwp += 1; //switch to next
         if (*iwp >= N_wp) {
-                *iwp =-1;
+                *iwp = -1;
                 return;	
         }
 
@@ -64,7 +137,7 @@ void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const dou
     //limit angle
     double G_new = *G+deltaG;
     if (abs(G_new) > maxG) {
-        int sign2 = (G_new > 0) ? 1: ((G_new < 0) ? -1 : 0);
+        int sign2 = (G_new > 0) ? 1 : ((G_new < 0) ? -1 : 0);
         G_new = sign2*maxG;
     }
     *G = G_new;
