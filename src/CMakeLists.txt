@@ -14,7 +14,7 @@ if(${WITHOUT_AVX2})
   set(CMAKE_CXX_FLAGS "-mno-avx2 -mno-fma ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -ffast-math")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native")
 
 set(USE_YGLEE_KF_CHOLESKY FALSE CACHE BOOL "Use KF_cholesky_update() as in Yglee's C++ code.")
 

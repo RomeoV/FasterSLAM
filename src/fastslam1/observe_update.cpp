@@ -148,7 +148,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
         }
     }
 
-    resample_particles_orig(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles_base(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 
 void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
@@ -388,7 +388,7 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
             add_feature(particles+i+3, zn, count_zn, R);
         }
     }
-    resample_particles_base(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
 
 void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
