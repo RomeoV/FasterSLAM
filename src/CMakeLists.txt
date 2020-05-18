@@ -16,7 +16,7 @@ endif()
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -march=native -ffast-math")
 
-set(USE_YGLEE_KF_CHOLESKY TRUE CACHE BOOL "Use KF_cholesky_update() as in Yglee's C++ code.")
+set(USE_YGLEE_KF_CHOLESKY FALSE CACHE BOOL "Use KF_cholesky_update() as in Yglee's C++ code.")
 
 include(CTest)
 enable_testing()
