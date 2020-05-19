@@ -49,19 +49,6 @@ int main() {
                 size_t N_lm, N_wp;
                 // read_input_file(input_file_path.string(), lm, wp, N_lm, N_wp);
                 read_input_file_and_scale("inputfiles_test/test_webmap.mat", scale, &lm, &wp, N_lm, N_wp);
-
-                std::cout << "test XXX N_lm " << N_lm << " N_wp " << N_wp << std::endl;
-                for(int i=0; i<N_lm; i++){ // 2*scale lm
-                    std::cout << lm[i*3] << " ";
-                    std::cout << lm[i*3+1] << " ";
-                    std::cout << lm[i*3+2] << " ";
-                    std::cout << std::endl;
-                }
-                for(int i=0; i<N_wp; i++){ // 2*scale wp
-                    std::cout << wp[i*2] << " ";
-                    std::cout << wp[i*2+1] << " ";
-                    std::cout << std::endl;
-                }
                 
                 then("I expect the correct number of waypoints and landmarks") = [N_lm, N_wp, scale] {
                     expect(that % N_lm == 2*scale);
