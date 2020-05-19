@@ -66,8 +66,6 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
     set_Pfi(particle, Pf[i], i + N_x);
   }
 
-  // free(xf);
-  // free(Pf);
 }
 
 /*****************************************************************************
@@ -123,8 +121,6 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
     set_Pfi(particle, Pf[i], i + N_x);
   }
 
-  // free(xf);
-  // free(Pf);
 }
 
 // Work / Memory instrumenting
@@ -144,7 +140,12 @@ double add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matr
 
 double add_feature_base_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
 
-  Matrix2d MatResult_1;
+  Matrix2d MatResult_1, MatResult_2, Gz, Gz_T;
+  Vector3d xv;
+  Vector2d xf[N_z];
+  Matrix2d Pf[N_z];
+  double measurement;
+
   double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
     copy_memory(measurement, 2, xf[i]) +
     mul_memory(Gz, R, 2, 2, 2, MatResult_1) +
@@ -179,6 +180,11 @@ double add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Ma
 double add_feature_active_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
 
   Matrix2d MatResult_1;
+  Vector3d xv;
+  Vector2d xf[N_z];
+  Matrix2d Pf[N_z];
+  double measurement;
+
   double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
     copy_memory(measurement, 2, xf[i]) +
     mm_2x2_flops(Gz, R, MatResult_1) + // the same as mm_2x2_avx_v1_memory(Gz, R, MatResult_1) + 
