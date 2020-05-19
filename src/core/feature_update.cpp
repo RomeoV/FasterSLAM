@@ -157,8 +157,8 @@ double feature_update_base_memory(Particle* particle,
   Vector2d feat_diff[N_idf];
   double memory_called = compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) + 
     N_idf * (
-      2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
-      2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
+      copy_memory(particle->xf + (2 * idf[i]), 2, xf[i]) + // 2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
+      copy_memory(particle->Pf + (4 * idf[i]), 4, Pf[i]) + // 2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
       sub_memory(z[0], zp[0], 2, feat_diff[0]) +
       pi_to_pi_base_memory(feat_diff[0][1]) +
       KF_cholesky_update_base_memory(xf[0], Pf[0], 
@@ -205,8 +205,8 @@ double feature_update_active_memory(Particle* particle,
 
   Vector2d feat_diff[N_idf];    
   double memory_called = N_idf * (
-      2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
-      2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
+      copy_memory(particle->xf + (2 * idf[i]), 2, xf[i]) + // 2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
+      copy_memory(particle->Pf + (4 * idf[i]), 4, Pf[i]) + //2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
       sub_memory(z[0], zp[0], 2, feat_diff[0]) +
       pi_to_pi_active_memory(feat_diff[0][1]) +
       KF_cholesky_update_active_memory(xf[0], Pf[0], 
