@@ -100,13 +100,13 @@ int main() {
     setup(particles, weights, Nf, xtrue, &ftag, &da_table, &z, &zf, &zn, &idf, &ftag_visible, xvs, Pvs);
 
     // data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
-    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
+    observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
-    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
+    observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
-    observe_update_unrolled4x(lm,Nf, xtrue, *R, ftag, 
+    observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
 
@@ -194,6 +194,9 @@ int main() {
     bench.add_function(&observe_update_active, "observe_update_actve", work);
     bench.add_function(&observe_update_fast, "observe_update_fast", work);
     bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", work);
+#ifndef KF_YGLEE
+    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", work);
+#endif
 
     bench.run_benchmark(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
