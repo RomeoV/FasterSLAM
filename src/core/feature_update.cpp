@@ -132,13 +132,14 @@ double feature_update_base_flops(Particle* particle,
                     Matrix2d Hf[],
                     Matrix2d Sf[]){
 
-  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
+  Vector2d feat_diff[N_idf];
+  double flop_count = compute_jacobians_base_flops(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
     N_idf * (   
-      sub_flops(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base_flops(feat_diff[i][1]) + 
-      KF_cholesky_update_base_flops(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i])
+      sub_flops(z[0], zp[0], 2, feat_diff[0]) +
+      pi_to_pi_base_flops(feat_diff[0][1]) + 
+      KF_cholesky_update_base_flops(xf[0], Pf[0], 
+                       feat_diff[0], R, 
+                       Hf[0])
     );
   return flop_count;
   }
@@ -153,17 +154,18 @@ double feature_update_base_memory(Particle* particle,
                     Matrix2d Hf[],
                     Matrix2d Sf[]){
 
+  Vector2d feat_diff[N_idf];
   double memory_called = compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) + 
     N_idf * (
-      copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
-      copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
-      sub_memory(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base_memory(feat_diff[i][1]) +
-      KF_cholesky_update_base(xf[i], Pf[i], 
-                        feat_diff[i], R, 
-                        Hf[i]) +
-      set_xfi(particle, xf[i], idf[i]) +
-      set_Pfi(particle, Pf[i], idf[i])
+      2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
+      2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
+      sub_memory(z[0], zp[0], 2, feat_diff[0]) +
+      pi_to_pi_base_memory(feat_diff[0][1]) +
+      KF_cholesky_update_base_memory(xf[0], Pf[0], 
+                        feat_diff[0], R, 
+                        Hf[0]) +
+      2 * (2 + 1) + // set_xfi(particle, xf[i], idf[i]) +
+      2 * (2 + 1) // set_Pfi(particle, Pf[i], idf[i])
     );
   double memory_read_count = N_idf * 16;
   double memory_written_count = N_idf * 2;
@@ -180,12 +182,13 @@ double feature_update_active_flops(Particle* particle,
                     Matrix2d Hf[],
                     Matrix2d Sf[]){
 
+  Vector2d feat_diff[N_idf];
   double flop_count = N_idf * (   
-      sub(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_active_flops(feat_diff[i][1]) + 
-      KF_cholesky_update_active_flops(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i])
+      sub_flops(z[0], zp[0], 2, feat_diff[0]) +
+      pi_to_pi_active_flops(feat_diff[0][1]) + 
+      KF_cholesky_update_active_flops(xf[0], Pf[0], 
+                       feat_diff[0], R, 
+                       Hf[0])
     );
   return flop_count;
 }
@@ -199,17 +202,18 @@ double feature_update_active_memory(Particle* particle,
                     Matrix23d Hv[],
                     Matrix2d Hf[],
                     Matrix2d Sf[]){
-                      
+
+  Vector2d feat_diff[N_idf];    
   double memory_called = N_idf * (
-      copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
-      copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
-      sub_memory(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_active(feat_diff[i][1]) +
-      KF_cholesky_update_active(xf[i], Pf[i], 
-                        feat_diff[i], R, 
-                        Hf[i]) +
-      set_xfi(particle, xf[i], idf[i]) +
-      set_Pfi(particle, Pf[i], idf[i])
+      2 * 2 + //copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
+      2 * 4 + //copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
+      sub_memory(z[0], zp[0], 2, feat_diff[0]) +
+      pi_to_pi_active_memory(feat_diff[0][1]) +
+      KF_cholesky_update_active_memory(xf[0], Pf[0], 
+                        feat_diff[0], R, 
+                        Hf[0]) +
+      2 * (2 + 1) + // set_xfi(particle, xf[i], idf[i]) +
+      2 * (2 + 1) // set_Pfi(particle, Pf[i], idf[i])
     );
   double memory_read_count = N_idf * 16;
   double memory_written_count = N_idf * 2;
