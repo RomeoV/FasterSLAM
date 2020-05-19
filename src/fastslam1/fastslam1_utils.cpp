@@ -28,10 +28,9 @@ void setup_initial_particles_and_pose(Particle **p_, double **w_,  double**xv_, 
     
 
     // Weights and pose
-    *w_ = (double *) aligned_alloc(32, N_particles * sizeof(double) );
-    
-    *xv_ = (double *) aligned_alloc(32, 3 * N_particles * sizeof(double) );
-    *Pv_ = (double *) aligned_alloc(32, 9 * N_particles * sizeof(double) );
+    *w_  = (double *) aligned_alloc( 32,     N_particles * sizeof(double) );
+    *xv_ = (double *) aligned_alloc( 32, 3 * N_particles * sizeof(double) );
+    *Pv_ = (double *) aligned_alloc( 32, 9 * N_particles * sizeof(double) );
 
     double *w = *w_;
     const double uniform_w = 1.0 / N_particles; 

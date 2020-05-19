@@ -56,6 +56,23 @@ void init_particles_contigous(Particle* particle, double* xv, double* Pv, const 
     } 
 }
 
+// I will try to add this as smooth as possible to the benchmark, but for now do this
+void set_work(Benchmark<decltype(&predict_update)>& bench, 
+                double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    bench.funcFlops[0] = predict_update_base_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    bench.funcBytes[0] = 8* predict_update_base_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    for (int i = 1; i < bench.numFuncs; i++) {
+        bench.funcFlops[i] = predict_update_active_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        bench.funcBytes[i] = 8* predict_update_active_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    }
+}
+
 int main() {
     //init_sin();
     //init_sin2();
@@ -122,15 +139,18 @@ int main() {
     bench.add_function(&predict_update_base, "base", work);
     bench.add_function(&predict_update_fast, "fast", work);
 
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    //Run the benchmark: give the inputs of your function in the same order as they are defined.
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
     G= M_PI;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
     minD = 5.0;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
     //bench.destructor_output = false;

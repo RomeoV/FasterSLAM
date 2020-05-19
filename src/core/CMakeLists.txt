@@ -32,12 +32,13 @@ target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
-# if(${USE_MARCH_NATIVE})
-# target_compile_options(FasterSlamCore
-#   PUBLIC
-#   -march=native
-# )
-# endif()
+if(${USE_MARCH_NATIVE})
+target_compile_options(FasterSlamCore
+  PUBLIC
+  -march=native
+  -O3
+)
+endif()
 
 # target_compile_options(FasterSlamCore
 #   PUBLIC

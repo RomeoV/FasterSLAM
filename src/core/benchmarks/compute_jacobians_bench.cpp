@@ -74,13 +74,13 @@ int main() {
 
     Particle* particle = particle_preloader(xv,xf,Pf, Nfa);
 
-    Matrix2d R = {1,0,0,1};
+    Matrix2d R __attribute__((aligned(32))) = {1,0,0,1};
 
     
     
 
     // outputs
-    Vector2d zp[Nfa];
+    Vector2d zp[Nfa] __attribute__((aligned(32)));
     Matrix23d* Hv = static_cast<Matrix23d *>(aligned_alloc(32, Nfa * sizeof(Matrix23d)));
     Matrix2d* Hf = static_cast<Matrix2d *>(aligned_alloc(32, Nfa * sizeof(Matrix2d)));
     //Matrix2d Sf[Nfa]; NOT ALIGNED (Segfault, works with storeu, but this is shit)
@@ -90,17 +90,17 @@ int main() {
     //static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
     //Input -> Change this as you like
-    const size_t Nfz = 10; // Nfz <= Nfa
-    int idf[Nfz] = {0,1,2,3,4,5,6,7,8,9}; //Unique
+    const size_t Nfz = 12; // Nfz <= Nfa
+    int idf[Nfz] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11}; //Unique
 
     // Compare two methods
     "functional equality"_test = [&] {
         auto is_close = [&](double lhs, double rhs) -> bool {return std::abs(lhs - rhs) < 1e-4;};
         
-        Vector2d zp_base[Nfa];
-        Matrix23d Hv_base[Nfa];
-        Matrix2d Hf_base[Nfa];
-        Matrix2d Sf_base[Nfa];
+        Vector2d zp_base[Nfa] __attribute__((aligned(32)));
+        Matrix23d Hv_base[Nfa] __attribute__((aligned(32)));
+        Matrix2d Hf_base[Nfa] __attribute__((aligned(32)));
+        Matrix2d Sf_base[Nfa] __attribute__((aligned(32)));
 
         compute_jacobians_base(particle, idf, Nfz, R, zp_base, Hv_base, Hf_base, Sf_base);
 
@@ -153,12 +153,12 @@ int main() {
     set_work(bench, particle, idf, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
 
-    int idf_2[Nfz] = {0,2,4,6,8,10,12,14,16,18};
+    int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,18, 20, 22};
     set_work(bench, particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
 
 
-    int idf_3[20] = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
+    int idf_3[20] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
     set_work(bench, particle, idf_3, 20, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_3, 20, R, zp, Hv, Hf, Sf);
 

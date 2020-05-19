@@ -144,7 +144,7 @@ double determinant_2x2(const double* A);
 double determinant_2x2_flops(const double* A); 
 double determinant_2x2_memory(const double* A); 
 
-__m256d produce_hvec(const __m256d& m1, const __m256d& m2, const __m256d& v12);
+__m256d produce_hvec(const __m256d m1, const __m256d m2, const __m256d v12);
 
 /** Executes four v.T @ M @ v.T calculations
  * @param m1 - m4 Row major matrices
@@ -153,9 +153,9 @@ __m256d produce_hvec(const __m256d& m1, const __m256d& m2, const __m256d& v12);
  *
  * @result AVX vector with the results
  */
-__m256d mm_vT_M_v_avx2(const __m256d& m1,  const __m256d& m2,
-                       const __m256d& m3,  const __m256d& m4,
-                       const __m256d& v12, const __m256d& v34);
+__m256d mm_vT_M_v_avx2(const __m256d m1,  const __m256d m2,
+                       const __m256d m3,  const __m256d m4,
+                       const __m256d v12, const __m256d v34);
 
 __m256d mm_vT_M_v_avx2_phil(const __m256d m1,  const __m256d m2,
                        const __m256d m3,  const __m256d m4,
