@@ -51,6 +51,12 @@ void fill(double *x, size_t size, double val) {
     }
 }
 
+void icopy(const int* ref, size_t N, int* target) {
+    for (size_t i = 0; i < N; i++) {
+        target[i] = ref[i];
+    }
+}
+
 //! Copies all values from ref to target
 void copy(const double* ref, size_t N, double* target) {
     for (size_t i = 0; i < N; i++) {
@@ -563,6 +569,14 @@ __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c) {
 void mv_2x2(const double *A, const double *b, double *c) {
     c[0] = A[0]*b[0] + A[1]*b[1];
     c[1] = A[2]*b[0] + A[3]*b[1];
+}
+
+double mv_2x2_flops(const double *A, const double *b, double *c) {
+    return 2*tp.add + 4*tp.mul;
+}
+
+double mv_2x2_memory(const double *A, const double *b, double *c) {
+    return 2*2 + 4*2;
 }
 
 //! c += A*b ( 2x2 )

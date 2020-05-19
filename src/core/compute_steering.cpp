@@ -19,6 +19,10 @@ double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
                                    const double minD, const double rateG,
                                    const double maxG, const double dt,
                                    int* iwp, double* G) {
+    // Backup G and iwp for reset
+    double G_bak = *G;
+    int iwp_bak = *iwp;
+    // start counting flops
     double flops = 0.0;
     //determine if current waypoint reached
     double cwp[2];
@@ -63,6 +67,10 @@ double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
         G_new = sign2*maxG;
     }
     *G = G_new;
+
+    // Reset
+    *G = G_bak;
+    *iwp = iwp_bak;
 
     return flops;
 }
