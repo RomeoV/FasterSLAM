@@ -34,3 +34,16 @@ void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
                                       __m256d const H2,
                                       __m256d const H3);
 #endif
+
+//! Utils
+double KF_cholesky_update_base_flops(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H);
+
+double KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H);
+
+double KF_cholesky_update_base_memory(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H);
+
+double KF_cholesky_update_active_memory(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H);

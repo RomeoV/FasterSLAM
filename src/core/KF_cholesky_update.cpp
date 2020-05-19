@@ -293,3 +293,215 @@ void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
 }
     #endif
 #endif
+
+// Utils
+
+// Naive base flops
+double KF_cholesky_update_base_flops(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H) {
+    double Ht[4], PHt[4], HPHt[4];
+    double S[4], St[4], SChol[4], SCholInv[4], SCholInvt[4];
+    double W1[4], W[4], Wv[2], W1t[4], W1W1t[4];
+    double flops = 0.0;
+
+    flops += transpose_flops(H, 2, 2, Ht);               //! Ht = H.transpose();
+    flops += mul_flops(P, Ht, 2, 2, 2, PHt);             //! PHt = P*Ht;
+    flops += mul_flops(H, PHt, 2, 2, 2, HPHt);           //! HPHt = H*PHt;
+    flops += add_flops(HPHt, R, 4, S);                   //! S = HPHt + R;
+
+    flops += transpose_flops(S, 2, 2, St);               //! St = S.transpose();
+    flops += add_flops(S, St, 4, S);                     //! S = S + St
+    flops += scal_flops(S, 4, 0.5, S);                   //! S = 0.5*S;
+
+    flops += llt_2x2_flops(S, SChol);                    //! S = SChol * SChol^T
+    flops += inv_2x2_flops(SChol, SCholInv);             //! SCholInv = inv( SChol )
+
+#ifdef KF_YGLEE
+    flops += mul_flops(PHt, SCholInv, 2, 2, 2, W1);     //! W1 = PHt * SCholInv;
+    flops += transpose_flops(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
+    flops += mul_flops(W1, SCholInvt, 2, 2, 2, W);        //! W = W1 * SCholInvt;
+#else
+    flops += transpose_flops(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
+    flops += mul_flops(PHt, SCholInvt, 2, 2, 2, W1);     //! W1 = PHt * SCholInvt;
+    flops += mul_flops(W1, SCholInv, 2, 2, 2, W);        //! W = W1 * SCholInv;
+#endif
+
+    //! x = x + Wv;
+    flops += mul_flops(W, v, 2, 2, 1, Wv);
+    flops += add_flops(x, Wv, 2, x);
+ 
+    //! P = P - W1*W1.transpose();
+    flops += transpose_flops(W1, 2, 2, W1t);
+    flops += mul_flops(W1, W1t, 2, 2, 2, W1W1t);
+    flops += sub_flops(P, W1W1t, 4, P);
+
+    return flops;
+}
+
+// Naive base memory
+double KF_cholesky_update_base_memory(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H) {
+    double Ht[4], PHt[4], HPHt[4];
+    double S[4], St[4], SChol[4], SCholInv[4], SCholInvt[4];
+    double W1[4], W[4], Wv[2], W1t[4], W1W1t[4];
+    double memory = 0.0;
+
+    memory += transpose_memory(H, 2, 2, Ht);               //! Ht = H.transpose();
+    memory += mul_memory(P, Ht, 2, 2, 2, PHt);             //! PHt = P*Ht;
+    memory += mul_memory(H, PHt, 2, 2, 2, HPHt);           //! HPHt = H*PHt;
+    memory += add_memory(HPHt, R, 4, S);                   //! S = HPHt + R;
+
+    memory += transpose_memory(S, 2, 2, St);               //! St = S.transpose();
+    memory += add_memory(S, St, 4, S);                     //! S = S + St
+    memory += scal_memory(S, 4, 0.5, S);                   //! S = 0.5*S;
+
+    memory += llt_2x2_memory(S, SChol);                    //! S = SChol * SChol^T
+    memory += inv_2x2_memory(SChol, SCholInv);             //! SCholInv = inv( SChol )
+
+#ifdef KF_YGLEE
+    memory += mul_memory(PHt, SCholInv, 2, 2, 2, W1);     //! W1 = PHt * SCholInv;
+    memory += transpose_memory(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
+    memory += mul_memory(W1, SCholInvt, 2, 2, 2, W);        //! W = W1 * SCholInvt;
+#else
+    memory += transpose_memory(SCholInv, 2, 2, SCholInvt); //! SCholInvt = SCholInv.transpose();
+    memory += mul_memory(PHt, SCholInvt, 2, 2, 2, W1);     //! W1 = PHt * SCholInvt;
+    memory += mul_memory(W1, SCholInv, 2, 2, 2, W);        //! W = W1 * SCholInv;
+#endif
+
+    //! x = x + Wv;
+    memory += mul_memory(W, v, 2, 2, 1, Wv);
+    memory += add_memory(x, Wv, 2, x);
+ 
+    //! P = P - W1*W1.transpose();
+    memory += transpose_memory(W1, 2, 2, W1t);
+    memory += mul_memory(W1, W1t, 2, 2, 2, W1W1t);
+    memory += sub_memory(P, W1W1t, 4, P);
+
+    return memory;
+}
+
+// Active flops
+double KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H) {
+
+#ifdef KF_YGLEE
+    // SHOULD !!NOT!! BE USED
+    // Just fusing some ops
+    double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
+    double W1[4], W[4], W1W1t[4];
+    double flops = 0.0;
+
+    flops += mmT_2x2_flops(P, H, PHt);                 //! PHt = P*Ht
+    flops += copy_flops(R, 4, S);                      //! S = R;
+    flops += mmadd_2x2_flops(H, PHt, S);               //! S += H*PHt ( S = H*P*H^T + R )
+
+    // optimize or skip
+    flops += transpose_2x2_flops(S, St);               //! St = S^T
+    flops += add_flops(S, St, 4, S);                   //! S = S + St
+    flops += scal_flops(S, 4, 0.5, S);                 //! S = 0.5*S
+ 
+    flops += llt_2x2_flops(S, SChol);                  //! S = SChol * SChol^T
+    flops += inv_2x2_flops(SChol, SCholInv);           //! SCholInv = inv( SChol )
+
+    flops += mm_2x2_flops(PHt, SCholInv, W1);          //! W1 = PHt * SCholInv
+    flops += mmT_2x2_flops(W1, SCholInv, W);
+
+    flops += mvadd_2x2_flops(W, v, x);                 //! x = x + W*v
+
+    //! P = P - W1*W1.transpose();
+    flops += mmT_2x2_flops(W1, W1, W1W1t);
+    flops += sub_flops(P, W1W1t, 4, P);
+
+    return flops;
+
+#else    
+    // THIS IS WHAT SHOULD BE USED
+    // After some math reformulation and fusing some linalg ops
+    // This is based on KF_cholesky_update_reduced_flops
+    double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
+    double flops = 0.0;
+
+    flops += mmT_2x2_flops(P, H, PHt);
+    flops += copy_flops(R, 4, S);        //! S = R;
+    flops += mmadd_2x2_flops(H, PHt, S); //! S += H*PHt ( S = H*P*H^T + R )
+
+    // optimize or skip
+    //flops += transpose_2x2_flops(S, St); //! St = S^T
+    //flops += add_flops(S, St, 4, S);     //! S = S + St
+    //flops += scal_flops(S, 4, 0.5, S);   //! S = 0.5*S
+
+    flops += inv_2x2_flops(S, Sinv);     //! Sinv = S^(-1)
+    flops += mm_2x2_flops(PHt, Sinv, W); //! W = PHt*Sinv
+
+    flops += mvadd_2x2_flops(W, v, x);   //! x = x + W*v
+
+    flops += mmT_2x2_flops(W, PHt, W1W1t);
+    flops += sub_flops(P, W1W1t, 4, P);
+
+    return flops;
+
+#endif
+}
+
+// Active memory
+double KF_cholesky_update_active_memory(Vector2d x, Matrix2d P,
+        cVector2d v, cMatrix2d R, cMatrix2d H) {
+
+#ifdef KF_YGLEE
+    // SHOULD !!NOT!! BE USED
+    // Just fusing some ops
+    double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
+    double W1[4], W[4], W1W1t[4];
+    double memory = 0.0;
+
+    memory += mmT_2x2_memory(P, H, PHt);                 //! PHt = P*Ht
+    memory += copy_memory(R, 4, S);                      //! S = R;
+    memory += mmadd_2x2_memory(H, PHt, S);               //! S += H*PHt ( S = H*P*H^T + R )
+
+    // optimize or skip
+    memory += transpose_2x2_memory(S, St);               //! St = S^T
+    memory += add_memory(S, St, 4, S);                   //! S = S + St
+    memory += scal_memory(S, 4, 0.5, S);                 //! S = 0.5*S
+ 
+    memory += llt_2x2_memory(S, SChol);                  //! S = SChol * SChol^T
+    memory += inv_2x2_memory(SChol, SCholInv);           //! SCholInv = inv( SChol )
+
+    memory += mm_2x2_memory(PHt, SCholInv, W1);          //! W1 = PHt * SCholInv
+    memory += mmT_2x2_memory(W1, SCholInv, W);
+
+    memory += mvadd_2x2_memory(W, v, x);                 //! x = x + W*v
+
+    //! P = P - W1*W1.transpose();
+    memory += mmT_2x2_memory(W1, W1, W1W1t);
+    memory += sub_memory(P, W1W1t, 4, P);
+
+    return memory;
+
+#else    
+    // THIS IS WHAT SHOULD BE USED
+    // After some math reformulation and fusing some linalg ops
+    // This is based on KF_cholesky_update_reduced_memory
+    double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
+    double memory = 0.0;
+
+    memory += mmT_2x2_memory(P, H, PHt);
+    memory += copy_memory(R, 4, S);        //! S = R;
+    memory += mmadd_2x2_memory(H, PHt, S); //! S += H*PHt ( S = H*P*H^T + R )
+
+    // optimize or skip
+    //memory += transpose_2x2_memory(S, St); //! St = S^T
+    //memory += add_memory(S, St, 4, S);     //! S = S + St
+    //memory += scal_memory(S, 4, 0.5, S);   //! S = 0.5*S
+
+    memory += inv_2x2_memory(S, Sinv);     //! Sinv = S^(-1)
+    memory += mm_2x2_memory(PHt, Sinv, W); //! W = PHt*Sinv
+
+    memory += mvadd_2x2_memory(W, v, x);   //! x = x + W*v
+
+    memory += mmT_2x2_memory(W, PHt, W1W1t);
+    memory += sub_memory(P, W1W1t, 4, P);
+
+    return memory;
+
+#endif
+}
