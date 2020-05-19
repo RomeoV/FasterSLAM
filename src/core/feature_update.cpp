@@ -164,3 +164,44 @@ void feature_update_active(Particle* particle,
     set_Pfi(particle, Pf[i], idf[i]);
   }
 }
+
+// Work / Memory instrumenting
+double feature_update_base_flops(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
+
+double feature_update_base_memory(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
+
+double feature_update_active_flops(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
+
+double feature_update_active_memory(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
