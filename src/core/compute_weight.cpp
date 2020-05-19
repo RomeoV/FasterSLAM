@@ -161,7 +161,16 @@ double compute_weight_base_memory(Particle* particle,
                       Vector2d zp[],
                       Matrix23d Hv[],
                       Matrix2d Hf[],
-                      Matrix2d Sf[]);
+                      Matrix2d Sf[]){
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (
+    2 * 2
+  );
+  return memory_called + memory_read_count + memory_written_count;               
+}
 
 double compute_weight_active_flops(Particle* particle,
                       Vector2d z[],
@@ -181,4 +190,13 @@ double compute_weight_active_memory(Particle* particle,
                       Vector2d zp[],
                       Matrix23d Hv[],
                       Matrix2d Hf[],
-                      Matrix2d Sf[]);
+                      Matrix2d Sf[]){
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (
+    2 * 2
+  );
+  return memory_called + memory_read_count + memory_written_count;               
+}

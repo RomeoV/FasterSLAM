@@ -23,8 +23,26 @@ void add_control_noise_active(double V, double G, double* Q, int addnoise, doubl
 
 double add_control_noise_base_flops(double V, double G, double* Q, int addnoise, double* VnGn);
 
-double add_control_noise_base_memory(double V, double G, double* Q, int addnoise, double* VnGn);
+double add_control_noise_base_memory(double V, double G, double* Q, int addnoise, double* VnGn){
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (
+    2 * 2
+  );
+  return memory_called + memory_read_count + memory_written_count;               
+}
 
 double add_control_noise_active_flops(double V, double G, double* Q, int addnoise, double* VnGn);
 
-double add_control_noise_active_memory(double V, double G, double* Q, int addnoise, double* VnGn);
+double add_control_noise_active_memory(double V, double G, double* Q, int addnoise, double* VnGn){
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (
+    2 * 2
+  );
+  return memory_called + memory_read_count + memory_written_count;               
+}
