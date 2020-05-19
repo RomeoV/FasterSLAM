@@ -148,8 +148,8 @@ double compute_weight_base_flops(Particle* particle,
       1 * tp.div +
       1 * tp.sqrt + 
       1 * tp.exp + 
-      sub(z[0], zp[0], 2, v_j) + 
-      pi_to_pi_base_flops(v_j[1]) +
+      sub_flops(z[0], zp[0], 2, v_j) + 
+      pi_to_pi_base_flops(v_j[1]) + // TODO: depends on input
       inv_2x2_flops(S, S_inv) + 
       mul_flops(S_inv, v_j, 2, 2, 1, S_inv_v) +
       mul_flops(v_j, S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
@@ -179,8 +179,8 @@ double compute_weight_base_memory(Particle* particle,
   N_z * (
     sub_memory(z[0], zp[0], 2, v_j) + 
     pi_to_pi_base_memory(v_j[1]) +
-    2 * 2 + //copy_memory(v_j, 2, v[j]) + 
-    2 * 4 + //copy_memory(Sf[i], 4, S) +
+    copy_memory(v_j, 2, v[j]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
+    copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
     inv_2x2_memory(S, S_inv) +
     mul_memory(S_inv, v[0], 2, 2, 1, S_inv_v) +
@@ -214,10 +214,10 @@ double compute_weight_active_flops(Particle* particle,
       1 * tp.div +
       1 * tp.sqrt + 
       1 * tp.exp + 
-      sub(z[0], zp[0], 2, v_j) + 
-      pi_to_pi_active_flops(v_j[1]) +
+      sub_flops(z[0], zp[0], 2, v_j) + 
+      pi_to_pi_active_flops(v_j[1]) + // TODO: depends on input
       inv_2x2_flops(S, S_inv) + 
-      mv_2x2_flops(S_inv, v_j, S_inv_v) +
+      mv_2x2_flops(S_inv, v_j, S_inv_v) + // TODO: where is this function
       mul_flops(v_j, S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
       determinant_2x2_flops(S)
     );
@@ -242,12 +242,12 @@ double compute_weight_active_memory(Particle* particle,
 
   double memory_called = N_z * (
     sub_memory(z[0], zp[0], 2, v_j) + 
-    pi_to_pi_base_memory(v_j[1]) +
-    2 * 2 + //copy_memory(v_j, 2, v[j]) + 
-    2 * 4 + //copy_memory(Sf[i], 4, S) +
+    pi_to_pi_active_memory(v_j[1]) +
+    copy_memory(v_j, 2, v[j]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
+    copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
     inv_2x2_memory(S, S_inv) +
-    mv_2x2_memory(S_inv, v[0], S_inv_v) +
+    mv_2x2_memory(S_inv, v[0], S_inv_v) + // TODO: where is this function
     mul_memory(v[0], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
     determinant_2x2_memory(S)
   );
