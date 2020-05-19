@@ -137,9 +137,7 @@ double add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matr
       2*mul_flops(-r*s) +
       mul(Gz, R, 2, 2, 2, MatResult_1) +
       transpose(Gz, 2, 2, Gz_T) +
-      mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2) +
-      set_xfi(particle, xf[i], i + N_x) + 
-      set_Pfi(particle, Pf[i], i + N_x)
+      mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2)
       );
   
   return flop_count;
@@ -174,8 +172,6 @@ double add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Ma
       mm_2x2_avx_v1(Gz, R, MatResult_1) + 
       mmT_2x2_avx_v1(MatResult_1, Gz, Pf[i]) +
       /* different end */
-      set_xfi(particle, xf[i], i + N_x) +
-      set_Pfi(particle, Pf[i], i + N_x)
       ) ;
   
   return flop_count;

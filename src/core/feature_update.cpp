@@ -47,9 +47,6 @@ void feature_update_base(Particle* particle,
   // assumed perfect and each feature update maybe computed independently and
   // without pose uncertainty
 
-  // double* xf = (double*)malloc(2 * N_idf * sizeof(double));
-  // double* Pf = (double*)malloc(4 * N_idf * sizeof(double));
-
   Vector2d xf[N_idf];
   Matrix2d Pf[N_idf];
 
@@ -58,13 +55,6 @@ void feature_update_base(Particle* particle,
     copy(particle->Pf + (4 * idf[i]), 4, Pf[i]);  // covariances
   }
 
-  // Vector2d zp[N_idf];  // this contains all predicted features in the updated
-  //                      // robot frame (after movement) but before considering
-  //                      // new measurements
-  // Matrix23d Hv[N_idf];
-  // Matrix2d Hf[N_idf];
-  // Matrix2d Sf[N_idf];
-  
   compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
   Vector2d feat_diff[N_idf];  // difference btw feature prediciton and
@@ -74,22 +64,10 @@ void feature_update_base(Particle* particle,
     feat_diff[i][1] = pi_to_pi_base(feat_diff[i][1]);
   }
 
-  // Vector2d vi;
-  // Matrix2d Hfi;
-  // Matrix2d Pfi;
-  // Vector2d xfi;
-
   for (int i = 0; i < N_idf; i++) {
-    // vi = feat_diff[i];
-    // Hfi = Hf[i];
-    // Pfi = Pf[i];
-    // xfi = xf[i];
-    // KF_cholesky_update(xfi, Pfi, vi, R, Hfi);
     KF_cholesky_update_base(xf[i], Pf[i], 
                        feat_diff[i], R, 
                        Hf[i]);
-    // xf[i] = xfi;
-    // Pf[i] = Pfi;
   }
 
   for (size_t i = 0; i < N_idf; i++) {
@@ -97,14 +75,6 @@ void feature_update_base(Particle* particle,
     set_Pfi(particle, Pf[i], idf[i]);
   }
 
-  // free(feat_diff);
-  // free(zp);
-  // free(Hv);
-  // free(Hf);
-  // free(Sf);
-
-  // free(xf);
-  // free(Pf);
 }
 
 // z is the list of measurements conditioned on the particle.
@@ -123,8 +93,6 @@ void feature_update_active(Particle* particle,
   // assumed perfect and each feature update maybe computed independently and
   // without pose uncertainty
 
-  // double* xf = (double*)malloc(2 * N_idf * sizeof(double));
-  // double* Pf = (double*)malloc(4 * N_idf * sizeof(double));
   Vector2d xf[N_idf] __attribute__((aligned(32)));
   Matrix2d Pf[N_idf] __attribute__((aligned(32)));
 
@@ -132,16 +100,6 @@ void feature_update_active(Particle* particle,
     copy(particle->xf + (2 * idf[i]), 2, xf[i]);  // means
     copy(particle->Pf + (4 * idf[i]), 4, Pf[i]);  // covariances
   }
-
-  // Vector2d zp[N_idf] __attribute__((aligned(32)));  // this contains all predicted features in the updated
-  //                      // robot frame (after movement) but before considering
-  //                      // new measurements
-  // Matrix23d Hv[N_idf] __attribute__((aligned(32)));
-  // Matrix2d Hf[N_idf] __attribute__((aligned(32)));
-  // Matrix2d Sf[N_idf] __attribute__((aligned(32)));
-  
-
-  // compute_jacobians(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
   Vector2d feat_diff[N_idf] __attribute__((aligned(32)));  // difference btw feature prediciton and
                             // measurement (used to update mean)
@@ -155,8 +113,6 @@ void feature_update_active(Particle* particle,
     KF_cholesky_update(xf[i], Pf[i], 
                        feat_diff[i], R, 
                        Hf[i]);
-    // xf[i] = xfi;
-    // Pf[i] = Pfi;
   }
 
   for (size_t i = 0; i < N_idf; i++) {
@@ -174,7 +130,18 @@ double feature_update_base_flops(Particle* particle,
                     Vector2d zp[],
                     Matrix23d Hv[],
                     Matrix2d Hf[],
-                    Matrix2d Sf[]);
+                    Matrix2d Sf[]){
+                      
+  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
+    N_idf * (   
+      sub(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_base(feat_diff[i][1]) + 
+      KF_cholesky_update_base(xf[i], Pf[i], 
+                       feat_diff[i], R, 
+                       Hf[i])
+    );
+  return flop_count;
+  }
 
 double feature_update_base_memory(Particle* particle,
                     Vector2d z[],
@@ -194,7 +161,17 @@ double feature_update_active_flops(Particle* particle,
                     Vector2d zp[],
                     Matrix23d Hv[],
                     Matrix2d Hf[],
-                    Matrix2d Sf[]);
+                    Matrix2d Sf[]){
+
+  double flop_count = N_idf * (   
+      sub(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_active_flops(feat_diff[i][1]) + 
+      KF_cholesky_update_active_flops(xf[i], Pf[i], 
+                       feat_diff[i], R, 
+                       Hf[i])
+    );
+  return flop_count;
+}
 
 double feature_update_active_memory(Particle* particle,
                     Vector2d z[],
