@@ -147,7 +147,7 @@ double add_feature_base_memory(Particle* particle, Vector2d z[], size_t N_z, Mat
   double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
     copy(measurement, 2, xf[i]) +
     mul(Gz, R, 2, 2, 2, MatResult_1) +
-    transpose(Gz, 2, 2, Gz_T) +
+    transpose_memory(Gz, 2, 2, Gz_T) +
     mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2) +
     copy(MatResult_2, 2 * 2, Pf[i]) +
     set_xfi(particle, xf[i], i + N_x) + 
@@ -181,7 +181,7 @@ double add_feature_active_memory(Particle* particle, Vector2d z[], size_t N_z, M
   double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
     copy(measurement, 2, xf[i]) +
     mul(Gz, R, 2, 2, 2, MatResult_1) +
-    transpose(Gz, 2, 2, Gz_T) +
+    transpose_memory(Gz, 2, 2, Gz_T) +
     mul(MatResult_1, Gz_T, 2, 2, 2, MatResult_2) +
     copy(MatResult_2, 2 * 2, Pf[i]) +
     mm_2x2_avx_v1(Gz, R, MatResult_1) + 

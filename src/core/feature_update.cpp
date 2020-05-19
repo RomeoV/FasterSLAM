@@ -134,9 +134,9 @@ double feature_update_base_flops(Particle* particle,
 
   double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
     N_idf * (   
-      sub(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base(feat_diff[i][1]) + 
-      KF_cholesky_update_base(xf[i], Pf[i], 
+      sub_flops(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_base_flops(feat_diff[i][1]) + 
+      KF_cholesky_update_base_flops(xf[i], Pf[i], 
                        feat_diff[i], R, 
                        Hf[i])
     );
@@ -157,8 +157,8 @@ double feature_update_base_memory(Particle* particle,
     N_idf * (
       copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
       copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
-      sub(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base(feat_diff[i][1]) +
+      sub_memory(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_base_memory(feat_diff[i][1]) +
       KF_cholesky_update_base(xf[i], Pf[i], 
                         feat_diff[i], R, 
                         Hf[i]) +
@@ -203,7 +203,7 @@ double feature_update_active_memory(Particle* particle,
   double memory_called = N_idf * (
       copy(particle->xf + (2 * idf[i]), 2, xf[i]) +
       copy(particle->Pf + (4 * idf[i]), 4, Pf[i]) +
-      sub(z[i], zp[i], 2, feat_diff[i]) +
+      sub_memory(z[i], zp[i], 2, feat_diff[i]) +
       pi_to_pi_active(feat_diff[i][1]) +
       KF_cholesky_update_active(xf[i], Pf[i], 
                         feat_diff[i], R, 
