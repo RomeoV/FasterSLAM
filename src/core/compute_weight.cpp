@@ -69,12 +69,8 @@ double compute_weight_base(Particle* particle,
     copy(Sf[i], 4, S);
     transpose(S, 2, 2, ST);
     inv_2x2(S, S_inv);
-
-    
     mul(S_inv, v[i], 2, 2, 1, S_inv_v);
     mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v);
-
-    
 
     den = 2 * M_PI * sqrt(determinant_2x2(S));
     num = exp(-0.5 * vT_S_inv_v);
@@ -118,12 +114,8 @@ double compute_weight_active(Particle* particle,
     copy(Sf[i], 4, S);
     transpose(S, 2, 2, ST);
     inv_2x2(S, S_inv);
-
-    
     mv_2x2(S_inv, v[i], S_inv_v);
     mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
-
-    
 
     den = 2 * M_PI * sqrt(determinant_2x2(S));
     num = exp(-0.5 * vT_S_inv_v);
@@ -144,13 +136,18 @@ double compute_weight_base_flops(Particle* particle,
                       Matrix2d Hf[],
                       Matrix2d Sf[]){
 
-  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
-    N_idf * (   
-      sub(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base(feat_diff[i][1]) + 
-      KF_cholesky_update_base(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i])
+  double flop_count = compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf) +
+    N_z * (
+      4 * fp_mul +
+      1 * fp_div + 
+      sub(z[j], zp[j], 2, v_j) + 
+      pi_to_pi_base(v_j[1]) +
+      inv_2x2(S, S_inv) + 
+      mul(S_inv, v[i], 2, 2, 1, S_inv_v) +
+      mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
+      1 * sqrt(determinant_2x2(S)) + 
+      determinant_2x2(S) + 
+      exp(-0.5 * vT_S_inv_v)
     );
   return flop_count;
 }
@@ -166,12 +163,20 @@ double compute_weight_base_memory(Particle* particle,
                       Matrix2d Hf[],
                       Matrix2d Sf[]){
 
-  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  double memory_called = compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf) + 
+  N_z * (
+    sub(z[j], zp[j], 2, v_j) + 
+    pi_to_pi_base(v_j[1]) +
+    copy(v_j, 2, v[j]) + 
+    copy(Sf[i], 4, S) +
+    transpose(S, 2, 2, ST) +
+    inv_2x2(S, S_inv) +
+    mul(S_inv, v[i], 2, 2, 1, S_inv_v) +
+    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
+    determinant_2x2(S)
   );
-  double memory_read_count = N_z * 10;
-  double memory_written_count = N_z * (
-    2 * 2
-  );
+  double memory_read_count = N_z * 7;
+  double memory_written_count = N_z * 2;
   return memory_called + memory_read_count + memory_written_count;               
 }
 
@@ -185,13 +190,17 @@ double compute_weight_active_flops(Particle* particle,
                       Matrix2d Hf[],
                       Matrix2d Sf[]){
 
-  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
-    N_idf * (   
-      sub(z[i], zp[i], 2, feat_diff[i]) +
-      pi_to_pi_base(feat_diff[i][1]) + 
-      KF_cholesky_update_base(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i])
+  double flop_count = N_z * (
+      4 * fp_mul +
+      1 * fp_div + 
+      sub(z[j], zp[j], 2, v_j) + 
+      pi_to_pi_base(v_j[1]) +
+      inv_2x2(S, S_inv) + 
+      mv_2x2(S_inv, v[i], S_inv_v) +
+      mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
+      1 * sqrt(determinant_2x2(S)) + 
+      determinant_2x2(S) + 
+      exp(-0.5 * vT_S_inv_v)
     );
   return flop_count;
 }
@@ -206,11 +215,18 @@ double compute_weight_active_memory(Particle* particle,
                       Matrix2d Hf[],
                       Matrix2d Sf[]){
 
-  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+  double memory_called = N_z * (
+    sub(z[j], zp[j], 2, v_j) + 
+    pi_to_pi_base(v_j[1]) +
+    copy(v_j, 2, v[j]) + 
+    copy(Sf[i], 4, S) +
+    transpose(S, 2, 2, ST) +
+    inv_2x2(S, S_inv) +
+    mv_2x2(S_inv, v[i], S_inv_v) +
+    mul(v[i], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
+    determinant_2x2(S)
   );
-  double memory_read_count = N_z * 10;
-  double memory_written_count = N_z * (
-    2 * 2
-  );
-  return memory_called + memory_read_count + memory_written_count;               
+  double memory_read_count = N_z * 7;
+  double memory_written_count = N_z * 2;
+  return memory_called + memory_read_count + memory_written_count; 
 }
