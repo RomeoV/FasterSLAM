@@ -43,10 +43,6 @@ double compute_weight_base(Particle* particle,
                       Matrix23d Hv[],
                       Matrix2d Hf[],
                       Matrix2d Sf[]) {
-  // Vector2d zp[N_z];
-  // Matrix23d Hv[N_z];
-  // Matrix2d Hf[N_z];
-  // Matrix2d Sf[N_z];
 
   // process each feature, incrementally refine proposal distribution
   compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
@@ -97,13 +93,8 @@ double compute_weight_active(Particle* particle,
                       Matrix23d Hv[],
                       Matrix2d Hf[],
                       Matrix2d Sf[]) {
-  // Vector2d zp[N_z];
-  // Matrix23d Hv[N_z];
-  // Matrix2d Hf[N_z];
-  // Matrix2d Sf[N_z];
 
   // process each feature, incrementally refine proposal distribution
-  // compute_jacobians(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 
   Vector2d v[N_z];
   for (size_t j = 0; j < N_z; j++) {
@@ -151,7 +142,19 @@ double compute_weight_base_flops(Particle* particle,
                       Vector2d zp[],
                       Matrix23d Hv[],
                       Matrix2d Hf[],
-                      Matrix2d Sf[]);
+                      Matrix2d Sf[]){
+
+  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
+    N_idf * (   
+      sub(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_base(feat_diff[i][1]) + 
+      KF_cholesky_update_base(xf[i], Pf[i], 
+                       feat_diff[i], R, 
+                       Hf[i])
+    );
+  return flop_count;
+}
+
 
 double compute_weight_base_memory(Particle* particle,
                       Vector2d z[],
@@ -180,7 +183,18 @@ double compute_weight_active_flops(Particle* particle,
                       Vector2d zp[],
                       Matrix23d Hv[],
                       Matrix2d Hf[],
-                      Matrix2d Sf[]);
+                      Matrix2d Sf[]){
+
+  double flop_count =  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
+    N_idf * (   
+      sub(z[i], zp[i], 2, feat_diff[i]) +
+      pi_to_pi_base(feat_diff[i][1]) + 
+      KF_cholesky_update_base(xf[i], Pf[i], 
+                       feat_diff[i], R, 
+                       Hf[i])
+    );
+  return flop_count;
+}
 
 double compute_weight_active_memory(Particle* particle,
                       Vector2d z[],
