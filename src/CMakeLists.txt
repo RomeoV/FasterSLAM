@@ -25,12 +25,6 @@ add_subdirectory(microbenchmarks)
 add_subdirectory(output)
 add_subdirectory(utils)
 
-add_custom_target(benchmarks
-  DEPENDS
-  _run_core_benchmarks
-  _run_fastslam1_benchmarks
-)
-
 if(TEST_COVERAGE)
   include(TestCoverage)
 endif()
