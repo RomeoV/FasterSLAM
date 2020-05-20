@@ -18,21 +18,10 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 Particle* particle_preloader(Vector3d xv, Vector2d xf[], Matrix2d Pf[], const size_t Nfa) {
     Particle* particle = newParticle(50, xv);
     for (int i = 0; i< Nfa; i++) {
-        set_xfi(particle,xf[i] ,i);
+        set_xfi(particle, xf[i], i);
         set_Pfi(particle, Pf[i], i);
     }
     return particle;
-}
-
-void data_loader(Particle* particle,
-                       int idf[],
-                       size_t N_z,
-                       Matrix2d R,
-                       Vector2d zp[],
-                       Matrix23d Hv[],
-                       Matrix2d Hf[],
-                       Matrix2d Sf[]) {
-    
 }
 
 void enforce_symmetry_Pf(Matrix2d Pf[], const size_t Nfa) {
@@ -76,18 +65,11 @@ int main() {
 
     Matrix2d R __attribute__((aligned(32))) = {1,0,0,1};
 
-    
-    
-
     // outputs
     Vector2d zp[Nfa] __attribute__((aligned(32)));
     Matrix23d* Hv = static_cast<Matrix23d *>(aligned_alloc(32, Nfa * sizeof(Matrix23d)));
     Matrix2d* Hf = static_cast<Matrix2d *>(aligned_alloc(32, Nfa * sizeof(Matrix2d)));
-    //Matrix2d Sf[Nfa]; NOT ALIGNED (Segfault, works with storeu, but this is shit)
     Matrix2d* Sf = static_cast<Matrix2d *>(aligned_alloc(32, Nfa * sizeof(Matrix2d)));
-    //Matrix2d* Sf = (Matrix2d*) malloc( Nfa * sizeof(Matrix2d) ); // No seg fault but test fails
-
-    //static_cast<int *>(aligned_alloc(32, N * sizeof(int)));
 
     //Input -> Change this as you like
     const size_t Nfz = 12; // Nfz <= Nfa
@@ -103,11 +85,8 @@ int main() {
         Matrix2d Sf_base[Nfa] __attribute__((aligned(32)));
 
         compute_jacobians_base(particle, idf, Nfz, R, zp_base, Hv_base, Hf_base, Sf_base);
-
-        //decltype(&compute_jacobians) func[1] = {&compute_jacobians_fast};
-
-        
         compute_jacobians_fast(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
+
         for (int i = 0; i < Nfz; i++) {
             for (int j = 0; j<4;j++) {
                 expect(is_close(Hf_base[i][j], Hf[i][j])) <<i << "Hf" <<j;
@@ -131,7 +110,6 @@ int main() {
     Benchmark<decltype(&compute_jacobians)> bench("compute_jacobians Benchmark");
 
     double work = Nfz*10; // best-case in flops
-    bench.data_loader = data_loader;
 
     bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
     bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", work);
@@ -161,11 +139,10 @@ int main() {
     int idf_3[20] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
     set_work(bench, particle, idf_3, 20, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_3, 20, R, zp, Hv, Hf, Sf);
+    bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
 
-    
 
     delParticleMembersAndFreePtr(particle);
-    //bench.destructor_output = false;
 
     bench.details();
 

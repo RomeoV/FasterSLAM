@@ -4,3 +4,6 @@
 [submodule "5ea73e40f777800001ae24ab"]
 	path = overleaf_report
 	url = https://git.overleaf.com/5ea73e40f777800001ae24ab
+[submodule "clang-format-hooks"]
+	path = clang-format-hooks
+	url = https://github.com/barisione/clang-format-hooks.git

@@ -43,8 +43,8 @@ int main() {
 
     predict(&p, V,G, Q, WB, dt),
     predict_base(&p_exact, V,G, Q, WB, dt);
-    for (int i = 0; i< 3; i++) {
-        expect(that % fabs(p.xv[i]-p_exact.xv[i])<= 1.0e-10) <<i;
+    for (int i = 0; i < 3; i++) {
+        expect(that % fabs(p.xv[i]-p_exact.xv[i])<= 1.0e-10) << i;
     }
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
@@ -61,23 +61,6 @@ int main() {
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, V,G, Q, WB, dt);
-
-    /*
-    // Alternative (much slower here, but nicer to look at. Generally useful if you want to average over a few inputs). Yields averages over all runs.
-    
-    Benchmark<decltype(&pi_to_pi)> multi_bench("pi_to_pi Benchmark");
-
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    multi_bench.add_function(&pi_to_pi, "pi_to_pi", 6);
-    multi_bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 6);
-
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i<N; i++) {
-        // You could set the data_loader function here to generate new input. multi_bench.data_loader =&my_load_func_i...
-        multi_bench.run_benchmark(angles[i]);
-    }
-    */
 
     return 0;
 }

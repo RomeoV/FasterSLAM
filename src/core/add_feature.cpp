@@ -25,8 +25,7 @@ void add_feature(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
  * Status: TBD
  ****************************************************************************/
 void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
-  // double* xf = (double*)malloc(2 * N_z * sizeof(double));
-  // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
+
   Vector2d xf[N_z];
   Matrix2d Pf[N_z];
 
@@ -78,8 +77,7 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
  * Status: TBD
  ****************************************************************************/
 void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) {
-  // double* xf = (double*)malloc(2 * N_z * sizeof(double));
-  // double* Pf = (double*)malloc(4 * N_z * sizeof(double));
+
   Vector2d xf[N_z] __attribute__((aligned(32)));
   Matrix2d Pf[N_z] __attribute__((aligned(32)));
 

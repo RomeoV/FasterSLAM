@@ -1110,17 +1110,17 @@ void compute_jacobians_advanced_optimizations(Particle* particle,
       __m256d HfMat_T_vec = _mm256_permute4x64_pd(HfMat_vec, 0xD8);
      
       __m256d Pf_vec = _mm256_load_pd(Pf_i);
-      __m256d avec = _mm256_permute4x64_pd(HfMat_vec, 0xA0); // 2,2,0,0
+      __m256d avec = _mm256_permute_pd(HfMat_vec, 0xA0); // 2,2,0,0
       __m256d bvec = _mm256_permute4x64_pd(Pf_vec, 0x44); // 1,0,1,0
-      __m256d cvec = _mm256_permute4x64_pd(HfMat_vec, 0xF5); // 3,3,1,1
+      __m256d cvec = _mm256_permute_pd(HfMat_vec, 0xF5); // 3,3,1,1
       __m256d dvec = _mm256_permute4x64_pd(Pf_vec, 0xEE); // 3,2,3,2
       __m256d left_mul = _mm256_mul_pd(avec,bvec);
       __m256d right_mul = _mm256_mul_pd(cvec,dvec);
       __m256d Hf_Pf_vec = _mm256_add_pd(left_mul, right_mul);
 
-      __m256d evec = _mm256_permute4x64_pd(Hf_Pf_vec, 0xA0); // 2,2,0,0
+      __m256d evec = _mm256_permute_pd(Hf_Pf_vec, 0xA0); // 2,2,0,0
       __m256d fvec = _mm256_permute4x64_pd(HfMat_T_vec, 0x44); // 1,0,1,0
-      __m256d gvec = _mm256_permute4x64_pd(Hf_Pf_vec, 0xF5); // 3,3,1,1
+      __m256d gvec = _mm256_permute_pd(Hf_Pf_vec, 0xF5); // 3,3,1,1
       __m256d hvec = _mm256_permute4x64_pd(HfMat_T_vec, 0xEE); // 3,2,3,2
       __m256d left_mul2 = _mm256_mul_pd(evec,fvec);
       __m256d right_mul2 = _mm256_mul_pd(gvec,hvec);

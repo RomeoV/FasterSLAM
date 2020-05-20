@@ -91,7 +91,7 @@ int main() {
     data_loader(x, P, v, R, H);
     KF_cholesky_update(x, P, v, R, H);
 
-    // Check x
+    // Check x is the same as in base function
     double error = 0.0;
     for (int i = 0; i < 2; i++) {
         error = fabs(        x[i] - exact_x[i] ); expect(that % error < 1e-10) << i;
@@ -102,7 +102,7 @@ int main() {
         error = fabs(     x_rf2[i] - exact_x[i] ); expect(that % error < 1e-10) << i + 21;
     #endif
     }
-    // Check P 
+    // Check P is the same as in base function
     for (int i = 0; i < 4; i++) {
         error = fabs(        P[i] - exact_P[i] ); expect(that % error < 1e-10) << i;
         error = fabs(     P_v10[i] - exact_P[i] ); expect(that % error < 1e-10) << i + 10;
