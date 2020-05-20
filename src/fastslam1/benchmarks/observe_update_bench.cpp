@@ -53,6 +53,7 @@ void data_loader(double * lm, int N_features, Vector3d xtrue, double* R, int* ft
         particles[i].xv[2] = xv_initial[2];
     }
     predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xv_initial, &iwp, &G,particles);
+    observe_update_base(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
 }
 
 void init_particles_contigous(Particle* particle, double* _xv, double* _Pv, double* weight, const size_t N, const size_t Nf) {
@@ -67,6 +68,25 @@ void init_particles_contigous(Particle* particle, double* _xv, double* _Pv, doub
         double Pf[4];
     } 
 }
+
+// I will try to add this as smooth as possible to the benchmark, but for now do this
+void set_work(Benchmark<decltype(&observe_update)>& bench, 
+                double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    bench.funcFlops[0] = observe_update_base_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    bench.funcBytes[0] = 8* observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    for (int i = 1; i < bench.numFuncs; i++) {
+        bench.funcFlops[i] = observe_update_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        bench.funcBytes[i] = 8* observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    }
+}
+
 
 void setup(Particle* particles, double* weights, const int Nf, Vector3d xtrue, 
                     int** ftag, int** da_table, Vector2d** z, Vector2d** zf, 
@@ -212,6 +232,9 @@ int main() {
     bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", work);
 #endif
 
+    set_work(bench, lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn_exact, particles, weights);
     bench.run_benchmark(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn_exact, particles, weights);
