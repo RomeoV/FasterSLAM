@@ -184,17 +184,17 @@ double compute_weight_base_memory(Particle* particle,
   Vector2d S_inv_v;
   double vT_S_inv_v;
 
-  double memory_called = compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf) +
+  double memory_called = compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf) +
   N_z * (
     sub_memory(z[0], zp[0], 2, v_j) + 
     pi_to_pi_base_memory(v_j[1]) +
-    copy_memory(v_j, 2, v[j]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
-    copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
+    copy_memory(v_j, 2, v[0]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
+    copy_memory(Sf[0], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
-    inv_2x2_memorydeterminant_2x2_memory(S, S_inv) +
+    inv_2x2_memory(S, S_inv) +
+    determinant_2x2_memory(S) +
     mul_memory(S_inv, v[0], 2, 2, 1, S_inv_v) +
-    mul_memory(v[0], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
-    (S)
+    mul_memory(v[0], S_inv_v, 1, 2, 1, &vT_S_inv_v)
   );
   double memory_read_count = N_z * 7;
   double memory_written_count = N_z * 2;
@@ -262,8 +262,8 @@ double compute_weight_active_memory(Particle* particle,
   double memory_called = N_z * (
     sub_memory(z[0], zp[0], 2, v_j) + 
     pi_to_pi_active_memory(v_j[1]) +
-    copy_memory(v_j, 2, v[j]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
-    copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
+    copy_memory(v_j, 2, v[0]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
+    copy_memory(Sf[0], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
     inv_2x2_memory(S, S_inv) +
     mv_2x2_memory(S_inv, v[0], S_inv_v) + 

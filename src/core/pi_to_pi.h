@@ -7,6 +7,8 @@
  */
 double pi_to_pi(double ang);
 double pi_to_pi_base(double ang);
+double pi_to_pi_active(double ang);
+
 
 
 /*!
