@@ -140,8 +140,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
     size_t count_zf = 0;
     size_t count_zn = 0;
     data_associate_known_base(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
-
-    // perform update
+    // perform update    
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
             // std::cout<<"HiBase"<<std::endl;
@@ -160,8 +159,7 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
             add_feature_base(&particles[i], zn, count_zn, R);
         }
     }
-
-    resample_particles_dag(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles_dag(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);             
 }
 
 void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
@@ -208,7 +206,8 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
         }
     }
 
-    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);   
+       
 }
 
 #ifdef __AVX2__
@@ -1586,8 +1585,6 @@ void observe_update_inplace(double * lm, int N_features, Vector3d xtrue, double*
                 mv_2x2(S_inv, v[j], S_inv_v);
                 mul(v[j], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
 
-                print(v[j],2,1);
-                print(S_inv,4,1);
                 assert(num);
                 den = 2 * M_PI * sqrt(determinant_2x2(S));
                 num = exp(-0.5 * vT_S_inv_v);

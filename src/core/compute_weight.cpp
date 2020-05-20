@@ -5,7 +5,8 @@
 #include "compute_jacobians.h"
 #include "linalg.h"
 #include "pi_to_pi.h"
-
+#include <assert.h>
+#include <iostream>
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base implementation

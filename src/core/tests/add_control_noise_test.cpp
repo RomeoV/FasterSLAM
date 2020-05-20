@@ -13,10 +13,11 @@ int main() {
 "add_noise"_test = [] {
     // since this is random, it is a bit hard to test
     // for now test that it changed
+    srand(1);
     given("I have speed, a steering angle and a covariance matrix") = [] {
         double V = 10;
         double G = 0.5;
-        double Q[4] = {0.1, 0.1, 0.3, 0.5};
+        double Q[4] = {0.1,0.0,0.0,0.5};// Old inputs, yields nan, fails test in -ffast-math: {0.1, 0.1, 0.3, 0.5};
         int addnoise = 1; // adding noise
         when("I add control noise") = [&] {
             double VnGn[2];

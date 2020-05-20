@@ -31,17 +31,28 @@ void data_loader(double * lm, int N_features, Vector3d xtrue, double* R, int* ft
     double maxG = 1.5;
     double dt = 1.0;
     double V = 3.0;
-    double xv_initial[3] = {0,0,0};
+    setup_initial_Q_R();
+    double xv_initial[3] = {0.0,0.0,0.0};
     int N_waypoints = 3;
     double wp[6] = {0,0,1,1,2,2};
     int iwp = 1;
     double G = 0.0;
-    predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xv_initial, &iwp, &G,particles);
+    *Nf_visible = 0;
+    //double weights[NPARTICLES] __attribute__ ((aligned(32)));
+    setup_landmarks(&ftag, &da_table, N_features);
     for (int i = 0; i<Nfa_start; i++) {
         double _xf[2];
         double _Pf[4];
         // Add here start values to each particle to not test the add_feature part!
     }
+    for (int i = 0; i<NPARTICLES; i++) {
+        particles[i].Nfa = 0;
+        weights[i] = 1.0/NPARTICLES;
+        particles[i].xv[0] = xv_initial[0];
+        particles[i].xv[1] = xv_initial[1];
+        particles[i].xv[2] = xv_initial[2];
+    }
+    predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xv_initial, &iwp, &G,particles);
 }
 
 void init_particles_contigous(Particle* particle, double* _xv, double* _Pv, double* weight, const size_t N, const size_t Nf) {
@@ -189,7 +200,10 @@ int main() {
 
     bench.data_loader=data_loader;
 
+    bench.controls.NUM_RUNS = 3;
+
     double work = 100;
+
     bench.add_function(&observe_update_base, "observe_update_base", work);
     bench.add_function(&observe_update_active, "observe_update_actve", work);
     bench.add_function(&observe_update_fast, "observe_update_fast", work);
@@ -198,9 +212,9 @@ int main() {
     bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", work);
 #endif
 
-    bench.run_benchmark(lm,Nf, xtrue, *R, ftag_exact, 
-            da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
-            zn_exact, particles_exact, weights_exact);
+    bench.run_benchmark(lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn_exact, particles, weights);
 
     return 0;
 }

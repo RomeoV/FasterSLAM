@@ -71,7 +71,9 @@ void resample_particles_dag(Particle* particles, size_t N, double* weights,int N
     // what they should contain!
     size_t keep_indices[N];  // can be seen as dependencies   
     stratified_resample_base(weights, N, &Neff, keep_indices);
-    
+    for (int i = 0; i<N; i++) {
+        assert(keep_indices[i] <N);
+    }
     if ((Neff < Nmin) && (doresample == 1)) {
         int count[N];
         count_occurences(keep_indices,N,count);
@@ -145,7 +147,7 @@ double resample_particles_dag_memory(Particle* particles, size_t N, double* weig
     return memory;
 }
 
-void resample_particles_orig(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
+void resample_particles_base(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
     normalize_weights(weights, N);
 
     
@@ -174,14 +176,14 @@ void resample_particles_orig(Particle* particles, size_t N, double* weights,int 
         }
     }
 }
-double resample_particles_orig_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
+double resample_particles_base_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
     double _Neff;
     size_t* _keep;
     return normalize_weights_flops(weights, N)
            + stratified_resample_base_flops(weights, N, &_Neff, _keep)
            + N * (tp.div + tp.add);
 }
-double resample_particles_orig_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
+double resample_particles_base_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
     double _Neff;
     size_t* _keep;
     size_t Nfa = particles[0].Nfa;
@@ -216,7 +218,12 @@ void normalize_weights(double* weights, size_t N) {
         sum += weights[i];
     }
     for (size_t i = 0; i < N; i++) {
-        weights[i] /= sum;
+        if (sum >0.0) {
+            weights[i] /= sum;
+        } else  {
+            // std::cout << "Sum of weights was 0. Resetting to uniform..."<<std::endl;
+            weights[i] = 1.0/N; // I added this hack to avoid numerical instabilities that occur if we do many observations without predictions inbetween.
+        }
     }
 }
 double normalize_weights_flops(double* weights, size_t N) {

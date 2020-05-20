@@ -20,7 +20,6 @@ void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, d
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
 // Utils
-
 double predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 

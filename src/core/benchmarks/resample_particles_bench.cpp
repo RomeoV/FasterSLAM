@@ -45,7 +45,7 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.data_loader = &data_loader;
 
-    bench.add_function(&resample_particles_orig, "resample_particles_base", work); // cycles scale exponentially with #Particles!!!
+    bench.add_function(&resample_particles_base, "resample_particles_base", work); // cycles scale exponentially with #Particles!!!
     bench.add_function(&resample_particles_dag, "resample_particles_dag", work);
     //bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
 
