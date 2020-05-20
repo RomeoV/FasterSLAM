@@ -143,18 +143,27 @@ double compute_weight_base_flops(Particle* particle,
   transpose(S, 2, 2, ST);
   double vT_S_inv_v;
 
-  double flop_count = compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf) + N_z * (
+  double flop_count = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf) + 
+    N_z * (
       4 * tp.mul +
       1 * tp.div +
       1 * tp.sqrt + 
       1 * tp.exp + 
       sub_flops(z[0], zp[0], 2, v_j) + 
-      pi_to_pi_base_flops(v_j[1]) + // TODO: depends on input
       inv_2x2_flops(S, S_inv) + 
       mul_flops(S_inv, v_j, 2, 2, 1, S_inv_v) +
       mul_flops(v_j, S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
       determinant_2x2_flops(S)
     );
+
+  compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+  Vector2d v[N_z];
+  for (size_t j = 0; j < N_z; j++) {
+    Vector2d v_j;
+    sub(z[j], zp[j], 2, v_j);  // v_j = z[j] - zp[j]
+    flop_count += pi_to_pi_base_flops(v_j[1]);
+  }
+
   return flop_count;
 }
 
@@ -182,16 +191,19 @@ double compute_weight_base_memory(Particle* particle,
     copy_memory(v_j, 2, v[j]) + // 2 * 2 + //copy_memory(v_j, 2, v[j]) + 
     copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
-    inv_2x2_memory(S, S_inv) +
+    inv_2x2_memorydeterminant_2x2_memory(S, S_inv) +
     mul_memory(S_inv, v[0], 2, 2, 1, S_inv_v) +
     mul_memory(v[0], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
-    determinant_2x2_memory(S)
+    (S)
   );
   double memory_read_count = N_z * 7;
   double memory_written_count = N_z * 2;
   return memory_called + memory_read_count + memory_written_count;               
 }
 
+// Careful: this function needs correct input to work, since
+// pi_to_pi number of flops depends on the output of compute_jacobians
+// which needs to be passed to this function via zp!
 double compute_weight_active_flops(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
@@ -215,12 +227,19 @@ double compute_weight_active_flops(Particle* particle,
       1 * tp.sqrt + 
       1 * tp.exp + 
       sub_flops(z[0], zp[0], 2, v_j) + 
-      pi_to_pi_active_flops(v_j[1]) + // TODO: depends on input
       inv_2x2_flops(S, S_inv) + 
-      mv_2x2_flops(S_inv, v_j, S_inv_v) + // TODO: where is this function
+      mv_2x2_flops(S_inv, v_j, S_inv_v) +
       mul_flops(v_j, S_inv_v, 1, 2, 1, &vT_S_inv_v) + 
       determinant_2x2_flops(S)
     );
+  
+  Vector2d v[N_z];
+  for (size_t j = 0; j < N_z; j++) {
+    Vector2d v_j;
+    sub(z[j], zp[j], 2, v_j);  // v_j = z[j] - zp[j]
+    flop_count += pi_to_pi_active_flops(v_j[1]);
+  }
+
   return flop_count;
 }
 
@@ -247,7 +266,7 @@ double compute_weight_active_memory(Particle* particle,
     copy_memory(Sf[i], 4, S) + // 2 * 4 + //copy_memory(Sf[i], 4, S) +
     transpose_memory(S, 2, 2, ST) +
     inv_2x2_memory(S, S_inv) +
-    mv_2x2_memory(S_inv, v[0], S_inv_v) + // TODO: where is this function
+    mv_2x2_memory(S_inv, v[0], S_inv_v) + 
     mul_memory(v[0], S_inv_v, 1, 2, 1, &vT_S_inv_v) +
     determinant_2x2_memory(S)
   );
