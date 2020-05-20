@@ -146,6 +146,8 @@ int main() {
     bench.add_function(avx2_pcg32_lambda, "avx2_pcg32", work);
     bench.run_benchmark(recipient, N);
 
+    free(recipient);
+
 #else
 #warning "Disabled trigonometry_bench because AVX2 is not supported!"
 #endif

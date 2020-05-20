@@ -45,21 +45,18 @@ void fill (FT* alphas) {
 }
 
 void calc_normalized_csines(double* alphas) {
-  double result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += sin(alphas[i]);
   }
 }
 
 void calc_tscheb_normalized_fsines(double* alphas) {
-  float result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += tscheb_fsine(alphas[i], true);
   }
 }
 
 void calc_tscheb_normalized_dsines(double* alphas) {
-  double result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += tscheb_dsine(alphas[i], true);
   }
@@ -81,7 +78,6 @@ void calc_avx_normalized_dsines(double* alphas) {
 }
 
 void read_sine(double* alphas) {
-  float result = 0;
   for (size_t i = 0; i < NR; i++) {
       sum += read_sin(alphas[i]);
   }
@@ -89,7 +85,6 @@ void read_sine(double* alphas) {
 
 #ifdef __AVX2__
 void read_sine_vec(double* alphas) {
-  float result = 0;
   for (size_t i = 0; i < NR; i+=4) {
       auto vec = _mm256_load_pd(alphas+i);
       _mm256_store_pd(results+i, read_sin2_vec(vec));
@@ -114,7 +109,7 @@ int main() {
     double dsine_vec_results[99];
     double dsine_unrolled_results[99];
     double* angles = (double*)aligned_alloc(32, 100*sizeof(double));
-    double* angles_normalised = (double*)aligned_alloc(32, 100*sizeof(double));
+    double* angles_normalized = (double*)aligned_alloc(32, 100*sizeof(double));
     auto rand_angle = []{ return rand()*1.0/RAND_MAX * 4. * M_PI - 2. * M_PI; };
     for (size_t i = 0; i < 99; i++) { 
       angles[i] = rand_angle(); 
@@ -126,10 +121,10 @@ int main() {
         dsine_results[i] = tscheb_dsine(angles[i], false);
     }
     for (size_t i = 0; i < 99; i++) {
-      angles_normalised[i] = pi_to_pi(angles[i]);
+      angles_normalized[i] = pi_to_pi(angles[i]);
     }
-    tscheb_dsines(angles_normalised, 99, dsine_vec_results);
-    tscheb_dsines_unrolled(angles_normalised, 99, dsine_unrolled_results);
+    tscheb_dsines(angles_normalized, 99, dsine_vec_results);
+    tscheb_dsines_unrolled(angles_normalized, 99, dsine_unrolled_results);
 
     for (size_t i = 0; i < 99; i++) {
       expect(that % fabs(fsine_results[i] - sin_results[i]) < 1e-6);
@@ -165,6 +160,8 @@ int main() {
     // If you want the summary to be written to a file, set bench.fout with your preferred ostream. (Default std::cout)
 
     // Free memory
+    free(angles);
+    free(angles_normalized);
     destroy(alphas_d);
 
     return 0;
