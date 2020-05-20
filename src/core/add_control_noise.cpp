@@ -36,6 +36,8 @@ double add_control_noise_base_flops(double V, double G, double* Q, int addnoise,
 	return 0;
   }
 
+  Vector2d A;
+  Vector2d result;
   double flop_count = multivariate_gauss_base_flops(A, Q, result);
   return flop_count;
 }
@@ -46,7 +48,9 @@ double add_control_noise_base_memory(double V, double G, double* Q, int addnoise
 	return 0;
   }
 
-  double memory_called = multivariate_gauss_base_memory(A, Q, result)
+  Vector2d A;
+  Vector2d result;
+  double memory_called = multivariate_gauss_base_memory(A, Q, result);
   double memory_read_count = 2;
   double memory_written_count = 2 * 4;
   return memory_called + memory_read_count + memory_written_count;               
@@ -57,6 +61,8 @@ double add_control_noise_active_flops(double V, double G, double* Q, int addnois
 	return 0;
   }
 
+  Vector2d A;
+  Vector2d result;
   double flop_count = multivariate_gauss_active_flops(A, Q, result);
   return flop_count;
 }
@@ -66,7 +72,9 @@ double add_control_noise_active_memory(double V, double G, double* Q, int addnoi
 	return 0;
   }
 
-  double memory_called = multivariate_gauss_active_memory(A, Q, result)
+  Vector2d A;
+  Vector2d result;
+  double memory_called = multivariate_gauss_active_memory(A, Q, result);
   double memory_read_count = 2;
   double memory_written_count = 2 * 4;
   return memory_called + memory_read_count + memory_written_count;  
