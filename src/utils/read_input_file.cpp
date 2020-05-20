@@ -6,11 +6,17 @@
 using std::string;
 using std::vector;
 
+void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, size_t& N_wp) 
+{
+    int scale = 1;
+    read_input_file_and_scale(s, scale, lm, wp, N_lm, N_wp);
+}
+
 /*****************************************************************************
  * Should have highest priority to be translated to C. Just make
  * the matrices a 2D array with fixed size for now.
  * **************************************************************************/
-void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, size_t& N_wp) 
+void read_input_file_and_scale(const string s, const int scale, double **lm, double **wp, size_t& N_lm, size_t& N_wp) 
 {
     using std::ifstream;
     using std::istringstream;
@@ -22,10 +28,10 @@ void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, siz
     ifstream in(s.c_str());
     
     int lineno = 0;
-    int lm_rows =0;
-    int lm_cols =0;
-    int wp_rows =0;
-    int wp_cols =0;
+    int lm_rows = 0;
+    int lm_cols = 0;
+    int wp_rows = 0;
+    int wp_cols = 0;
     
     while(in) {
         lineno++;
@@ -54,9 +60,9 @@ void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, siz
             lm_rows = strtof(tokens[1].c_str(),NULL);    
             lm_cols = strtof(tokens[2].c_str(),NULL);
             
-            N_lm = lm_rows;
-            (*lm) = (double*)malloc(lm_rows*lm_cols*sizeof(double));
-            for (int r =0; r<lm_rows; r++) {
+            N_lm = lm_rows*scale;
+            (*lm) = (double*)malloc(lm_rows*lm_cols*scale*sizeof(double));
+            for (int r = 0; r<lm_rows; r++) {
                 lineno++;
                 if (!in) {
                     std::cerr<<"EOF after reading" << std::endl;
@@ -75,8 +81,10 @@ void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, siz
                     exit(EXIT_FAILURE);
                 }
                 
-                for (unsigned c=0; c< lm_cols; c++) {
-                    (*lm)[lm_cols*r + c] = strtof(tokens[c].c_str(),NULL);                
+                for (unsigned c=0; c < lm_cols; c++) {
+                    for (int i=0; i<scale; i++){
+                        (*lm)[r*lm_cols*scale + c + i*lm_cols] = strtof(tokens[c].c_str(),NULL);
+                    }
                 }                
             }
         }
@@ -90,8 +98,8 @@ void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, siz
             wp_rows = strtof(tokens[1].c_str(),NULL);    
             wp_cols = strtof(tokens[2].c_str(),NULL);
 
-            N_wp = wp_rows;
-            (*wp) = (double*)malloc(wp_rows*wp_cols*sizeof(double));
+            N_wp = wp_rows*scale;
+            (*wp) = (double*)malloc(wp_rows*wp_cols*scale*sizeof(double));
             for (int r =0; r<wp_rows; r++) {
                 lineno++;
                 if (!in) {
@@ -112,14 +120,16 @@ void read_input_file(const string s, double **lm, double **wp, size_t& N_lm, siz
                 }
                 
                 for (int c=0; c < wp_cols; c++) {
-                    (*wp)[wp_cols*r + c] = strtof(tokens[c].c_str(),NULL);                
+                    for (int i=0; i<scale; i++){
+                        (*wp)[r*wp_cols*scale + c + i*wp_cols] = strtof(tokens[c].c_str(),NULL);          
+                    }      
                 }                
             }
         }
         else {
-            std::cerr<<"Unkwown command"<<tokens[0] <<std::endl;
-            std::cerr<<"Error occured on line"<<lineno<<std::endl;
-            std::cerr<<"line: "<<str<<std::endl;
+            std::cerr << "Unkwown command" << tokens[0] << std::endl;
+            std::cerr << "Error occured on line" << lineno << std::endl;
+            std::cerr << "line: " << str << std::endl;
             exit(EXIT_FAILURE);
         }    
     }
