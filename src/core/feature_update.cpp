@@ -77,6 +77,7 @@ void feature_update_base(Particle* particle,
 
 }
 
+
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,
 // Matrix2d R)
@@ -122,6 +123,10 @@ void feature_update_active(Particle* particle,
 }
 
 // Work / Memory instrumenting
+
+// Careful: this function needs correct input to work, since
+// pi_to_pi number of flops depends on the output of compute_jacobians
+// which needs to be passed to this function via zp!
 double feature_update_base_flops(Particle* particle,
                     Vector2d z[],
                     int idf[],
@@ -136,11 +141,17 @@ double feature_update_base_flops(Particle* particle,
   double flop_count = compute_jacobians_base_flops(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
     N_idf * (   
       sub_flops(z[0], zp[0], 2, feat_diff[0]) +
-      pi_to_pi_base_flops(feat_diff[0][1]) + // TODO: depends on input
       KF_cholesky_update_base_flops(xf[0], Pf[0], 
                        feat_diff[0], R, 
                        Hf[0])
     );
+
+  compute_jacobians_base(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
+  for (int i = 0; i < N_idf; i++) {
+    sub(z[i], zp[i], 2, feat_diff[i]);
+    flop_count += pi_to_pi_base_flops(feat_diff[i][1]);
+  }
+
   return flop_count;
   }
 
@@ -185,11 +196,16 @@ double feature_update_active_flops(Particle* particle,
   Vector2d feat_diff[N_idf];
   double flop_count = N_idf * (   
       sub_flops(z[0], zp[0], 2, feat_diff[0]) +
-      pi_to_pi_active_flops(feat_diff[0][1]) + // TODO: depends on input
       KF_cholesky_update_active_flops(xf[0], Pf[0], 
                        feat_diff[0], R, 
                        Hf[0])
     );
+
+  for (int i = 0; i < N_idf; i++) {
+    sub(z[i], zp[i], 2, feat_diff[i]);
+    flop_count += pi_to_pi_active_flops(feat_diff[i][1]);
+  }
+
   return flop_count;
 }
 
