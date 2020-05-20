@@ -19,8 +19,7 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
                        Vector2d zp[], Matrix23d Hv[], Matrix2d Hf[], 
                        Matrix2d Sf[]) {
 #ifdef __AVX2__
-    //compute_jacobians_advanced_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    compute_jacobians_basic_optimizations(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    compute_jacobians_fast(particle, idf, N_z, R, zp, Hv, Hf, Sf);
 #else
 #warning "Using compute_jacobians_base because AVX2 is not supported!"
     compute_jacobians_base(particle, idf, N_z, R, zp, Hv, Hf, Sf);
@@ -61,7 +60,10 @@ double compute_jacobians_active_flops(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    return compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    double flops = N_z*(2*tp.add + 7*tp.mul + 1*tp.div + 1*tp.sqrt + tp.atan2 + 3*tp.negation);
+    flops += N_z*(3*4*tp.add + 4*4*tp.mul); // AVX
+    flops += N_z*pi_to_pi_active_flops(3.0); // Approximate
+    return flops;
 }
 
 double compute_jacobians_active_memory(Particle* particle,
@@ -72,7 +74,8 @@ double compute_jacobians_active_memory(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    return compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    double memory = 3 + 4 + N_z * ( 4 + 2*8 + 4 + 2*8 ); 
+    return memory;
 }
 
 
@@ -257,7 +260,7 @@ void compute_jacobians_fast(Particle* particle,
     double py = particle->xv[1];
     double ptheta = particle->xv[2];
 
-    auto R_vec =  _mm256_load_pd(R);
+    __m256d R_vec =  _mm256_load_pd(R);
 
     for (int i = 0; i < N_z; i++) {
         dx = particle->xf[2*idf[i]] - px;
@@ -1107,17 +1110,17 @@ void compute_jacobians_advanced_optimizations(Particle* particle,
       __m256d HfMat_T_vec = _mm256_permute4x64_pd(HfMat_vec, 0xD8);
      
       __m256d Pf_vec = _mm256_load_pd(Pf_i);
-      __m256d avec = _mm256_permute4x64_pd(HfMat_vec, 0xA0); // 2,2,0,0
+      __m256d avec = _mm256_permute_pd(HfMat_vec, 0xA0); // 2,2,0,0
       __m256d bvec = _mm256_permute4x64_pd(Pf_vec, 0x44); // 1,0,1,0
-      __m256d cvec = _mm256_permute4x64_pd(HfMat_vec, 0xF5); // 3,3,1,1
+      __m256d cvec = _mm256_permute_pd(HfMat_vec, 0xF5); // 3,3,1,1
       __m256d dvec = _mm256_permute4x64_pd(Pf_vec, 0xEE); // 3,2,3,2
       __m256d left_mul = _mm256_mul_pd(avec,bvec);
       __m256d right_mul = _mm256_mul_pd(cvec,dvec);
       __m256d Hf_Pf_vec = _mm256_add_pd(left_mul, right_mul);
 
-      __m256d evec = _mm256_permute4x64_pd(Hf_Pf_vec, 0xA0); // 2,2,0,0
+      __m256d evec = _mm256_permute_pd(Hf_Pf_vec, 0xA0); // 2,2,0,0
       __m256d fvec = _mm256_permute4x64_pd(HfMat_T_vec, 0x44); // 1,0,1,0
-      __m256d gvec = _mm256_permute4x64_pd(Hf_Pf_vec, 0xF5); // 3,3,1,1
+      __m256d gvec = _mm256_permute_pd(Hf_Pf_vec, 0xF5); // 3,3,1,1
       __m256d hvec = _mm256_permute4x64_pd(HfMat_T_vec, 0xEE); // 3,2,3,2
       __m256d left_mul2 = _mm256_mul_pd(evec,fvec);
       __m256d right_mul2 = _mm256_mul_pd(gvec,hvec);

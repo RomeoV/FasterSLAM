@@ -24,6 +24,7 @@ void print256d(__m256d var);
 void fill(double *x, size_t size, double val);
 
 //! Copies all values from ref to target
+void icopy(const int* ref, size_t N, int* target);
 void copy(const double* ref, size_t N, double* target);
 double copy_flops(const double* ref, size_t N, double* target); 
 double copy_memory(const double* ref, size_t N, double* target); 
@@ -116,6 +117,8 @@ __m256d _mmTadd_2x2_avx_v2(__m256d a0123, __m256d b0123, __m256d c);
 
 //! Matrix x Vector Multiplication ( 2x2 )
 void mv_2x2(const double *A, const double *b, double *c);
+double mv_2x2_flops(const double *A, const double *b, double *c);
+double mv_2x2_memory(const double *A, const double *b, double *c); 
 __m128d _mv_2x2_avx_v1( __m256d const a, __m128d const b );
 
 //! c += A*b ( 2x2 )

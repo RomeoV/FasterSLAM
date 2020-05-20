@@ -1,6 +1,6 @@
 #include "particle.h"
 #include "linalg.h"
-
+#include <cstdlib>
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation, unit test, weights as an outside array

@@ -15,9 +15,9 @@ int main() {
     // for now test that it changed
     srand(1);
     given("I have speed, a steering angle and a covariance matrix") = [] {
-        double V = 10;
-        double G = 0.5;
-        double Q[4] = {0.1,0.0,0.0,0.5};// Old inputs, yields nan, fails test in -ffast-math: {0.1, 0.1, 0.3, 0.5};
+        double V = 3.0;
+        double G = -0.008726646250000001;
+        double Q[4] = {0.089999999999999997, 0, 0, 0.0027415567718150069};
         int addnoise = 1; // adding noise
         when("I add control noise") = [&] {
             double VnGn[2];
@@ -26,6 +26,11 @@ int main() {
                 bool different = ((VnGn[0] != V) && (VnGn[1] != G));
                 expect(that % different == true);
             };
+            then("neither speed nor velocity is nan") = [&] {
+                bool notnan = (!std::isnan(VnGn[0]) && !std::isnan(VnGn[1]));
+                expect(that % notnan == true);
+            };
+           
         };
     };
 };
@@ -46,6 +51,10 @@ int main() {
             then("I get the same speed and velocity I had before") = [&] {
                 expect(that % VnGn[0] == 0.);
                 expect(that % VnGn[1] == 0.);
+            };
+            then("neither speed nor velocity is nan") = [&] {
+                bool notnan = (!std::isnan(VnGn[0]) && !std::isnan(VnGn[1]));
+                expect(that % notnan == true);
             };
         };
     };

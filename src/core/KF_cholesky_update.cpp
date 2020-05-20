@@ -25,6 +25,10 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
 #endif
 }
 
+void KF_cholesky_update_active(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
+    KF_cholesky_update(x, P, v, R, H);
+}
+
 /*****************************************************************************
  * PERFORMANCE STATUS
  * Work: 2 neg + 60 adds + 54 muls + 2 divs + 2 sqrts = 120 flops

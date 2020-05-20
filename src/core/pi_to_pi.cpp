@@ -13,6 +13,10 @@ double pi_to_pi(double ang) {
     return pi_to_pi_while(ang);
 }
 
+double pi_to_pi_active(double ang) {
+    return pi_to_pi_while(ang);
+}
+
 /*****************************************************************************
  * PERFORMANCE STATUS BASE
  * Work, best: 1 negate + 2 mult + 4 fl-comp = 7 flops

@@ -2,7 +2,12 @@
 #include "nanobench.h"
 #include "ut.hpp"
 
+#if defined(__MACH__)
+#include <stdlib.h>
+#else 
 #include <malloc.h>
+#endif
+
 #include <random>
 #include <iostream>
 
