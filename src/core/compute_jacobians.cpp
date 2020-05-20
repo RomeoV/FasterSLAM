@@ -197,10 +197,10 @@ void compute_jacobians_simd(Particle* particle,
         zp[i][1] = pi_to_pi_base(zp[i][1]);
 
         // Jacobian wrt vehicle states
-        Matrix23d HvMat = {-dx_dinv, -dy_dinv, 0, dy_d2inv, -dx_d2inv, -1};
+        Matrix23d HvMat __attribute__((aligned(32))) = {-dx_dinv, -dy_dinv, 0, dy_d2inv, -dx_d2inv, -1};
 
         // Jacobian wrt feature states
-        Matrix2d HfMat = {dx_dinv, dy_dinv, -dy_d2inv, dx_d2inv};
+        Matrix2d HfMat __attribute__((aligned(32))) = {dx_dinv, dy_dinv, -dy_d2inv, dx_d2inv};
 
         copy(HvMat, 6, Hv[i]);
         copy(HfMat, 4, Hf[i]);
