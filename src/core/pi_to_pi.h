@@ -25,3 +25,9 @@ double pi_to_pi_nongeneral(double ang);
 
 /*! This is a version that checks in a while loop if the angle is smaller or greater and keeps +/-ing 2PI */
 double pi_to_pi_while(double ang);
+
+double pi_to_pi_base_flops(double ang);
+double pi_to_pi_base_memory(double ang);
+
+double pi_to_pi_active_flops(double ang);
+double pi_to_pi_active_memory(double ang);

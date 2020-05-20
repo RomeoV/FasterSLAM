@@ -1,5 +1,7 @@
 #include "get_observations.h"
 #include <math.h>
+#include "typedefs.h"
+#include "linalg.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -171,4 +173,189 @@ void find2_base(const double *dx, const double *dy, const size_t size,
         }
     }
     *index_size = cnt;
+}
+
+
+//! -----------
+//! find2 utils
+//! -----------
+
+double find2_base_flops(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size)
+{
+    double flops = 0.0;
+    // worst case because && is not taken into account
+    flops = 4*tp.doublecomp + 2*tp.abs + tp.sin + tp.cos + 2*tp.mul + 2*tp.add + 3*tp.pow;
+    return ( flops * size );
+}
+
+double find2_active_flops(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size)
+{
+    double flops = find2_base_flops(dx, dy, size, phi, rmax, index, index_size);
+    return ( flops * size );
+}
+
+double find2_base_memory(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size)
+{
+    return ( size * 2 );
+}
+
+double find2_active_memory(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size)
+{
+    double memory = find2_base_memory(dx, dy, size, phi, rmax, index, index_size);
+    return memory;
+}
+
+//! ---------------------------
+//! get_visible_landmarks utils
+//! ---------------------------
+
+double get_visible_landmarks_base_flops(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
+{
+    double flops = 0.0;
+    size_t ii_size = 0; // dummy
+    flops += lm_rows * 2*tp.add;
+    flops += find2_base_flops(NULL, NULL, lm_rows, 0.0, 0.0, NULL, &ii_size);
+    return flops;
+}
+
+double get_visible_landmarks_active_flops(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
+{
+    double flops = 0.0;
+    size_t ii_size = 0; // dummy
+    flops += lm_rows * 2*tp.add;
+    flops += find2_active_flops(NULL, NULL, lm_rows, 0.0, 0.0, NULL, &ii_size);
+    return flops;
+}
+
+double get_visible_landmarks_base_memory(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
+{ 
+    // ATTENTION!!! *lm_new is not allocated anymore here
+    double memory = 0.0;
+    
+    // select set of landmarks that are visible within vehicle's semi-circular field of view
+    double *dx = (double*) malloc( lm_rows * sizeof(double) );
+    double *dy = (double*) malloc( lm_rows * sizeof(double) );
+
+    memory += (2*2 + 2*2)*lm_rows + 1;
+    for (size_t i = 0; i < lm_rows; i++) {
+        dx[i] = lm[i*2+0] - x[0];
+        dy[i] = lm[i*2+1] - x[1];
+    }
+
+    double phi = x[2];
+
+    // distant points are eliminated, allocate results of find2() ii and ii_size
+    size_t ii_size = lm_rows; 
+    size_t *ii = (size_t*) malloc( ii_size * sizeof(size_t) );
+
+    find2_base_memory(dx, dy, lm_rows, phi, rmax, ii, &ii_size);
+    find2_base(dx, dy, lm_rows, phi, rmax, ii, &ii_size); // fills ii and modifies ii_size
+
+    if ( ii_size != 0 ) {
+        memory += ii_size * 15;
+    }
+    free(dx); free(dy); free(ii); 
+
+    return memory;
+}
+
+double get_visible_landmarks_active_memory(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf)
+{ 
+    // ATTENTION!!! *lm_new is not allocated anymore here
+    return get_visible_landmarks_base_memory(x, rmax, lm, lm_rows, lm_new, idf, nidf);
+}
+
+//! ---------------------------
+//! compute_range_bearing utils
+//! ---------------------------
+double compute_range_bearing_base_flops(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
+{
+    return lm_rows * ( 4*tp.add + 2*tp.pow + tp.atan2 + tp.sqrt);
+}
+
+double compute_range_bearing_active_flops(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
+{
+    return lm_rows * ( 4*tp.add + 2*tp.pow + tp.atan2 + tp.sqrt);
+}
+
+double compute_range_bearing_base_memory(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
+{
+    return 16*lm_rows + 1;
+}
+
+double compute_range_bearing_active_memory(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]) 
+{
+    return 16*lm_rows + 1;
+}
+
+double get_observations_base_flops(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
+{
+    // Save backups for reset
+    size_t nidf_bak = *nidf;
+    int *idf_bak = (int*) malloc( nidf_bak * sizeof(int) );
+    icopy(idf, nidf_bak, idf_bak);
+
+    double flops = 0.0;
+    double *lm_new = NULL;
+
+    flops += get_visible_landmarks_base_flops(x, rmax, lm, lm_rows, &lm_new, idf, nidf);
+
+    // explicit call of function to provide correct inputs for compute_range_bearing
+    get_visible_landmarks_base(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
+
+    if ( lm_new != NULL ) {
+        flops += compute_range_bearing_base_flops(x, lm_new, *nidf, z);	
+        free(lm_new);
+    }
+    // Reset 
+    icopy(idf_bak, nidf_bak, idf);
+    *nidf = nidf_bak;
+    free(idf_bak);
+
+    return flops;
+}
+
+double get_observations_active_flops(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
+{
+    return get_observations_base_flops(x, rmax, lm, lm_rows, idf, nidf, z);
+}
+
+double get_observations_base_memory(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
+{
+    // Save backups for reset
+    size_t nidf_bak = *nidf;
+    int *idf_bak = (int*) malloc( nidf_bak * sizeof(int) );
+    icopy(idf, nidf_bak, idf_bak);
+
+    double memory = 0.0;
+    double *lm_new = NULL;
+
+    memory += get_visible_landmarks_base_memory(x, rmax, lm, lm_rows, &lm_new, idf, nidf);
+
+    // explicit call of function to provide correct inputs for compute_range_bearing
+    get_visible_landmarks_base(x, rmax, lm, lm_rows, &lm_new, idf, nidf); // allocates lm_new
+
+    if ( lm_new != NULL ) {
+        memory += compute_range_bearing_base_memory(x, lm_new, *nidf, z);	
+        free(lm_new);
+    }
+    // Reset 
+    icopy(idf_bak, nidf_bak, idf);
+    *nidf = nidf_bak;
+    free(idf_bak);
+
+    return memory;
+}
+
+double get_observations_active_memory(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[])
+{
+    return get_observations_base_memory(x, rmax, lm, lm_rows, idf, nidf, z);
 }

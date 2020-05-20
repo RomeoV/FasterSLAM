@@ -1,91 +1,61 @@
 #include "rdtsc_benchmark.h"
 #include <iostream>
 #include "resample_particles.h"
+#include "linalg.h"
+
+
+void data_loader(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
+    srand(0);
+    fill_rand(weights, N, 0.0001,1.0); //We normalize anyway in resample
+}
 
 int main() {
-    // // Initialize Input
-    // double weights[3] = {2./3, 1./3, 0.};
-    // const size_t Nf = 5;
+    // Initialize Input
 
-    // Particle particles[3];
-
-    // Vector3d zeros = {0.,0.,0.};
-    // particles[0].w = &weights[0];
-    // particles[0].Nf = Nf;
-
-    // Vector3d ones = {1.,1.,1.};
-    // particles[1].w = &weights[1];
-    // particles[1].Nf = Nf;
-
-    // Vector3d twos = {2.,2.,2.};
-    // particles[2].w = &weights[2];
-    // particles[2].Nf = Nf;
-
-    // for (size_t i = 0; i < 3; i++) {
-    //     auto xv = std::vector{zeros, ones, twos};
-    //     initParticle(&particles[i], 5, xv[i]);
-    //     particles[i].Nfa = 3;
-    //     for (size_t el = 0; el < 2*3; el++) {
-    //         particles[i].xf[el] = i;
-    //     }
-    // }
-
-    // const size_t N = 1000;
-
-    // double(*lambda)(Particle* particles, double* weights) = [](Particle* particles, double* weights){
-    //     double sum=0;
-    //     for (int i = 0; i<N; i++) {
-    //        resample_particles(particles, 3, weights, 2, 1);
-    //     }
-    //     return sum;
-    // };
-
-    // double(*lambda_base)(Particle* particles, double* weights) = [](Particle* particles, double* weights){
-    //     double sum=0;
-    //     for (int i = 0; i<N;i++) {
-    //        resample_particles(particles, 3, weights, 2, 1);
-    //     }
-    //     return sum;
-    // };
-
-    // /*double(*lambda_fmod)(double* angles) = [](double* angles){
-    //     double sum = 0;
-    //     for (int i = 0; i<N;i++) {
-    //         sum+=resample_particles(angles[i]);
-    //     }
-    //     return sum;
-    // };*/
-
-    // // Initialize the benchmark struct by declaring the type of the function you want to benchmark
-    // Benchmark<decltype(&resample_particles)> bench("resample_particles Benchmark");
-
-    // double work = 50000.0; // best-case in flops
-
-    // // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // // First function should always be the base case you want to benchmark against!
-    // bench.add_function(&resample_particles, "resample_particles", work);
-    // bench.add_function(&resample_particles_base, "resample_particles_base", work);
-    // //bench.add_function(&resample_particles_fmod, "resample_particles_fmod", work);
-
-    // //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    // bench.run_benchmark(particles, weights);
-
+    //We need to implement benchmark over a range of particle lengths here
+    const int N = 100;
+    double weights[N] __attribute__ ((aligned(32)));
     
-    // Benchmark<decltype(lambda)> bench_lambda("resample_particles on array Benchmark");
+    int N_min = 2*N;
+    
+    const size_t Nf = 20;
+    const size_t Nfa = 1;
 
-    // // Add lambda functions to aggregate over range of inputs.
-    // bench_lambda.add_function(lambda, "resample_particles", work*N);
-    // bench_lambda.add_function(lambda_base, "resample_particles_base", work*N);
-    // //bench_lambda.add_function(lambda_fmod, "resample_particles_fmod", work*N);
+    Particle particles[N] __attribute__ ((aligned(32)));
+    double xv[3]= {0.0,1.0,2.0} ;
+    for (size_t i = 0; i < N; i++) {
+        
+        initParticle(&particles[i], Nf, xv);
+        particles[i].w = &weights[i];
+        particles[i].Nfa = Nfa;
+        for (size_t el = 0; el < 2*Nfa; el++) {
+            particles[i].xf[el] = i;
+        }
+        for (size_t el = 0; el < 4*Nfa; el++) {
+            particles[i].Pf[el] = 0.0;
+        }
+    }
 
-    // //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    // bench_lambda.run_benchmark(particles, weights);
+    // Initialize the benchmark struct by declaring the type of the function you want to benchmark
+    Benchmark<decltype(&resample_particles)> bench("resample_particles Benchmark");
 
+    double work = 50000.0; // best-case in flops
 
-    // // Free memory
-    // // destroy(A);
-    // // destroy(x);
-    // // destroy(y);
+    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
+    // First function should always be the base case you want to benchmark against!
+    bench.data_loader = &data_loader;
+
+    bench.add_function(&resample_particles_orig, "resample_particles_base", work); // cycles scale exponentially with #Particles!!!
+    bench.add_function(&resample_particles_dag, "resample_particles_dag", work);
+    //bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
+
+    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    bench.run_benchmark(particles, N, weights,N_min, 1);
+
+    // Free memory
+    // destroy(A);
+    // destroy(x);
+    // destroy(y);
 
     return 0;
 }

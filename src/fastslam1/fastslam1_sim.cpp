@@ -51,15 +51,9 @@ void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols,
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
 //    }
  
-    if ( SWITCH_SEED_RANDOM ) {
-        srand( SWITCH_SEED_RANDOM );
-    }	
+    srand( SWITCH_SEED_RANDOM );
 #ifdef __AVX2__
-    uint64_t init_state[8] __attribute__((aligned(32))) = {1,1,1,1,1,1,1,1};
     avx_xorshift128plus_init(1,1);
-    uint64_t init_seq[8] __attribute__((aligned(32))) = {1,3,5,7,9,11,13,15};
-    pcg32_srand(1,1);
-    avx2_pcg32_srand(init_state, init_seq);
 #endif
 
     double dt        = DT_CONTROLS; // change in time btw predicts
@@ -137,16 +131,9 @@ void fastslam1_sim_active( double* lm, const size_t lm_rows, const size_t lm_col
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
 //    }
- 
-    if ( SWITCH_SEED_RANDOM ) {
-        srand( SWITCH_SEED_RANDOM );
-    }		
+    srand( SWITCH_SEED_RANDOM );
 #ifdef __AVX2__
-    uint64_t init_state[8] __attribute__((aligned(32))) = {1,1,1,1,1,1,1,1};
     avx_xorshift128plus_init(1,1);
-    uint64_t init_seq[8] __attribute__((aligned(32))) = {1,3,5,7,9,11,13,15};
-    pcg32_srand(1,1);
-    avx2_pcg32_srand(init_state, init_seq);
 #endif
 
     double dt        = DT_CONTROLS; // change in time btw predicts
@@ -188,7 +175,6 @@ void fastslam1_sim_active( double* lm, const size_t lm_rows, const size_t lm_col
             //////////////////////////////////////////////////////////////
         }
     }
-
     cleanup_landmarks(&ftag, &da_table);
     cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
     *particles_ = particles;

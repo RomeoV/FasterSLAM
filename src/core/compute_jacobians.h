@@ -1,7 +1,7 @@
 #pragma once
 #include "typedefs.h"
 #include "particle.h"
-
+#include "immintrin.h"
 
 /*!
  *  Computes the jacobians given a particle state and predict observations. [Compute-Intensive, Switch to mask]
@@ -36,6 +36,24 @@ void compute_jacobians_fast(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) ;
+
+void compute_jacobians_fast_4particles(Particle* particle[4],
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d* zp[4],
+                       Matrix23d* Hv[4],
+                       Matrix2d* Hf[4],
+                       Matrix2d* Sf[4]);
+
+void compute_jacobians_fast_4particles_fullavx(Particle* particle[4],
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d* zp[4],
+                       Matrix23d* Hv[4],
+                       Matrix2d* Hf[4],
+                       Matrix2d* Sf[4]);
                        
 void compute_jacobians_active(Particle* particle, 
                        int idf[],
@@ -66,6 +84,24 @@ void compute_jacobians_advanced_optimizations(Particle* particle,
         Matrix2d* Sf) //measurement covariance
 ;
 
+double compute_jacobians_base_flops(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+double compute_jacobians_base_memory(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
 void compute_jacobians_simd(Particle* particle,
                        int idf[],
                        size_t N_z,
@@ -75,7 +111,29 @@ void compute_jacobians_simd(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]);
 
+
+
 void compute_jacobians_nik(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+
+// For fastest version, i.e. compute_jacobians_fast
+double compute_jacobians_active_flops(Particle* particle,
+                       int idf[],
+                       size_t N_z,
+                       Matrix2d R,
+                       Vector2d zp[],
+                       Matrix23d Hv[],
+                       Matrix2d Hf[],
+                       Matrix2d Sf[]);
+
+double compute_jacobians_active_memory(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -93,6 +151,8 @@ void compute_jacobians_scalar_replacement(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]);
 
+
+
 void compute_jacobians_linalg_inplace(Particle* particle,
                        int idf[],
                        size_t N_z,
@@ -101,3 +161,9 @@ void compute_jacobians_linalg_inplace(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]);
+
+void compute_jacobians4x_avx(__m256d px, __m256d py,__m256d ptheta, __m256d xfp0p2, __m256d xfp1p3, 
+                            __m256d Pf0, __m256d Pf1, __m256d Pf2, __m256d Pf3, __m256d R_vec,
+                            __m256d* zp_dist, __m256d* zp_angle,
+                            __m256d* Hf0v,  __m256d* Hf1v,  __m256d* Hf2v, __m256d* Hf3v,
+                            __m256d* s_zeros, __m256d* s_ones, __m256d* s_twos, __m256d* s_threes);

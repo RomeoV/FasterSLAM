@@ -2,6 +2,7 @@
 #include <cmath>
 #include <sstream>
 #include <algorithm>
+#include <immintrin.h>
 
 #include "typedefs.h"
 #include "ut.hpp"
@@ -26,6 +27,39 @@ int main() {
             };
         };
     };
+#ifdef __AVX2__
+    given("I have a four 2-dim random vectors v and matrices M") = [] {
+        Vector2d v[4] __attribute__((aligned(32)));
+        fill_rand(v[0], 4*2, -10, 10);
+        Matrix2d M[4] __attribute__((aligned(32)));
+        fill_rand(M[0], 4*4, -10, 10);
+
+        when("I multiply v*M*v.T with AVX and with base") = [&] {
+            __m256d M_intr[4];
+            for (size_t i = 0; i < 4; i++) { M_intr[i] = _mm256_load_pd(M[i]); }
+
+            __m256d v_intr[2];
+            for (size_t i = 0; i < 2; i++) { v_intr[i] = _mm256_load_pd(v[2*i]); }
+
+            Matrix2d avx_results;
+            __m256d avx_results_intr = mm_vT_M_v_avx2(M_intr[0], M_intr[1],
+                                                      M_intr[2], M_intr[3],
+                                                      v_intr[0], v_intr[1]);
+            _mm256_store_pd(avx_results, avx_results_intr);
+
+            double base_results[4];
+            for (size_t i = 0; i < 4; i++) {
+                Matrix2d M_vT;
+                mul(M[i], v[i], 2, 2, 1, M_vT);
+                mul(v[i], M_vT, 1, 2, 1, &base_results[i]);
+            }
+            then("The v.T@M@v result is the same as for the base implementation") = [&] (size_t i) {
+                expect(that % +(avx_results[i] - base_results[i]) < 1e-12) << avx_results[i] << " vs " << base_results[i];
+                expect(that % -(avx_results[i] - base_results[i]) < 1e-12) << avx_results[i] << " vs " << base_results[i];
+            } | std::vector{0, 1, 2, 3};
+        };
+    };
+#endif
 };
 
 //!
@@ -329,6 +363,79 @@ int main() {
         };
     };
 };
+
+#ifdef __AVX2__
+"register_transpose"_test = [] {
+    given("I have four registers") = [] {
+        double A[16] __attribute__ ((aligned(32)));
+        for (int i = 0; i < 16; i++) {
+            A[i] = i;
+        }
+        __m256d const r0 = _mm256_load_pd( A+0 );
+        __m256d const r1 = _mm256_load_pd( A+4 );
+        __m256d const r2 = _mm256_load_pd( A+8 );
+        __m256d const r3 = _mm256_load_pd( A+12 );
+
+        when("I call register_transpose()") = [&] {
+            double T[16] __attribute__ ((aligned(32)));
+            __m256d t0, t1, t2, t3;
+
+            register_transpose(r0, r1, r2, r3, &t0, &t1, &t2, &t3);
+
+            _mm256_store_pd( T+0, t0 );
+            _mm256_store_pd( T+4, t1 );
+            _mm256_store_pd( T+8, t2 );
+            _mm256_store_pd( T+12, t3 );
+
+            then("I get the correct transposed equivalents") = [=] {
+                double AT[16];
+                transpose(A, 4, 4, AT);
+                for (size_t i = 0; i < 4; i++) {
+                    for (size_t j = 0; j < 4; j++) {
+                        expect(fabs(T[i*4+j] - AT[i*4+j]) < 1e-16);
+                    }
+                }
+            };
+        };
+    };
+};
+#endif
+
+#ifdef __AVX2__
+"batch_inverse_2x2"_test = [] {
+    given("I have four registers") = [] {
+        double A[16] __attribute__ ((aligned(32)));
+        for (int i = 0; i < 16; i++) {
+            A[i] = i;
+        }
+        __m256d const r0 = _mm256_load_pd( A+0 );
+        __m256d const r1 = _mm256_load_pd( A+4 );
+        __m256d const r2 = _mm256_load_pd( A+8 );
+        __m256d const r3 = _mm256_load_pd( A+12 );
+
+        when("I call batch_inverse_2x2()") = [&] {
+            double Inv[16] __attribute__ ((aligned(32)));
+            __m256d inv0, inv1, inv2, inv3;
+            batch_inverse_2x2(r0, r1, r2, r3, &inv0, &inv1, &inv2, &inv3);
+
+            _mm256_store_pd( Inv+0, inv0 );
+            _mm256_store_pd( Inv+4, inv1 );
+            _mm256_store_pd( Inv+8, inv2 );
+            _mm256_store_pd( Inv+12, inv3 );
+
+            then("I get the correct inverses equivalents") = [=] {
+                double AInv[16]; 
+                for (size_t i = 0; i < 4; i++) {
+                    inv_2x2(A+i*4, AInv+i*4);
+                    for (size_t j = 0; j < 4; j++) {
+                        expect(fabs(Inv[i*4+j] - AInv[i*4+j]) < 1e-10) << Inv[i*4+j] << " != " << AInv[i*4+j]; 
+                    }
+                }
+            };
+        };
+    };
+};
+#endif
 
 }
 
