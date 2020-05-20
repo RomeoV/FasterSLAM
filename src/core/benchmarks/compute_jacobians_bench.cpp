@@ -153,7 +153,7 @@ int main() {
     set_work(bench, particle, idf, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf, Nfz, R, zp, Hv, Hf, Sf);
 
-    int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,18, 20, 22};
+    int idf_2[Nfz] __attribute__((aligned(32))) = {0,2,4,6,8,10,12,14,16,17,18,19};
     set_work(bench, particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_2, Nfz, R, zp, Hv, Hf, Sf);
 
@@ -165,7 +165,9 @@ int main() {
     
 
     delParticleMembersAndFreePtr(particle);
-    //bench.destructor_output = false;
+    free(Hv);
+    free(Hf);
+    free(Sf);
 
     bench.details();
 
