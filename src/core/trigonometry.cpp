@@ -102,6 +102,7 @@ inline void rsqrtss_times_x_void( float* x, float* out)
    // compiles to movss, movaps, rsqrtss, mulss, movss
 }
 
+#ifdef __AVX2__
 __m256d read_sin_vec(__m256d angle) {
     angle = _mm256_mul_pd(num_steps_vec, angle);
     __m128i index = _mm256_cvtpd_epi32(angle);
@@ -114,24 +115,35 @@ __m256d read_sin_vec(__m256d angle) {
     auto neg_results = _mm256_mul_pd(minus_ones, results);
     return _mm256_blendv_pd(results, neg_results,angle);
 }
+#endif
 
+#ifdef __AVX2__
 __m256d read_cos_vec(__m256d angle) {
     //This sub and the mul in read_sin_vec can be fused to an fmsub, but I keep it modular for now
     // In cos we can also use symmetry!
     angle = _mm256_add_pd(angle, pi_2_vec);
     return read_sin_vec(angle);
 }
+#endif
 
+#ifdef __AVX2__
 __m256d read_sin2_vec(__m256d angle) {
+#ifdef __FMA__
     angle = _mm256_fmadd_pd(num_steps_vec, angle, offset_sin2);
+#else
+    angle = _mm256_add_pd( _mm256_mul_pd(num_steps_vec, angle), offset_sin2);
+#endif
     __m128i index = _mm256_cvtpd_epi32(angle);
     return _mm256_i32gather_pd(sin2_table, index, 8);
 }
+#endif
 
+#ifdef __AVX2__
 __m256d read_cos2_vec(__m256d angle) {
     angle = _mm256_add_pd(angle, pi_2_vec);
     return read_sin2_vec(angle);
 }
+#endif
 
 double read_cos(double angle) {
     return read_sin(angle + M_PI_2);

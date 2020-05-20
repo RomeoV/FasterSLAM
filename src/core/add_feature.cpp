@@ -57,7 +57,7 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R) 
   }
 
   size_t N_x = particle->Nfa;
-  assert(particle->Nfa + N_z < particle->Nf);
+  assert(particle->Nfa + N_z <= particle->Nf);
   particle->Nfa += N_z;
 
   for (size_t i = 0; i < N_z; i++) {
@@ -111,7 +111,7 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
   }
 
   size_t N_x = particle->Nfa;
-  assert(particle->Nfa + N_z < particle->Nf);
+  assert(particle->Nfa + N_z <= particle->Nf);
   particle->Nfa += N_z;
 
   for (size_t i = 0; i < N_z; i++) {
@@ -120,3 +120,80 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
   }
 
 }
+
+// Work / Memory instrumenting
+double add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+  
+  Matrix2d MatResult_1, MatResult_2, Gz, Gz_T;
+  double flop_count = N_z * (
+      tp.sin + tp.cos + 
+      4*tp.add +  
+      4*tp.mul +
+      mul_flops(Gz, R, 2, 2, 2, MatResult_1) +
+      mul_flops(MatResult_1, Gz_T, 2, 2, 2, MatResult_2)
+      );
+  
+  return flop_count;
+  }
+
+double add_feature_base_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+
+  Matrix2d MatResult_1, MatResult_2, Gz, Gz_T;
+  Vector3d xv;
+  Vector2d xf[N_z];
+  Matrix2d Pf[N_z];
+  Vector2d measurement;
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+    copy_memory(measurement, 2, xf[0]) +
+    mul_memory(Gz, R, 2, 2, 2, MatResult_1) +
+    transpose_memory(Gz, 2, 2, Gz_T) +
+    mul_memory(MatResult_1, Gz_T, 2, 2, 2, MatResult_2) +
+    copy_memory(MatResult_2, 2 * 2, Pf[0]) +
+    2 * (2 + 1) + // set_xfi(particle, xf[i], i + N_x) + 
+    2 * (2 + 1) // set_Pfi(particle, Pf[i], i + N_x)
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (2 * 2);
+  return memory_called + memory_read_count + memory_written_count;
+}
+
+double add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+
+  Matrix2d MatResult_1, Gz;
+  Vector3d xv;
+  Matrix2d Pf[N_z];
+
+  double flop_count = N_z * (
+      tp.sin + tp.cos + 
+      4*tp.add +  
+      4*tp.mul +
+      /* different */
+      // assuming we have AVX2
+      mm_2x2_flops(Gz, R, MatResult_1) + // the same as mm_2x2_avx_v1_flops(Gz, R, MatResult_1) + 
+      mm_2x2_flops(MatResult_1, Gz, Pf[0]) // the same as mmT_2x2_avx_v1_flops(MatResult_1, Gz, Pf[i])
+      /* different end */
+      );
+  
+  return flop_count;
+  }
+
+double add_feature_active_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+
+  Matrix2d MatResult_1, Gz;
+  Vector3d xv;
+  Vector2d xf[N_z];
+  Matrix2d Pf[N_z];
+  Vector2d measurement;
+
+  double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
+    copy_memory(measurement, 2, xf[0]) +
+    mm_2x2_flops(Gz, R, MatResult_1) + // the same as mm_2x2_avx_v1_memory(Gz, R, MatResult_1) + 
+    mm_2x2_flops(MatResult_1, Gz, Pf[0]) + // the same as mmT_2x2_avx_v1_memory(MatResult_1, Gz, Pf[i]) +
+    2 * (2 + 1) + // set_xfi(particle, xf[i], i + N_x) + 
+    2 * (2 + 1) // set_Pfi(particle, Pf[i], i + N_x)
+  );
+  double memory_read_count = N_z * 10;
+  double memory_written_count = N_z * (2 * 2);
+  return memory_called + memory_read_count + memory_written_count;
+  }

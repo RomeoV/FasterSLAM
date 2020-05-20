@@ -8,3 +8,6 @@ build
 doc
 .DS_Store
 *-checkpoint.ipynb
+src/fastslam1/placeholder
+src/build*
+callgrind*

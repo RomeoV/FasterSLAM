@@ -1,5 +1,6 @@
 #include "data_associate_known.h"
 #include <iostream>
+#include "typedefs.h"
 
 //z is range and bearing of visible landmarks
 
@@ -62,4 +63,34 @@ void data_associate_known_base(cVector2d z[], const int* idz, const size_t idz_s
         table[ idn[i] ] = Nf_known + i;  
     }
     free(idn);
+}
+
+// Utils
+
+double data_associate_known_base_flops(cVector2d z[], const int* idz, const size_t idz_size, 
+                               int* table, const int Nf_known, Vector2d zf[], int *idf, 
+                               size_t *count_zf, Vector2d zn[], size_t *count_zn) 
+{
+    return 0.0;
+}
+
+double data_associate_known_active_flops(cVector2d z[], const int* idz, const size_t idz_size, 
+                               int* table, const int Nf_known, Vector2d zf[], int *idf, 
+                               size_t *count_zf, Vector2d zn[], size_t *count_zn) 
+{
+    return 0.0;
+}
+
+double data_associate_known_base_memory(cVector2d z[], const int* idz, const size_t idz_size, 
+                              int* table, const int Nf_known, Vector2d zf[], int *idf, 
+                              size_t *count_zf, Vector2d zn[], size_t *count_zn) 
+{
+    return ( 2*2 + 2 ) * idz_size;
+}
+
+double data_associate_known_active_memory(cVector2d z[], const int* idz, const size_t idz_size, 
+                              int* table, const int Nf_known, Vector2d zf[], int *idf, 
+                              size_t *count_zf, Vector2d zn[], size_t *count_zn) 
+{
+    return ( 2*2 + 2 ) * idz_size;
 }

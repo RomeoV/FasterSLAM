@@ -2,7 +2,6 @@
 
 #include <math.h>
 
-
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation, unit test, Benchmark added
@@ -11,6 +10,10 @@
  ****************************************************************************/
 
 double pi_to_pi(double ang) {
+    return pi_to_pi_while(ang);
+}
+
+double pi_to_pi_active(double ang) {
     return pi_to_pi_while(ang);
 }
 
@@ -25,6 +28,7 @@ double pi_to_pi(double ang) {
  * Status: Baseline
  ****************************************************************************/
 
+
 double pi_to_pi_base(double ang) 
 {
     if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
@@ -38,6 +42,36 @@ double pi_to_pi_base(double ang)
         ang = ang + (2*M_PI);
     }
     return ang;
+}
+
+double pi_to_pi_base_flops(double ang) {
+    double flop_count = 2*tp.mul + 2*tp.negation * 4*tp.doublecomp;
+    if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
+        int n=floor(ang/(2*M_PI));
+        ang = ang-n*(2*M_PI);    
+        flop_count+= tp.floor + tp.div + tp.mul;
+    }
+    if (ang > M_PI) {
+        ang = ang - (2*M_PI);
+        flop_count+= tp.add + tp .mul;
+    }
+    if (ang <= -M_PI) {
+        ang = ang + (2*M_PI);
+        flop_count+= tp.add + tp .mul;
+    }
+    return flop_count;
+}
+
+double pi_to_pi_base_memory(double ang) {
+    return 0.0;
+}
+
+double pi_to_pi_active_flops(double ang) {
+    return pi_to_pi_base_flops(ang);
+}
+
+double pi_to_pi_active_memory(double ang) {
+    return 0.0;
 }
 
 void pi_to_pi_arr(double* angles,const size_t n) 

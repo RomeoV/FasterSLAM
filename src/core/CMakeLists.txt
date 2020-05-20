@@ -25,25 +25,31 @@ add_library(FasterSlamCore
   trigonometry.cpp
   compute_weight_and_feature_update.cpp
 )
+if (USE_YGLEE_KF_CHOLESKY)
+    target_compile_options(FasterSlamCore PUBLIC -DKF_YGLEE)
+endif()
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
 
+if(${USE_MARCH_NATIVE})
+target_compile_options(FasterSlamCore
+  PUBLIC
+  -march=native
+  -O3
+)
+endif()
+
 # target_compile_options(FasterSlamCore
-# PUBLIC
-#  -O3
-#  -march=native
-#  -Wall
-#  -Wno-sign-compare
-# -Wpedantic  # these warnings are too pedantic...
-#  -Wno-vla  # no warning when using vla-extension
-# -Wno-c++20-designator
-# PRIVATE
-#  -Wno-unused-lambda-capture  # https://stackoverflow.com/q/52416362/5616591
-#)
+#   PUBLIC
+#   -Wall
+#   -Wno-sign-compare
+# )
 
 add_subdirectory(tests)
+if(${BUILD_BENCHMARKS})
 add_subdirectory(benchmarks)
+endif()
 
 if(TEST_COVERAGE)
   target_compile_options(FasterSlamCore PRIVATE
