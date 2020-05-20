@@ -36,7 +36,6 @@ if(${USE_MARCH_NATIVE})
 target_compile_options(FasterSlamCore
   PUBLIC
   -march=native
-  -O3
 )
 endif()
 
