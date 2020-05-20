@@ -2,7 +2,6 @@
 
 #include <math.h>
 
-
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation, unit test, Benchmark added

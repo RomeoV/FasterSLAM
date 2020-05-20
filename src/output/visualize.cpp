@@ -128,9 +128,15 @@ int main (int argc, char *argv[])
             //////////////////////////////////////////////////////////////
 
 #ifdef __AVX2__
+#ifdef KF_YGLEE
             observe_update_fast(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
+#else
+            observe_update_fast_KF_Nik(lm, N_features, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn, particles, weights);
+#endif
 #else
             observe_update(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 

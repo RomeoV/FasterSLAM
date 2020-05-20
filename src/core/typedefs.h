@@ -15,6 +15,7 @@ typedef const double cMatrix23d[6];
 
 // Source: https://latkin.org/blog/2014/11/09/a-simple-benchmark-of-various-math-operations/, Intel Intrinsics guide
 typedef struct throughputs_s {
+    double abs = 0.0; // TODO
     double sin = 15.0; //All values set to 1.0 for now, we change later
     double atan2 = 25.0;
     double mul = 1.0;

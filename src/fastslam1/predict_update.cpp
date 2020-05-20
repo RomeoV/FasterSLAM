@@ -60,6 +60,46 @@ void predict_update_base(double* wp, size_t N_waypoints, double V, double* Q, do
     }
 }
 
+double predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    double flop_count = compute_steering_base_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+
+    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
+                *iwp = 0;
+                NUMBER_LOOPS--;
+    }
+    flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
+
+    double VnGn[2];
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+
+    //flop_count += add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+    for (size_t i = 0; i < N; i++) {
+        flop_count += predict_base_flops(&particles[i], VnGn[0], VnGn[1], Q, WHEELBASE, dt);
+    }
+
+    return flop_count;
+}
+
+double predict_update_base_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    double memory_moved = compute_steering_base_memory(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
+                *iwp = 0;
+                NUMBER_LOOPS--;
+    }
+    memory_moved += predict_true_base_memory(V, *G, WHEELBASE, dt, xtrue);
+    double VnGn[2];
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    //memory_moved += add_control_noise_base_memory(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+    for (size_t i = 0; i < N; i++) {
+        memory_moved += predict_base_memory(&particles[i], VnGn[0], VnGn[1], Q, WHEELBASE, dt);
+    }
+    return memory_moved;
+}
+
+
+
 
 void predict_update_active(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
@@ -172,6 +212,42 @@ void predict_update_fast_plain(double* wp, size_t N_waypoints, double V, double*
     }
 }
 #endif
+
+double predict_update_active_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    double flop_count = compute_steering_active_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
+                *iwp = 0;
+                NUMBER_LOOPS--;
+    }
+    flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
+    double VnGn[2];
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    // flop_count += add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+    if (SWITCH_PREDICT_NOISE) {
+        flop_count+=N*(2*tp.fastrand + 2* mmadd_2x2_flops(Q,Q,Q));
+    }
+    flop_count+= N* (5*tp.mul + 4* tp.add+
+                    2*tp.sin /*tscheb_sin*/ + 1* tp.cos /*tscheb_cos*/+ 
+                    pi_to_pi_active_flops(3.0) /*simple pi_to_pi*/);
+    return flop_count;
+}
+
+double predict_update_active_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    double memory_moved = compute_steering_active_memory(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
+                *iwp = 0;
+                NUMBER_LOOPS--;
+    }
+    memory_moved += predict_true_base_memory(V, *G, WHEELBASE, dt, xtrue);
+    double VnGn[2];
+    // memory_moved += add_control_noise_base_memory(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    memory_moved += 2*3*N; //We load xv and write to xv //The angle_buffer[4] is supposed to stay in cache, so I didnt count that
+    return memory_moved;
+}
+
 #ifdef __AVX2__
 void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {

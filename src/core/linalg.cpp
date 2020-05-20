@@ -51,14 +51,6 @@ void fill(double *x, size_t size, double val) {
     }
 }
 
-double copy_flops(const double* ref, size_t N, double* target) {
-    return 0.0;
-}
-
-double copy_memory(const double* ref, size_t N, double* target) {
-    return 0.0;
-}
-
 //! Copies all values from ref to target
 void copy(const double* ref, size_t N, double* target) {
     for (size_t i = 0; i < N; i++) {
@@ -66,12 +58,12 @@ void copy(const double* ref, size_t N, double* target) {
     }
 }
 
-double fill_rand_flops(double *x, size_t size, double lo, double hi) {
-    return 1+size*(tp.add + tp.mul+ tp.mul + tp.div + tp.rand);
+double copy_flops(const double* ref, size_t N, double* target) {
+    return 0.0;
 }
 
-double fill_rand_memory(double *x, size_t size, double lo, double hi) {
-    return 2*size;
+double copy_memory(const double* ref, size_t N, double* target) {
+    return 0.0;
 }
 
 //! Fills an array with random values in the range [lo, hi]
@@ -83,7 +75,13 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
     }
 }
 
+double fill_rand_flops(double *x, size_t size, double lo, double hi) {
+    return 1+size*(tp.add + tp.mul+ tp.mul + tp.div + tp.rand);
+}
 
+double fill_rand_memory(double *x, size_t size, double lo, double hi) {
+    return 2*size;
+}
 
 // Works ;)
 #ifdef __AVX2__
@@ -144,14 +142,6 @@ void fill_rand_fast(double *x, size_t size, double lo, double hi) {
 
 //! Matrix Transpose
 
-double transpose_flops(const double *A, size_t mA, size_t nA, double *T) {
-    return 0.0;
-}
-
-double transpose_memory(const double *A, size_t mA, size_t nA, double *T) {
-    return 3*nA+mA;
-}
-
 void transpose(const double *A, size_t mA, size_t nA, double *T) {
     assert( A != NULL && T != NULL );
     for (size_t i = 0; i < nA; i++) {
@@ -161,11 +151,27 @@ void transpose(const double *A, size_t mA, size_t nA, double *T) {
     }
 }
 
+double transpose_flops(const double *A, size_t mA, size_t nA, double *T) {
+    return 0.0;
+}
+
+double transpose_memory(const double *A, size_t mA, size_t nA, double *T) {
+    return 3*nA*mA;
+}
+
 void transpose_2x2(const double *A, double *T) {
     T[0] = A[0];
     T[1] = A[2];
     T[2] = A[1];
     T[3] = A[3];
+}
+
+double transpose_2x2_flops(const double *A, double *T) {
+    return 0.0;
+}
+
+double transpose_2x2_memory(const double *A, double *T) {
+    return 3*4;
 }
 
 #ifdef __AVX2__
@@ -180,20 +186,20 @@ void stranspose_2x2(double *A) {
     A[2] = tmp;
 }
 
-double add_flops(const double *x, const double *y, size_t size, double* z) {
-    return size*tp.add;
-}
-
-double add_memory(const double *x, const double *y, size_t size, double* z) {
-    return size*4;
-}
-
 //! Adds two arrays
 void add(const double *x, const double *y, size_t size, double* z) {
     assert( x != NULL && y != NULL && z != NULL );
     for (size_t i = 0; i < size; i++) {
         z[i] = x[i] + y[i];
     }
+}
+
+double add_flops(const double *x, const double *y, size_t size, double* z) {
+    return size*tp.add;
+}
+
+double add_memory(const double *x, const double *y, size_t size, double* z) {
+    return size*4;
 }
 
 //! Subtracts two arrays
@@ -204,6 +210,14 @@ void sub(const double *x, const double *y, size_t size, double* z) {
     }
 }
 
+double sub_flops(const double *x, const double *y, size_t size, double* z) {
+    return size*tp.add;
+}
+
+double sub_memory(const double *x, const double *y, size_t size, double* z) {
+    return size*4;
+}
+
 //! Scales an array by a scalar
 void scal(const double *x, size_t size, double a, double *y) {
     for (size_t i = 0; i < size; i++) {
@@ -211,15 +225,13 @@ void scal(const double *x, size_t size, double a, double *y) {
     }
 }
 
-
-double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
-    return mA*nB* tp.mul + mA*nB*tp.add;
+double scal_flops(const double *x, size_t size, double a, double *y) {
+    return size*tp.mul;
 }
 
-double mul_memory(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
-    return 2*mA*nB + mA*nA + nB*nA;
+double scal_memory(const double *x, size_t size, double a, double *y) {
+    return size*2;
 }
-
 
 //! Matrix x Matrix Multiplication: C = A * B 
 void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
@@ -235,6 +247,14 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
     }
 }
 
+double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
+    return mA*nA*nB*tp.mul + mA*nA*nB*tp.add;
+}
+
+double mul_memory(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
+    return 2*mA*nB + mA*nA + nB*nA;
+}
+
 //! Matrix x Matrix Multiplication ( 2x2 )
 void mm_2x2(const double *A, const double *B, double *C) {
     //mm_2x2_avx_v1(A, B, C);
@@ -243,6 +263,14 @@ void mm_2x2(const double *A, const double *B, double *C) {
     C[1] = A[0]*B[1] + A[1]*B[3];
     C[2] = A[2]*B[0] + A[3]*B[2];
     C[3] = A[2]*B[1] + A[3]*B[3];
+}
+
+double mm_2x2_flops(const double *A, const double *B, double *C) {
+    return 4*tp.add + 8*tp.mul;
+}
+
+double mm_2x2_memory(const double *A, const double *B, double *C) {
+    return 2*4 + 4*4;
 }
 
 //! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
@@ -334,6 +362,14 @@ void mmT_2x2(const double *A, const double *B, double *C) {
     C[3] = A[2]*B[2] + A[3]*B[3];
 }
 
+double mmT_2x2_flops(const double *A, const double *B, double *C) {
+    return 4*tp.add + 8*tp.mul;
+}
+
+double mmT_2x2_memory(const double *A, const double *B, double *C) {
+    return 2*4 + 4*4;
+}
+
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
 #ifdef __AVX2__
 void mmT_2x2_avx_v1(const double *A, const double *B, double *C) {
@@ -423,6 +459,14 @@ void mmadd_2x2(const double *A, const double *B, double *C) {
     C[1] += A[0]*B[1] + A[1]*B[3];
     C[2] += A[2]*B[0] + A[3]*B[2];
     C[3] += A[2]*B[1] + A[3]*B[3];
+}
+
+double mmadd_2x2_flops(const double *A, const double *B, double *C) {
+    return 8*tp.add + 8*tp.mul;
+}
+
+double mmadd_2x2_memory(const double *A, const double *B, double *C) {
+    return 2*4 + 4*4;
 }
 
 #ifdef __AVX__
@@ -527,14 +571,14 @@ void mvadd_2x2(const double *A, const double *b, double *c) {
     c[1] += A[2]*b[0] + A[3]*b[1];
 }
 
-
-double llt_2x2_flops(const double *A, double *L) {
-    return 2* tp.sqrt + 1*tp.div + tp.mul + tp.add;
+double mvadd_2x2_flops(const double *A, const double *b, double *c) {
+    return 4*tp.add + 4*tp.mul;
 }
 
-double llt_2x2_memory(const double *A, double *L) {
-    return 3*4;
+double mvadd_2x2_memory(const double *A, const double *b, double *c) {
+    return 2*2 + 4*2;
 }
+
 //! Matrix x Vector Multiplication ( 2x2 ) [ AVX ]
 // a should be 32-byte aligned
 // b should be 16-byte aligned
@@ -567,13 +611,12 @@ void llt_2x2(const double *A, double *L) {
     L[3] = sqrt( A[3] - L[2]*L[2] ); // 1*2+1 -> (1,1)
 }
 
-
-double inv_2x2_flops(const double *A, double *Ainv) {
-    return 6*tp.mul + tp.div + 1* tp.add + 2* tp.negation; 
+double llt_2x2_flops(const double *A, double *L) {
+    return 2*tp.sqrt + tp.div + tp.mul + tp.add;
 }
 
-double inv_2x2_memory(const double *A, double *Ainv) {
-    return 3*4; 
+double llt_2x2_memory(const double *A, double *L) {
+    return 3*4;
 }
 
 //! Inverse of a 2x2 Matrix
@@ -585,16 +628,24 @@ void inv_2x2(const double *A, double *Ainv) {
     Ainv[3] =  s * A[0];
 }
 
+double inv_2x2_flops(const double *A, double *Ainv) {
+    return 6*tp.mul + tp.div + tp.add + 2*tp.negation; 
+}
+
+double inv_2x2_memory(const double *A, double *Ainv) {
+    return 3*4; 
+}
+
+double determinant_2x2(const double* A) {
+    return A[0] * A[3] - A[1] * A[2];
+}
+
 double determinant_2x2_flops(const double* A) {
     return 2*tp.mul + tp.add;
 }
 
 double determinant_2x2_memory(const double* A) {
     return 4.0;
-}
-
-double determinant_2x2(const double* A) {
-    return A[0] * A[3] - A[1] * A[2];
 }
 
 #ifdef __AVX2__
