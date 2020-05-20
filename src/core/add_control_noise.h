@@ -36,4 +36,15 @@ void add_control_noise(double V, double G, double* Q, int addnoise, double* VnGn
 
 void add_control_noise_base(double V, double G, double* Q, int addnoise, double* VnGn);
 
+// Work / Memory instrumenting
+void add_control_noise_active(double V, double G, double* Q, int addnoise, double* VnGn);
+
+double add_control_noise_base_flops(double V, double G, double* Q, int addnoise, double* VnGn);
+
+double add_control_noise_base_memory(double V, double G, double* Q, int addnoise, double* VnGn);
+
+double add_control_noise_active_flops(double V, double G, double* Q, int addnoise, double* VnGn);
+
+double add_control_noise_active_memory(double V, double G, double* Q, int addnoise, double* VnGn);
+
 #endif //ADD_CONTROL_NOISE
