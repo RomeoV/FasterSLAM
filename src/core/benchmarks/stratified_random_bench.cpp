@@ -44,11 +44,11 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&stratified_random_base, "base", 0.0);
-    bench.funcFlops[0] = KF_cholesky_update_base_flops(N, di);
-    bench.funcBytes[0] = KF_cholesky_update_base_memory(N, di);
+    bench.funcFlops[0] = stratified_random_base_flops(N, di);
+    bench.funcBytes[0] = stratified_random_base_flops(N, di);
     bench.add_function(&stratified_random, "active", 0.0);
     bench.funcFlops[1] = stratified_random_flops(N, di);
-    bench.funcBytes[1] = Kstratified_random_memory(N, di);
+    bench.funcBytes[1] = stratified_random_flops(N, di);
 
     bench.run_benchmark(N, di);
 
