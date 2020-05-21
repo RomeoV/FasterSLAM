@@ -32,3 +32,6 @@ double cumsum_memory(double* w, const size_t N_w);
 void cumsum_base(double* w, const size_t N_w);
 double cumsum_base_flops(double* w, const size_t N_w);
 double cumsum_base_memory(double* w, const size_t N_w);
+
+
+double get_Neff(const double* w_, const size_t N_w);

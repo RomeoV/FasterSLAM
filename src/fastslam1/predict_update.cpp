@@ -62,35 +62,33 @@ void predict_update_base(double* wp, size_t N_waypoints, double V, double* Q, do
 
 double predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    int iwp_reset = *iwp;
+    double G_reset = *G;
     double flop_count = compute_steering_base_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
 
-    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
-                *iwp = 0;
-                NUMBER_LOOPS--;
-    }
     flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
 
-    double VnGn[2];
-    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    double VnGn[2] = {0,0};
+    flop_count +=add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    //add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
 
     //flop_count += add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
     for (size_t i = 0; i < N; i++) {
         flop_count += predict_base_flops(&particles[i], VnGn[0], VnGn[1], Q, WHEELBASE, dt);
     }
-
+    *iwp = iwp_reset;
+    *G = G_reset;
     return flop_count;
 }
 
 double predict_update_base_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    int iwp_reset = *iwp;
+    double G_reset = *G;
     double memory_moved = compute_steering_base_memory(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
-    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
-                *iwp = 0;
-                NUMBER_LOOPS--;
-    }
     memory_moved += predict_true_base_memory(V, *G, WHEELBASE, dt, xtrue);
-    double VnGn[2];
-    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    double VnGn[2] = {0,0};
+    //add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
     //memory_moved += add_control_noise_base_memory(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
     for (size_t i = 0; i < N; i++) {
         memory_moved += predict_base_memory(&particles[i], VnGn[0], VnGn[1], Q, WHEELBASE, dt);
@@ -215,14 +213,14 @@ void predict_update_fast_plain(double* wp, size_t N_waypoints, double V, double*
 
 double predict_update_active_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    int iwp_reset = *iwp;
+    double G_reset = *G;
+    double _xtrue[3] = {xtrue[0], xtrue[1], xtrue[2]};
     double flop_count = compute_steering_active_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
-    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
-                *iwp = 0;
-                NUMBER_LOOPS--;
-    }
     flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
     double VnGn[2];
-    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    flop_count +=add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    //add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
     // flop_count += add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
     if (SWITCH_PREDICT_NOISE) {
         flop_count+=N*(2*tp.fastrand + 2* mmadd_2x2_flops(Q,Q,Q));
@@ -230,21 +228,23 @@ double predict_update_active_flops(double *wp, size_t N_waypoints, double V, dou
     flop_count+= N* (5*tp.mul + 4* tp.add+
                     2*tp.sin /*tscheb_sin*/ + 1* tp.cos /*tscheb_cos*/+ 
                     pi_to_pi_active_flops(3.0) /*simple pi_to_pi*/);
+    *iwp = iwp_reset;
+    *G = G_reset;
+    copy(_xtrue, 3, xtrue);
     return flop_count;
 }
 
 double predict_update_active_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    int iwp_reset = *iwp;
+    double G_reset = *G;
     double memory_moved = compute_steering_active_memory(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
-    if ( *iwp == -1 && NUMBER_LOOPS > 1 ) {
-                *iwp = 0;
-                NUMBER_LOOPS--;
-    }
     memory_moved += predict_true_base_memory(V, *G, WHEELBASE, dt, xtrue);
-    double VnGn[2];
     // memory_moved += add_control_noise_base_memory(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
-    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+    //add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
     memory_moved += 2*3*N; //We load xv and write to xv //The angle_buffer[4] is supposed to stay in cache, so I didnt count that
+    *iwp = iwp_reset;
+    *G = G_reset;
     return memory_moved;
 }
 
@@ -697,7 +697,7 @@ void predict_update_sine(double* wp, size_t N_waypoints, double V, double* Q, do
         double xv2 = particles[i].xv[2];
         particles[i].xv[0] += Vn*dt*tscheb_cos(Gn + xv2);
         particles[i].xv[1] += Vn*dt*tscheb_sin(Gn + xv2); 
-        particles[i].xv[2] = pi_to_pi(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
+        particles[i].xv[2] = pi_to_pi_base(xv2 + Vn*dt*tscheb_sin(Gn)/WHEELBASE);
     }
 }
 

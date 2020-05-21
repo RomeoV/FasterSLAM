@@ -94,7 +94,8 @@ void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, doub
                                               double* FLOPS_RET, double* MEMORY_RET) { 
     double FLOPS = 0, READS = 0, WRITES = 0, MEMORY = 0;
     double* weights_internal = (double*)malloc(N * sizeof(double));
-    std::copy(weights, weights+N, weights_internal);
+    //std::copy(weights, weights+N, weights_internal);
+    copy(weights, N, weights_internal);
     normalize_weights(weights_internal, N);
     FLOPS += normalize_weights_flops (weights_internal, N);
     MEMORY+= normalize_weights_memory(weights_internal, N);
@@ -126,10 +127,6 @@ void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, doub
             FLOPS += find_particle_without_dependency_flops (count, N);
             MEMORY+= find_particle_without_dependency_memory(count, N);
         }
-        for (int i = 0; i<N; i++) {
-            weights[i] = 1.0f/N;
-            particles[i].w = weights+i;
-        }
         FLOPS += N * (tp.div + tp.add);
         WRITES += 2;
     }
@@ -137,14 +134,42 @@ void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, doub
     *MEMORY_RET = 1 * READS + 2 * WRITES + MEMORY;
 }
 double resample_particles_dag_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
-    double flops, memory_;
-    resample_particles_dag_flops_and_memory(particles, N, weights, Nmin, doresample, &flops, &memory_);
-    return flops;
+    double* weights_internal = (double*)malloc(N * sizeof(double));
+    //std::copy(weights, weights+N, weights_internal);
+    copy(weights, N, weights_internal);
+    normalize_weights(weights_internal, N);
+    double flop_count = normalize_weights_flops (weights_internal, N);
+
+    double Neff = get_Neff(weights_internal,N);
+    size_t keep_indices[N];  // can be seen as dependencies   
+    flop_count += stratified_resample_base_flops (weights_internal, N, &Neff, keep_indices);
+
+    if ((Neff < Nmin) && (doresample == 1)) {
+        flop_count += N*tp.div;
+    }
+    return flop_count;
+    // double flops, memory_;
+    // resample_particles_dag_flops_and_memory(particles, N, weights, Nmin, doresample, &flops, &memory_);
+    // return flops;
 }
-double resample_particles_dag_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
-    double flops_, memory;
-    resample_particles_dag_flops_and_memory(particles, N, weights, Nmin, doresample, &flops_, &memory);
-    return memory;
+double resample_particles_dag_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
+    double* weights_internal = (double*)malloc(N * sizeof(double));
+    //std::copy(weights, weights+N, weights_internal);
+    copy(weights, N, weights_internal);
+    normalize_weights(weights_internal, N);
+    double memory_moved = normalize_weights_memory (weights_internal, N);
+
+    double Neff = get_Neff(weights_internal,N);
+    size_t keep_indices[N];  // can be seen as dependencies   
+    memory_moved += stratified_resample_base_memory(weights_internal, N, &Neff, keep_indices);
+    size_t Nfa = particles[0].Nfa;
+    if ((Neff < Nmin) && (doresample == 1)) {
+        memory_moved += (3+9 + (0.5+0.5) + 6 * Nfa)*N*2 + 2*N /*weights*/;
+    }
+    return memory_moved; 
+    // double flops_, memory;
+    // resample_particles_dag_flops_and_memory(particles, N, weights, Nmin, doresample, &flops_, &memory);
+    // return memory;
 }
 
 void resample_particles_base(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
