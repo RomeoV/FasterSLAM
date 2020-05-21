@@ -63,7 +63,7 @@ void set_work(Benchmark<decltype(&predict_update)>& bench,
     data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
     bench.funcFlops[0] = predict_update_base_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
     data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
-    bench.funcBytes[0] = 8* predict_update_base_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    bench.funcBytes[0] = 8 * predict_update_base_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
     data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
     for (int i = 1; i < bench.numFuncs; i++) {
         bench.funcFlops[i] = predict_update_active_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
@@ -118,7 +118,7 @@ int main() {
     expect(that % fabs(G - G_exact) < 1.0e-10) << "G";
     expect(that % (iwp - iwp_exact) == 0 ) << "iwp";
 
-    for (int i =0; i<N; i++) {
+    for (int i=0; i<N; i++) {
         expect(that % fabs(particles[i].xv[0] - particles_exact[i].xv[0]) < 1.0e-6) <<particles[i].xv[0] << "x"<< i <<particles_exact[i].xv[0];
         expect(that % fabs(particles[i].xv[1] - particles_exact[i].xv[1]) < 1.0e-6) <<particles[i].xv[1] << "y"<< i <<particles_exact[i].xv[1];
         expect(that % fabs(particles[i].xv[2] - particles_exact[i].xv[2]) < 1.0e-6);
@@ -131,19 +131,17 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&predict_update_base)> bench("predict_update Benchmark");
 
-    double work = 41 + N*19; // best
-
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&predict_update_base, "base", work);
-    bench.add_function(&predict_update_fast, "fast", work);
+    bench.add_function(&predict_update_base, "base", 0.0);
+    bench.add_function(&predict_update_fast, "fast", 0.0);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined.
     set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
-    G= M_PI;
+    G = M_PI;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);

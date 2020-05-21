@@ -39,23 +39,21 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&resample_particles)> bench("resample_particles Benchmark");
 
-    double work = 50000.0; // best-case in flops
-
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
+    data_loader(particles, N, weights, N_min, 1);
     bench.data_loader = &data_loader;
 
-    bench.add_function(&resample_particles_base, "resample_particles_base", work); // cycles scale exponentially with #Particles!!!
-    bench.add_function(&resample_particles_dag, "resample_particles_dag", work);
+    bench.add_function(&resample_particles_base, "resample_particles_base", 0.0); // cycles scale exponentially with #Particles!!!
+    bench.funcFlops[0] = resample_particles_base_flops(particles, N, weights, N_min, 1);
+    bench.funcBytes[0] = resample_particles_base_memory(particles, N, weights, N_min, 1);
+    bench.add_function(&resample_particles_dag, "resample_particles_dag", 0.0);
+    bench.funcFlops[1] = resample_particles_dag_flops(particles, N, weights, N_min, 1);
+    bench.funcBytes[1] = resample_particles_dag_memory(particles, N, weights, N_min, 1);
     //bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particles, N, weights,N_min, 1);
-
-    // Free memory
-    // destroy(A);
-    // destroy(x);
-    // destroy(y);
+    bench.run_benchmark(particles, N, weights, N_min, 1);
 
     return 0;
 }

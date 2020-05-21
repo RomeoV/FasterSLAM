@@ -30,12 +30,15 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&add_control_noise)> bench("add_control_noise Benchmark");
 
-    double work = 500.0; // best-case in flops
-
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&add_control_noise_base, "add_control_noise_base", work);
-    bench.add_function(&add_control_noise, "add_control_noise", work);
+    bench.add_function(&add_control_noise_base, "add_control_noise_base", 0.0);
+    bench.funcFlops[0] = add_control_noise_base_flops(V,G,Q,addnoise,VnGn_base);
+    bench.funcBytes[0] = add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
+
+    bench.add_function(&add_control_noise, "add_control_noise", 0.0);
+    bench.funcFlops[1] = add_control_noise_base_flops(V,G,Q,addnoise,VnGn_base);
+    bench.funcBytes[1] = add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(V,G,Q,addnoise,VnGn);

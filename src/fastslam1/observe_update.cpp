@@ -1745,7 +1745,7 @@ double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double
     for (int i = 0; i<NPARTICLES; i++) {
         delParticleMembers_prealloc(_particles+i);
     }
-    return 0.0;
+    return memory_moved;
 }
 
 double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 

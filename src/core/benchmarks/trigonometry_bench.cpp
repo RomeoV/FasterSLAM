@@ -110,7 +110,8 @@ int main() {
 
     Benchmark<decltype(std_sin_lambda)> bench("Trigonometry Benchmark");
 
-    // Add lambda functions to aggregate over range of inputs.
+    // Add lambda functions to aggregate over range of inputs. 
+    // there is no instrumentation available
     bench.add_function(std_sin_lambda, "base", N);
     bench.add_function(read_sin_lambda, "read_sin", N);
     bench.add_function(tscheb_sin_lambda, "tscheb_sine",N);

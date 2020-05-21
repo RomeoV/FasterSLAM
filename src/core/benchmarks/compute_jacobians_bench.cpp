@@ -40,10 +40,10 @@ void set_work(Benchmark<decltype(&compute_jacobians)>& bench, Particle* particle
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
     bench.funcFlops[0] = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[0] = 8* compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = 8 * compute_jacobians_base_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
     for (int i = 1; i < bench.numFuncs; i++) {
         bench.funcFlops[i] = compute_jacobians_active_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf);
-        bench.funcBytes[i] = 8* compute_jacobians_active_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
+        bench.funcBytes[i] = 8 * compute_jacobians_active_memory(particle, idf, N_z, R, zp, Hv, Hf, Sf);
     }
 }
 
@@ -109,20 +109,16 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&compute_jacobians)> bench("compute_jacobians Benchmark");
 
-    double work = Nfz*10; // best-case in flops
-
-    bench.add_function(&compute_jacobians_base, "compute_jacobians_base", work);
-    bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", work);
+    bench.add_function(&compute_jacobians_base, "compute_jacobians_base", 0.0);
+    bench.add_function(&compute_jacobians_fast, "compute_jacobians_fast", 0.0);
 #ifdef __AVX2__
-    bench.add_function(&compute_jacobians_advanced_optimizations, "compute_jacobians_jonathan", work);
+    bench.add_function(&compute_jacobians_advanced_optimizations, "compute_jacobians_jonathan", 0.0);
 #endif
     //bench.add_function(&compute_jacobians, "compute_jacobians", work);
-    
-    
-    bench.add_function(&compute_jacobians_simd, "compute_jacobians_simd", work);
-    bench.add_function(&compute_jacobians_nik, "compute_jacobians_nik", work);
-    bench.add_function(&compute_jacobians_scalar_replacement, "compute_jacobians_scalar_replacement", work);
-    bench.add_function(&compute_jacobians_linalg_inplace, "compute_jacobians_linalg_inplace", work);
+    bench.add_function(&compute_jacobians_simd, "compute_jacobians_simd", 0.0);
+    bench.add_function(&compute_jacobians_nik, "compute_jacobians_nik", 0.0);
+    bench.add_function(&compute_jacobians_scalar_replacement, "compute_jacobians_scalar_replacement", 0.0);
+    bench.add_function(&compute_jacobians_linalg_inplace, "compute_jacobians_linalg_inplace", 0.0);
 
     int idf_4[1] = {5};
     set_work(bench, particle, idf_4, 1, R, zp, Hv, Hf, Sf);
