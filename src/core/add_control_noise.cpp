@@ -1,6 +1,7 @@
 #include "add_control_noise.h"
 #include <iostream>
-
+#include "linalg.h"
+#include <math.h>
 
 void add_control_noise(double V, double G, double* Q, int addnoise, double* VnGn)  {
 	add_control_noise_active(V,G,Q,addnoise,VnGn);
@@ -22,11 +23,22 @@ void add_control_noise_base(double V, double G, double* Q, int addnoise, double*
 // Work / Memory instrumenting
 void add_control_noise_active(double V, double G, double* Q, int addnoise, double* VnGn){
 	if (addnoise == 1) {
-		Vector2d A; //seems we don't use malloc //malloc(2 * sizeof(double))
-		A[0] = V;
-		A[1] = G;
 		Vector2d result; // need allocation? double *C = malloc(2 * sizeof(double));
-		multivariate_gauss_active(A, Q, result);
+		
+    // multivariate_gauss_active(A, Q, result); x P result
+    /* inlining multivariate_gauss_active */
+    double S[4]; //! 2x2 matrix, lower triangular cholesky factor
+    llt_2x2(Q, S); //! P = S * S^T
+
+    double X[2]; //! 2-vector
+    fill_rand(X, 2, -1.0, 1.0);
+    /* end inlining multivariate_gauss_active */
+
+    //! result = S*X + x
+    result[0] = V;
+    result[1] = G;
+    mvadd_2x2(S, X, result);
+
 		VnGn[0] = result[0];
 		VnGn[1] = result[1];
 	}
