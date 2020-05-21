@@ -43,7 +43,7 @@ NAME = np.array([
     'transpose',
     'compute_jacobians',
     'multivariate_gauss',
-    'fill_rand'])
+    ''])
 
 df = pd.DataFrame({'time':SELF, 'called':CALLED, 'name':NAME})
 ax = df.plot.bar('name', 'time', width = 0.9, legend=False, alpha=0.6, color='royalblue')

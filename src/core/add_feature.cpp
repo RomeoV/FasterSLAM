@@ -97,7 +97,7 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
     r = z[i][0];
     b = z[i][1];
     xv2b = xv2 + b;
-    s = tscheb_sin(xv2b);
+    s = tscheb_sin(xv2b); // by far the biggest improvement, about 5x speedup
     c = tscheb_cos(xv2b);
 
     rc = r*c;
