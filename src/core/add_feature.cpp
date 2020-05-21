@@ -4,6 +4,7 @@
 #include <math.h>
 
 #include "linalg.h"
+#include "tscheb_sine.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -81,24 +82,36 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
   Vector2d xf[N_z] __attribute__((aligned(32)));
   Matrix2d Pf[N_z] __attribute__((aligned(32)));
 
-  Vector3d xv __attribute__((aligned(32)));
-  copy(particle->xv, 3, xv);
+  double xv0 = particle->xv[0];
+  double xv1 = particle->xv[1];
+  double xv2 = particle->xv[2];
 
-  double r, b, s, c;
+  // seems to make no difference if inside or outside of loop
+  double r, b, s, c, measurement0, measurement1;
+  double rc, rs, xv2b;
+  Matrix2d Gz __attribute__((aligned(32)));
+  Matrix2d MatResult_1 __attribute__((aligned(32)));
 
   for (size_t i = 0; i < N_z; i++) {
+    
     r = z[i][0];
     b = z[i][1];
-    s = sin(xv[2] + b);
-    c = cos(xv[2] + b);
+    xv2b = xv2 + b;
+    s = tscheb_sin(xv2b);
+    c = tscheb_cos(xv2b);
 
-    Vector2d measurement;
-    measurement[0] = xv[0] + r * c;
-    measurement[1] = xv[1] + r * s;
-    copy(measurement, 2, xf[i]);  // xf[i,:] = measurement[0:2]
+    rc = r*c;
+    rs = r*s;
+    measurement0 = xv0 + rc;
+    measurement1 = xv1 + rs;
+    xf[i][0] = measurement0;
+    xf[i][1] = measurement1;
 
-    Matrix2d Gz __attribute__((aligned(32))) = {c, -r * s, s, r * c} ;
-    Matrix2d MatResult_1 __attribute__((aligned(32)));
+    Gz[0] = c;
+    Gz[1] = -rs;
+    Gz[2] = s;
+    Gz[3] = rc;
+    
     
 #ifdef __AVX2__
     mm_2x2_avx_v1(Gz, R, MatResult_1);
