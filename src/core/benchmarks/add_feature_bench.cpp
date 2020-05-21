@@ -48,7 +48,7 @@ int main() {
     bench.funcBytes[0] = add_feature_base_memory(&p, landmarks, 2, R);
     bench.add_function(&add_feature, "add_feature", 0.0);
     bench.funcFlops[1] = add_feature_active_flops(&p, landmarks, 2, R);
-    bench.funcBytes[1] = add_feature_active_memory(&p, landmarks, 2, R;
+    bench.funcBytes[1] = add_feature_active_memory(&p, landmarks, 2, R);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, landmarks, 2, R);
