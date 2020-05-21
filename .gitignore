@@ -11,3 +11,5 @@ doc
 src/fastslam1/placeholder
 src/build*
 callgrind*
+*.mp4
+*.log
