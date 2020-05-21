@@ -68,6 +68,14 @@ void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, 
     free(select);
     free(w);    
 }
+
+double get_Neff(const double* w_, const size_t N_w) {
+    double wsqrd_sum = 0.0;
+    for (int i=0; i<N_w; i++) {
+        wsqrd_sum += w_[i] * w_[i];
+    }
+    return 1.0/wsqrd_sum;
+}
 double stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     double * _;
     return N_w * ( 2*tp.add + tp.div + tp.mul + tp.doublecomp ) + tp.div + stratified_random_flops(N_w, _) + cumsum_base_flops(_, N_w);

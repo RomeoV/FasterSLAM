@@ -335,6 +335,31 @@ struct Benchmark {
         }
     }
 
+    void write_csv_details() {
+        std::ofstream fstream;
+        fstream.open(csv_path, std::ios::out | std::ios::app);
+        const char* separator = ";";
+        const int cell_width = 0;
+
+        for (int i = 0; i<numFuncs;i++){
+            for (int j = 0; j<num_runs; j++) {
+                double cyc = cycles_capture[i][j];
+                double flops = flops_capture[i][j];
+                double bytes = bytes_capture[i][j];
+                fstream<<prd(i, 0,0)<<separator<<left(funcNames[i], cell_width)
+                        <<separator<<right(run_names[j],cell_width)
+                        <<separator<<prd(flops, 0, cell_width)
+                        <<separator<<prd(bytes, 0, cell_width)
+                        <<separator<<prd(cyc, 4, cell_width) 
+                        <<separator<<prd(flops/cyc, 4, cell_width) 
+                        <<separator<<prd(cyc/flops, 4, cell_width) 
+                        <<separator<<prd(cycles_capture[0][j]/cyc, 4, cell_width) 
+                        <<separator<<std::endl;
+            }
+        }
+        fstream.close();
+    }
+
     ~Benchmark() {
         if (destructor_output) {
             summary();

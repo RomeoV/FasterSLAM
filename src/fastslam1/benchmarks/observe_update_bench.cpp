@@ -82,7 +82,7 @@ void set_work(Benchmark<decltype(&observe_update)>& bench,
     for (int i = 1; i < bench.numFuncs; i++) {
         bench.funcFlops[i] = observe_update_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
         data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-        bench.funcBytes[i] = 8 * observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        bench.funcBytes[i] = 8* observe_update_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
         data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     }
 }
