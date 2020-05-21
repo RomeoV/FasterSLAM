@@ -10,7 +10,7 @@ import seaborn as sns
 from matplotlib.cbook import flatten
 
 #data = pd.read_csv('../src/build/core/benchmarks/benchmark.csv')
-data = pd.read_csv('./benchmark_sample.csv').values
+data = pd.read_csv('./benchmark_sample_new.csv').values
 # format: benchmark name, function name, flops, cycles, performance, speedup 
 #print(data)
 
@@ -26,6 +26,7 @@ for i, x in enumerate(data):
     prev_key = key
     arr = x[0].split(";")
     arr[3] = float(arr[3])
+    arr[4] = float(arr[4])
     prev_array.append(arr)
   elif(key != prev_key):
     # print prev array
@@ -43,11 +44,13 @@ for i, x in enumerate(data):
     prev_array = []
     arr = x[0].split(";")
     arr[3] = float(arr[3])
+    arr[4] = float(arr[4])
     prev_array.append(arr)
     prev_key = key
   else:
     arr = x[0].split(";")
     arr[3] = float(arr[3])
+    arr[4] = float(arr[4])
     prev_array.append(arr)
 
 print(prev_key, prev_array)
@@ -59,14 +62,14 @@ sns.set(style="darkgrid")
 for index, benchmark in enumerate(plot_arrays):
     print(plot_arrays[index])
     titanic = pd.DataFrame(data=plot_arrays[index],
-                columns=['bench','function','flops','cycles','performance','speedup',''])
+                columns=['bench','function','flops','bytes','cycles','performance','speedup',''])
     print(titanic)
     sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=titanic)
     plt.show()
 
 print(optim)
 titanic = pd.DataFrame(data=optim,
-            columns=['bench','function','flops','cycles','performance','speedup',''])
+            columns=['bench','function','flops','bytes','cycles','performance','speedup',''])
 print(titanic)
 sns.catplot(x="bench", y="speedup", hue="function", kind="bar", data=titanic)
 plt.show()
