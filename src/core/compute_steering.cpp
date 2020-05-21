@@ -12,7 +12,7 @@
 void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double minD,
                       const double rateG, const double maxG, const double dt,
                       int* iwp, double* G) {
-    compute_steering_base(x, wp, N_wp, minD, rateG, maxG, dt, iwp, G);
+    compute_steering_active(x, wp, N_wp, minD, rateG, maxG, dt, iwp, G);
 }
 
 double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
@@ -134,6 +134,53 @@ void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const dou
     //compute change in G to point towards current waypoint
     double deltaG = atan2(cwp[1]-x[1], cwp[0]-x[0]) - x[2] - *G;
     deltaG = pi_to_pi_base(deltaG);
+
+    //limit rate
+    double maxDelta = rateG*dt;
+    if (abs(deltaG) > maxDelta) {
+        int sign = (deltaG > 0) ? 1 : ((deltaG < 0) ? -1 : 0);
+        deltaG = sign*maxDelta;	
+    }	
+
+    //limit angle
+    double G_new = *G+deltaG;
+    if (abs(G_new) > maxG) {
+        int sign2 = (G_new > 0) ? 1 : ((G_new < 0) ? -1 : 0);
+        G_new = sign2*maxG;
+    }
+    *G = G_new;
+}
+
+void compute_steering_active(cVector3d x, double* wp, const size_t N_wp, const double minD, 
+                      const double rateG, const double maxG, const double dt, 
+                      int* iwp, double* G) {
+    //determine if current waypoint reached
+    double cwp0, cwp1;
+    cwp0 = wp[2*(*iwp)+0];
+    cwp1 = wp[2*(*iwp)+1];
+
+    double x0, x1;
+    // scalar replacement
+    x0 = x[0];
+    x1 = x[1];
+    // inlined pow -- both didn't make much difference, probably done by compiler
+    double d2 = (cwp0-x0)*(cwp0-x0) + (cwp1-x1)*(cwp1-x1);
+
+    if (d2 < minD*minD) {
+        *iwp += 1; //switch to next
+        if (*iwp >= N_wp) {
+                *iwp = -1;
+                return;	
+        }
+
+        cwp0 = wp[2*(*iwp)+0];   
+        cwp1 = wp[2*(*iwp)+1];
+    }
+
+
+    //compute change in G to point towards current waypoint
+    double deltaG = atan2(cwp1-x1, cwp0-x0) - x[2] - *G;
+    deltaG = pi_to_pi(deltaG); // updated to active_pi_to_pi
 
     //limit rate
     double maxDelta = rateG*dt;

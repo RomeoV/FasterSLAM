@@ -22,6 +22,10 @@ void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const dou
                       const double rateG, const double maxG, const double dt, 
                       int* iwp, double* G);
 
+void compute_steering_active(cVector3d x, double* wp, const size_t N_wp, const double minD, 
+                      const double rateG, const double maxG, const double dt, 
+                      int* iwp, double* G);
+
                       
 // Utils
 double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
