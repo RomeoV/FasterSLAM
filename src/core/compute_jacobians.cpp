@@ -254,7 +254,7 @@ void compute_jacobians_fast(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
 
-    double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
+    double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv, theta;
 
     double px = particle->xv[0];
     double py = particle->xv[1];
@@ -268,11 +268,9 @@ void compute_jacobians_fast(Particle* particle,
         //d2 = pow(dx, 2) + pow(dy, 2);
         d2 = dx * dx + dy * dy;
 
-        
         d = sqrt(d2);
-        dinv = 1.0/ d;
+        dinv = 1.0/d;
         d2inv = dinv * dinv;
-
 
         dx_dinv = dx * dinv;
         dy_dinv = dy * dinv;
@@ -281,7 +279,7 @@ void compute_jacobians_fast(Particle* particle,
 
         // predicted observation
         zp[i][0] = d;
-        double theta = atan2(dy, dx) - ptheta;
+        theta = atan2(dy, dx) - ptheta;
         zp[i][1] = pi_to_pi(theta);
 
         //! Hv is unused in fastslam1 !!!
