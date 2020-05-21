@@ -50,8 +50,8 @@ int main() {
     bench.funcFlops[0] = add_observation_noise_base_flops(z, zlen, R, addnoise);
     bench.funcBytes[0] = add_observation_noise_base_memory(z, zlen, R, addnoise);
     bench.add_function(&add_observation_noise, "active", 0.0);
-    bench.funcFlops[1] = add_observation_noise_active_flops(z, zlen, R, addnoise);
-    bench.funcBytes[1] = add_observation_noise_active_memory(z, zlen, R, addnoise);
+    bench.funcFlops[1] = add_observation_noise_flops(z, zlen, R, addnoise);
+    bench.funcBytes[1] = add_observation_noise_memory(z, zlen, R, addnoise);
 
     bench.run_benchmark(z, zlen, R, addnoise);
 
