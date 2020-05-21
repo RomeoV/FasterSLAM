@@ -37,6 +37,7 @@ target_compile_options(FasterSlamCore
   PUBLIC
   -march=native
   -O3
+  -ffast-math
 )
 endif()
 

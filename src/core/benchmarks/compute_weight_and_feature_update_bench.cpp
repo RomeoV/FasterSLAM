@@ -38,8 +38,6 @@ void enforce_symmetry_Pf(Matrix2d Pf[], const size_t Nfa) {
     }
 }
 
-
-
 int main() {
     // // Initialize Input
     // // prepare particle
