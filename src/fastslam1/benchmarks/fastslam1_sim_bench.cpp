@@ -40,6 +40,7 @@ int main(int argc, char *argv[]) {
     bench.controls.CYCLES_REQUIRED = 0.0;
 
     bench.csv_path = "fastslam1_particle.csv";
+    bench.csv_output = false;
 
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
@@ -67,6 +68,8 @@ int main(int argc, char *argv[]) {
     bench.details(); // We want output per func and run, so details is the choice
 
     cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
+
+    bench.write_csv_details();
 
 	free(lm);
 	free(wp);

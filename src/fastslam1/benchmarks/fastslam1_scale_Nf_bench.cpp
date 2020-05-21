@@ -36,6 +36,7 @@ int main(int argc, char *argv[]) {
     bench.controls.CYCLES_REQUIRED = 0.0;
 
     bench.csv_path = "fastslam1_feature.csv";
+    bench.csv_output= false;
 
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
@@ -43,7 +44,7 @@ int main(int argc, char *argv[]) {
     bench.add_function(&fastslam1_sim_active, "fastslam1_sim_active", 0.0);
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 4; i++) {
         int scale = pow(2,i);
         if (argc < 2){
 		    read_input_file_and_scale("../input_data/example_webmap.mat",scale, &lm, &wp, lm_rows, wp_rows);
@@ -52,15 +53,15 @@ int main(int argc, char *argv[]) {
         }
         std::cout<< "Benchmarking Nf="<<lm_rows<<" features..."<<std::endl;
         //print(lm, lm_rows, 2);
-        // NUMBER_LOOPS=2;
-        // bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        // NUMBER_LOOPS=2;
-        // bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        // NUMBER_LOOPS=2;
-        // bench.funcBytes[0] = fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        // NUMBER_LOOPS=2;
-        // bench.funcBytes[1] = fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        NUMBER_LOOPS=1;
+        NUMBER_LOOPS=2;
+        bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        NUMBER_LOOPS=2;
+        bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        NUMBER_LOOPS=2;
+        bench.funcBytes[0] = fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        NUMBER_LOOPS=2;
+        bench.funcBytes[1] = fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        NUMBER_LOOPS=2;
         bench.run_name = std::to_string(lm_rows); // Set name of run to identify it easier
         bench.run_benchmark(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
     }
@@ -68,6 +69,8 @@ int main(int argc, char *argv[]) {
     bench.details(); // We want output per func and run, so details is the choice
 
     cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
+
+    bench.write_csv_details();
 
 	free(lm);
 	free(wp);
