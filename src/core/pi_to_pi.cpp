@@ -2,6 +2,8 @@
 
 #include <math.h>
 
+int TWOPI = 2*M_PI;
+
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base Implementation, unit test, Benchmark added
@@ -10,7 +12,7 @@
  ****************************************************************************/
 
 double pi_to_pi(double ang) {
-    return pi_to_pi_while(ang);
+    return pi_to_pi_while_fast(ang);
 }
 
 double pi_to_pi_active(double ang) {
@@ -117,6 +119,16 @@ double pi_to_pi_while(double ang) {
     }
     else if (ang <= -M_PI) {
         while (ang <= -M_PI) ang += 2*M_PI;
+    }
+    return ang;
+}
+
+double pi_to_pi_while_fast(double ang) {
+    if (ang > M_PI) {
+        while (ang > M_PI) ang -= TWOPI; // precompute_two_pi
+    }
+    else if (ang <= -M_PI) {
+        while (ang <= -M_PI) ang += TWOPI;
     }
     return ang;
 }
