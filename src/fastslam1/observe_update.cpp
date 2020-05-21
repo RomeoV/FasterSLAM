@@ -132,7 +132,7 @@ double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, do
     Vector2d _zn[N_features]  __attribute__ ((aligned(32)));
     size_t _Nf_visible = *Nf_visible;
     Particle _particles[NPARTICLES];
-    double _weights[NPARTICLES];
+    double _weights[NPARTICLES] __attribute__((aligned(32)));
     double _xv[3*NPARTICLES]  __attribute__ ((aligned(32)));
     double _Pv[9*NPARTICLES]  __attribute__ ((aligned(32)));
     // copy(xv, 3*NPARTICLES, _xv);

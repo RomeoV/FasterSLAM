@@ -9,25 +9,25 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 void data_loader(Particle *p, Vector2d *z, size_t N_z, double *R) {
     // Initialize Input
-    double xv_initial[3] =  {0,0,0};
-    initParticle(p, 1230000, xv_initial); // the benchmark keeps adding features, so the maximum has to be set high
-    Vector3d pos = {1., 1., acos(4. / 5.)};
-    copy(pos, 3, p->xv);
-    p->Nfa = 3;
+    p->Nfa = 0;
 }
 
 int main() {
     
     Particle p;
-    Vector2d landmarks[2] = {
+    double xv_initial[3] =  {0,0,0};
+    initParticle(&p, 300000, xv_initial);
+    Vector3d pos = {1., 1., acos(4. / 5.)};
+    copy(pos, 3, p.xv);
+    Vector2d landmarks[2] __attribute__((aligned(32))) = {
         {5, 0}, {2, M_PI / 2 - acos(4. / 5.)}};  // local robot frame
 
-    Matrix2d R = {pow(0.1, 2), 0,
+    Matrix2d R __attribute__((aligned(32))) = {
+                pow(0.1, 2), 0,
                 0, pow(1.0 * M_PI / 180, 2)};  // this is from the yglee config
 
     // sanity check
     Particle p_base, p_new;
-    Vector3d pos = {1., 1., acos(4. / 5.)};
     initParticle(&p_base, 3, pos);
     initParticle(&p_new, 3, pos);
     add_feature_base(&p_base, landmarks, 2, R);
