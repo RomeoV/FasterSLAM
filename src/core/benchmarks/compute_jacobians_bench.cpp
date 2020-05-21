@@ -58,7 +58,7 @@ int main() {
     Matrix2d Pf[Nfa];
     
     fill_rand(*xf, 2*Nfa, -2.0,2.0);
-    fill_rand(*Pf, 6*Nfa, 0.0,0.2); //Ignore symmetry for computation for now. Pos. semi-definite
+    fill_rand(*Pf, 4*Nfa, 0.0,0.2); //Ignore symmetry for computation for now. Pos. semi-definite
     enforce_symmetry_Pf(Pf, Nfa);
 
     Particle* particle = particle_preloader(xv,xf,Pf, Nfa);

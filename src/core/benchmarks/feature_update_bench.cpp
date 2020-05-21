@@ -87,6 +87,8 @@ int main() {
 
     // Free memory
     delParticleMembers(&p);
+    delParticleMembers(&p_new);
+    delParticleMembers(&p_base);
 
     return 0;
 }
