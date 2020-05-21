@@ -36,7 +36,9 @@ double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
     if (d2 < minD*minD) {
         *iwp += 1; //switch to next
         if (*iwp >= N_wp) {
-                *iwp = -1;
+                //*iwp = -1;
+                *G = G_bak;
+                *iwp = iwp_bak;
                 return flops;
         }
 

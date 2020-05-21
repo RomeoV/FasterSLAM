@@ -1,4 +1,5 @@
 add_library(FasterSlamCore
+  alignment_utils.cpp
   KF_cholesky_update.cpp
   add_feature.cpp
   add_observation_noise.cpp
