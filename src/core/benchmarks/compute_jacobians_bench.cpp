@@ -135,7 +135,6 @@ int main() {
     int idf_3[20] __attribute__((aligned(32))) = {0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19};
     set_work(bench, particle, idf_3, 20, R, zp, Hv, Hf, Sf);
     bench.run_benchmark(particle, idf_3, 20, R, zp, Hv, Hf, Sf);
-    bench.run_benchmark(particle, idf_4, 1, R, zp, Hv, Hf, Sf);
 
 
     delParticleMembersAndFreePtr(particle);
