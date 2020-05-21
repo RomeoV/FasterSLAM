@@ -77,12 +77,12 @@ void set_work(Benchmark<decltype(&observe_update)>& bench,
     data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     bench.funcFlops[0] = observe_update_base_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-    bench.funcBytes[0] = 8* observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    bench.funcBytes[0] = 8 * observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     for (int i = 1; i < bench.numFuncs; i++) {
         bench.funcFlops[i] = observe_update_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
         data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-        bench.funcBytes[i] = 8* observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        bench.funcBytes[i] = 8 * observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
         data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     }
 }
@@ -222,14 +222,12 @@ int main() {
 
     bench.controls.NUM_RUNS = 3;
 
-    double work = 100;
-
-    bench.add_function(&observe_update_base, "observe_update_base", work);
-    bench.add_function(&observe_update_active, "observe_update_actve", work);
-    bench.add_function(&observe_update_fast, "observe_update_fast", work);
-    bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", work);
+    bench.add_function(&observe_update_base, "observe_update_base", 0.0);
+    bench.add_function(&observe_update_active, "observe_update_actve", 0.0);
+    bench.add_function(&observe_update_fast, "observe_update_fast", 0.0);
+    bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", 0.0);
 #ifndef KF_YGLEE
-    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", work);
+    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", 0.0);
 #endif
 
     set_work(bench, lm,Nf, xtrue, *R, ftag, 

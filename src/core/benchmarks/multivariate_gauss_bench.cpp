@@ -33,12 +33,16 @@ int main() {
     }
 
     Benchmark<decltype(&multivariate_gauss)> bench("multivariate_gauss benchmark");
-    double work = 17;
+
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&multivariate_gauss_base, "base", work);
+    bench.add_function(&multivariate_gauss_base, "base", 0.0);
+    bench.funcFlops[0] = multivariate_gauss_base_flops(x, P, result);
+    bench.funcBytes[0] = multivariate_gauss_base_memory(x, P, result);
     //bench.add_function(&multivariate_gauss_fast_rand, "fast pseudo RNG", work);
-    bench.add_function(&multivariate_gauss, "active", work);
+    bench.add_function(&multivariate_gauss, "active", 0.0);
+    bench.funcFlops[1] = multivariate_gauss_active_flops(x, P, result);
+    bench.funcBytes[1] = multivariate_gauss_active_memory(x, P, result);
 
     bench.run_benchmark(x, P, result);
 

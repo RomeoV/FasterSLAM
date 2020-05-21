@@ -39,14 +39,16 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&add_feature)> bench("add_feature Benchmark");
 
-    // plus function calls, 2x matrix mul
-    double work = 8.0; // best-case in flops
-
+    data_loader(&p, landmarks, 2, R);
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&add_feature_base, "add_feature_base", work);
-    bench.add_function(&add_feature, "add_feature", work);
+    bench.add_function(&add_feature_base, "add_feature_base", 0.0);
+    bench.funcFlops[0] = add_feature_base_flops(&p, landmarks, 2, R);
+    bench.funcBytes[0] = add_feature_base_memory(&p, landmarks, 2, R);
+    bench.add_function(&add_feature, "add_feature", 0.0);
+    bench.funcFlops[1] = add_feature_active_flops(&p, landmarks, 2, R);
+    bench.funcBytes[1] = add_feature_active_memory(&p, landmarks, 2, R;
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, landmarks, 2, R);

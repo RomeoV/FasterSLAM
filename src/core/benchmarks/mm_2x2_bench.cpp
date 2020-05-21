@@ -49,15 +49,24 @@ int main() {
     }
     
     Benchmark<decltype(&mm_2x2)> bench("mm_2x2 benchmark");
-    double work = 12; 
+    data_loader(A, B, C);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&mm_2x2, "base", work);
+    bench.add_function(&mm_2x2, "base", 0.0);
+    bench.funcFlops[0] = mm_2x2_flops(A, B, C);
+    bench.funcBytes[0] = mm_2x2_memory(A, B, C);
+
 #ifdef __FMA__
-    bench.add_function(&mm_2x2_avx_v1, "avx_v1", work);
-    bench.add_function(&mm_2x2_avx_v2, "avx_v2", work);
-    bench.add_function(&mm_2x2_avx_v3, "avx_v2", work);
+    bench.add_function(&mm_2x2_avx_v1, "avx_v1", 0.0);
+    bench.funcFlops[1] = mm_2x2_flops(A, B, C);
+    bench.funcBytes[1] = mm_2x2_memory(A, B, C);
+    bench.add_function(&mm_2x2_avx_v2, "avx_v2", 0.0);
+    bench.funcFlops[2] = mm_2x2_flops(A, B, C);
+    bench.funcBytes[2] = mm_2x2_memory(A, B, C);
+    bench.add_function(&mm_2x2_avx_v3, "avx_v2", 0.0);
+    bench.funcFlops[3] = mm_2x2_flops(A, B, C);
+    bench.funcBytes[3] = mm_2x2_memory(A, B, C);
 #endif
 
     bench.run_benchmark(A, B, C);

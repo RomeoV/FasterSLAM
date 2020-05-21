@@ -41,12 +41,17 @@ int main() {
     }
 
     Benchmark<decltype(&add_observation_noise)> bench("add_observation_noise benchmark");
-    double work = 6*zlen +2; // TODO Count work
+
+    data_loader(z, zlen, R, addnoise);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&add_observation_noise_base, "base", work);
-    bench.add_function(&add_observation_noise, "active", work);
+    bench.add_function(&add_observation_noise_base, "base", 0.0);
+    bench.funcFlops[0] = add_observation_noise_base_flops(z, zlen, R, addnoise);
+    bench.funcBytes[0] = add_observation_noise_base_memory(z, zlen, R, addnoise);
+    bench.add_function(&add_observation_noise, "active", 0.0);
+    bench.funcFlops[1] = add_observation_noise_active_flops(z, zlen, R, addnoise);
+    bench.funcBytes[1] = add_observation_noise_active_memory(z, zlen, R, addnoise);
 
     bench.run_benchmark(z, zlen, R, addnoise);
 

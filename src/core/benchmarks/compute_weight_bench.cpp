@@ -42,12 +42,14 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&compute_weight)> bench("compute_weight Benchmark");
 
-    double work = 500.0; // best-case in flops
-
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&compute_weight_base, "compute_weight_base", work);
-    bench.add_function(&compute_weight, "compute_weight", work);
+    bench.add_function(&compute_weight_base, "compute_weight_base", 0.0);
+    bench.funcFlops[0] = compute_weight_base_flops(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = compute_weight_base_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    bench.add_function(&compute_weight, "compute_weight", 0.0);
+    bench.funcFlops[1] = compute_weight_active_flops(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[1] = compute_weight_active_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
