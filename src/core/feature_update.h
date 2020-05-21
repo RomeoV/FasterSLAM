@@ -45,6 +45,16 @@ void feature_update_active(Particle* particle,
                     Matrix2d Hf[],
                     Matrix2d Sf[]);
 
+void feature_update_all_loops(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]);
+
 // Work / Memory instrumenting
 double feature_update_base_flops(Particle* particle,
                     Vector2d z[],

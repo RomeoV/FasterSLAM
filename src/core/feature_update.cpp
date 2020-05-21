@@ -28,7 +28,7 @@ void feature_update(Particle* particle,
                     Matrix23d Hv[],
                     Matrix2d Hf[],
                     Matrix2d Sf[]) {
-    feature_update_base(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    feature_update_active(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 }
 
 // z is the list of measurements conditioned on the particle.
@@ -82,6 +82,49 @@ void feature_update_base(Particle* particle,
 // z is the list of measurements conditioned on the particle.
 // void feature_update(Particle &particle, vector<Vector2d> z, vector<int>idf,
 // Matrix2d R)
+void feature_update_all_loops(Particle* particle,
+                    Vector2d z[],
+                    int idf[],
+                    size_t N_idf,
+                    Matrix2d R,
+                    Vector2d zp[],
+                    Matrix23d Hv[],
+                    Matrix2d Hf[],
+                    Matrix2d Sf[]) {
+  // Having selected a new pose from the proposal distribution, this pose is
+  // assumed perfect and each feature update maybe computed independently and
+  // without pose uncertainty
+
+  Vector2d xf __attribute__((aligned(32)));
+  Matrix2d Pf __attribute__((aligned(32)));
+  Vector2d feat_diff;  // difference btw feature prediciton and
+                            // measurement (used to update mean)
+  double feat_diff0, feat_diff1;                      
+
+  for (size_t i = 0; i < N_idf; i++) {
+    // inline copy and sub
+    // increases speedup from 6.2079 to 6.98
+    xf[0] = (particle->xf + (2 * idf[i]))[0];
+    xf[1] = (particle->xf + (2 * idf[i]))[1];
+    Pf[0] = (particle->Pf + (4 * idf[i]))[0];
+    Pf[1] = (particle->Pf + (4 * idf[i]))[1];
+    Pf[2] = (particle->Pf + (4 * idf[i]))[2];
+    Pf[3] = (particle->Pf + (4 * idf[i]))[3];
+
+    feat_diff0 = z[i][0] - zp[i][0];
+    feat_diff1 = z[i][1] - zp[i][1];
+    feat_diff[0] = feat_diff0;
+    feat_diff[1] = pi_to_pi_active(feat_diff1);
+
+    KF_cholesky_update_active(xf, Pf, 
+                       feat_diff, R, 
+                       Hf[i]);
+
+    set_xfi(particle, xf, idf[i]);
+    set_Pfi(particle, Pf, idf[i]);
+  }
+}
+
 void feature_update_active(Particle* particle,
                     Vector2d z[],
                     int idf[],
@@ -97,27 +140,33 @@ void feature_update_active(Particle* particle,
 
   Vector2d xf[N_idf] __attribute__((aligned(32)));
   Matrix2d Pf[N_idf] __attribute__((aligned(32)));
-
-  for (size_t i = 0; i < N_idf; i++) {
-    copy(particle->xf + (2 * idf[i]), 2, xf[i]);  // means
-    copy(particle->Pf + (4 * idf[i]), 4, Pf[i]);  // covariances
-  }
-
-  Vector2d feat_diff[N_idf] __attribute__((aligned(32)));  // difference btw feature prediciton and
+  Vector2d feat_diff __attribute__((aligned(32)));  // difference btw feature prediciton and
                             // measurement (used to update mean)
-  for (int i = 0; i < N_idf; i++) {
-    sub(z[i], zp[i], 2, feat_diff[i]);
-    feat_diff[i][1] = pi_to_pi_active(feat_diff[i][1]);
-  }
-
-
-  for (int i = 0; i < N_idf; i++) {
-    KF_cholesky_update_active(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i]);
-  }
+  double feat_diff0, feat_diff1;                      
 
   for (size_t i = 0; i < N_idf; i++) {
+    // inline copy and sub
+    // increases speedup from 6.2079 to 6.98
+    xf[i][0] = (particle->xf + (2 * idf[i]))[0];
+    xf[i][1] = (particle->xf + (2 * idf[i]))[1];
+    Pf[i][0] = (particle->Pf + (4 * idf[i]))[0];
+    Pf[i][1] = (particle->Pf + (4 * idf[i]))[1];
+    Pf[i][2] = (particle->Pf + (4 * idf[i]))[2];
+    Pf[i][3] = (particle->Pf + (4 * idf[i]))[3];
+  }
+
+  for (int i = 0; i < N_idf; i++) { 
+    // merging the lower loops increases speedup from 6.98 to 7.9766
+    // somehow it is faster to not merge all loops 
+    feat_diff0 = z[i][0] - zp[i][0];
+    feat_diff1 = z[i][1] - zp[i][1];
+    feat_diff[0] = feat_diff0;
+    feat_diff[1] = pi_to_pi_active(feat_diff1);
+
+    KF_cholesky_update_active(xf[i], Pf[i], 
+                       feat_diff, R, 
+                       Hf[i]);
+
     set_xfi(particle, xf[i], idf[i]);
     set_Pfi(particle, Pf[i], idf[i]);
   }
