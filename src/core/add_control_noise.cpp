@@ -31,7 +31,11 @@ void add_control_noise_active(double V, double G, double* Q, int addnoise, doubl
     llt_2x2(Q, S); //! P = S * S^T
 
     double X[2]; //! 2-vector
-    fill_rand(X, 2, -1.0, 1.0);
+    //fill_rand(X, 2, -1.0, 1.0);
+    // inline fill rand
+    X[0] = -1.0 + 2 * ((double)rand())/((double)RAND_MAX);
+    X[1] = -1.0 + 2 * ((double)rand())/((double)RAND_MAX);
+
     /* end inlining multivariate_gauss_active */
 
     //! result = S*X + x
