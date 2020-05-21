@@ -3,6 +3,7 @@
 
 #define pi M_PI
 
+double TWOPI = 2*pi;
 
 // Workaround to keep the old main fastslam1_sim interface
 double* xv;

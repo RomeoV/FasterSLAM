@@ -4,6 +4,8 @@
 // Global Variables
 //******************
 
+extern double TWOPI;
+
 extern double* xv; //Workaround
 extern double* Pv; //Workaround
 
