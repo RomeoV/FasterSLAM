@@ -15,18 +15,26 @@ double tscheb_dsine(double f, bool angle_is_normalized);
  * Assumes angles are normalized! If not, you need to normalize them first (using pi_to_pi.h)
  */
 void tscheb_dsines(double* alphas, size_t N, double* results);
+double tscheb_dsines_flops(double* alphas, size_t N, double* results);
+double tscheb_dsines_memory(double* alphas, size_t N, double* results); 
 
 /** Unrolled version of tscheb_dsines(double*, size_t, double*)
  * Assumes angles are normalized! If not, you need to normalize them first (using pi_to_pi.h)
  * Only a little bit faster than the non-unrolled version
  */
 void tscheb_dsines_unrolled(double* alphas, size_t N, double* results);
+double tscheb_dsines_unrolled_flops(double* alphas, size_t N, double* results);
+double tscheb_dsines_unrolled_memory(double* alphas, size_t N, double* results); 
 
 void tscheb_dsines_avx(double* alphas, size_t N, double* results);
 
 double tscheb_sin(double alpha);
+double tscheb_sin_flops(double alpha);
+double tscheb_sin_memory(double alpha); 
 
 double tscheb_cos(double alpha);
+double tscheb_cos_flops(double alpha);
+double tscheb_cos_memory(double alpha);
 
 __m256d tscheb_sin_avx(__m256d alpha);
 __m256d tscheb_cos_avx(__m256d alpha);
