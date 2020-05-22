@@ -20,6 +20,7 @@ void KF_cholesky_update_fused_ops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatr
 #ifndef KF_YGLEE
 void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H);
 void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H);
+void KF_cholesky_update_reduced_flops_full_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H);
 
 void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
                                       __m256d *x1x3,

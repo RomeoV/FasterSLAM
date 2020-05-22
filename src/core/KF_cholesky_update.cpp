@@ -17,9 +17,10 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
         KF_cholesky_update_fused_ops(x, P, v, R, H);
     #endif
 #else
+    //KF_cholesky_update_reduced_flops(x, P, v, R, H);
     #ifdef __AVX2__
-        KF_cholesky_update_reduced_flops_avx(x, P, v, R, H);
-    #else
+        KF_cholesky_update_reduced_flops_full_avx(x, P, v, R, H);
+    #else // TODO: this gives higher speedup so it should always be used even with AVX available
         KF_cholesky_update_reduced_flops(x, P, v, R, H);
     #endif
 #endif
@@ -27,6 +28,7 @@ void KF_cholesky_update(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatri
 
 void KF_cholesky_update_active(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) {
     KF_cholesky_update(x, P, v, R, H);
+    //KF_cholesky_update_reduced_flops(x, P, v, R, H);
 }
 
 /*****************************************************************************
@@ -167,7 +169,12 @@ void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatr
     double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
 
     mmT_2x2(P, H, PHt);
-    copy(R, 4, S);        //! S = R;
+    // copy(R, 4, S);        //! S = R;
+    // inlining copy, seems not to give much benefit at this place
+    S[0] = R[0];
+    S[1] = R[1];
+    S[2] = R[2];
+    S[3] = R[3];
     mmadd_2x2(H, PHt, S); //! S += H*PHt ( S = H*P*H^T + R )
 
     // optimize or skip
@@ -181,7 +188,11 @@ void KF_cholesky_update_reduced_flops(Vector2d x, Matrix2d P, cVector2d v, cMatr
     mvadd_2x2(W, v, x);   //! x = x + W*v
 
     mmT_2x2(W, PHt, W1W1t);
-    sub(P, W1W1t, 4, P);
+    //sub(P, W1W1t, 4, P);
+    P[0] = P[0] - W1W1t[0];
+    P[1] = P[1] - W1W1t[1];
+    P[2] = P[2] - W1W1t[2];
+    P[3] = P[3] - W1W1t[3];
 }
 #endif
 
@@ -207,6 +218,41 @@ void KF_cholesky_update_reduced_flops_avx(Vector2d x, Matrix2d P, cVector2d v, c
     
     __m256d sinv = _mm256_load_pd( Sinv );
     
+    __m256d w = _mm_2x2_avx_v1(pht, sinv); //! W = PHt*Sinv
+
+    _mm_store_pd( x, _mvadd_2x2_avx_v1(w, _mm_load_pd(v), _mm_load_pd(x) ) ); //! x = x + W*v
+
+    __m256d w1w1t = _mmT_2x2_avx_v3(w, pht);
+    _mm256_store_pd(P, _mm256_sub_pd( p, w1w1t ));
+}
+    #endif
+#endif
+
+#ifndef KF_YGLEE
+    #ifdef __AVX2__
+void KF_cholesky_update_reduced_flops_full_avx(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H)
+{
+    __m256d p = _mm256_load_pd( P );
+    __m256d h = _mm256_load_pd( H );
+
+    __m256d pht = _mmT_2x2_avx_v3(p, h);                        //! PHt = P*Ht
+    __m256d s = _mmadd_2x2_avx_v2(h, pht, _mm256_load_pd( R )); //! S += H*PHt ( S = H*P*H^T + R )
+     
+    double     S[4] __attribute__ ((aligned(32)));
+    
+    // this is inefficient.. there should be a way to do this completely vectorised, but it is complicated
+    _mm256_store_pd(S, s);
+    // inlining inv_2x2(S, Sinv); 
+    double det = 1.0 / ( S[0]*S[3] - S[1]*S[2] );
+
+    //std::cout << "s 0 " << S[0] << "0 " << S[1] << "0 " << S[2] << "0 " << S[3] << std::endl;
+    //std::cout << "sinv 0 " << Sinv[0] << "0 " << Sinv[1] << "0 " << Sinv[2] << "0 " << Sinv[3] << std::endl;
+    //_mm256_store_pd(Sinv, sinv);
+
+    __m256d sinv = _mm256_set_pd(det * S[0], -det * S[2], -det * S[1], det * S[3]);
+
+    //std::cout << "sinv2 0 " << Sinv[0] << "0 " << Sinv[1] << "0 " << Sinv[2] << "0 " << Sinv[3] << std::endl;
+
     __m256d w = _mm_2x2_avx_v1(pht, sinv); //! W = PHt*Sinv
 
     _mm_store_pd( x, _mvadd_2x2_avx_v1(w, _mm_load_pd(v), _mm_load_pd(x) ) ); //! x = x + W*v
