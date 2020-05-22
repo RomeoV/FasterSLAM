@@ -62,5 +62,8 @@ int main() {
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, V,G, Q, WB, dt);
 
+    delParticleMembers(&p);
+    delParticleMembers(&p_exact);
+    
     return 0;
 }
