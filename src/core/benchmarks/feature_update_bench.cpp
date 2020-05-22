@@ -83,16 +83,16 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");
     
-    data_loader(&p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    data_loader(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&feature_update_base, "feature_update_base", 0.0);
-    bench.funcFlops[0] = feature_update_base_flops(&p, z, idf, N_z, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[0] = feature_update_base_memory(&p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcFlops[0] = feature_update_base_flops(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = feature_update_base_memory(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
     bench.add_function(&feature_update, "feature_update", 0.0);
-    bench.funcFlops[1] = feature_update_active_flops(&p, z, idf, N_z, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[1] = feature_update_active_memory(&p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcFlops[1] = feature_update_active_flops(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[1] = feature_update_active_memory(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
