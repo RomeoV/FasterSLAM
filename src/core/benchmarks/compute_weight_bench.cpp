@@ -46,10 +46,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&compute_weight_base, "compute_weight_base", 0.0);
     bench.funcFlops[0] = compute_weight_base_flops(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[0] = compute_weight_base_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = 8*compute_weight_base_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
     bench.add_function(&compute_weight, "compute_weight", 0.0);
     bench.funcFlops[1] = compute_weight_active_flops(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[1] = compute_weight_active_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[1] = 8*compute_weight_active_memory(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(particle, z, N_z, idf, R, zp, Hv, Hf, Sf);

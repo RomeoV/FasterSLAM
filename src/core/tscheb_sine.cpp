@@ -1,5 +1,6 @@
 #include "tscheb_sine.h"
 #include "pi_to_pi.h"
+#include "typedefs.h"
 #include <immintrin.h>
 
 #include <math.h>
@@ -12,6 +13,13 @@ const __m256d pi_vec = _mm256_set1_pd((double)M_PI);
 const __m256d minus_pi_vec = _mm256_set1_pd((double)-M_PI);
 const __m256d two_pi_vec = _mm256_set1_pd((double)two_pi);
 
+double tscheb_dsines_flops(double* alphas, size_t N, double* results) {
+    return N*( 9*tp.add + 9*tp.mul );
+}
+
+double tscheb_dsines_memory(double* alphas, size_t N, double* results) {
+    return N;
+}
 
 // assumes angle is normalized!
 void tscheb_dsines(double* alphas, size_t N, double* results) {
@@ -39,6 +47,14 @@ void tscheb_dsines(double* alphas, size_t N, double* results) {
         results[i] =  (alphas[i] - pi_major - pi_minor) *
             (alphas[i] + pi_major + pi_minor) * p1 * alphas[i];
     }
+}
+
+double tscheb_dsines_unrolled_flops(double* alphas, size_t N, double* results) {
+    return N*( 9*tp.add + 9*tp.mul );
+}
+
+double tscheb_dsines_unrolled_memory(double* alphas, size_t N, double* results) {
+    return N;
 }
 
 // assumes angle is normalized!
@@ -106,6 +122,21 @@ void tscheb_dsines_unrolled(double* alphas, size_t N, double* results) {
     tscheb_dsines(alphas+i, N-i, results+i); // do the rest
 }
 
+double tscheb_cos_flops(double alpha) {
+    return tscheb_sin_flops(alpha) + tp.add;
+}
+
+double tscheb_cos_memory(double alpha) {
+    return 1;
+}
+
+double tscheb_sin_flops(double alpha) {
+    return ( 2*tp.doublecomp + (9 + (alpha > M_PI) + (alpha < -M_PI))*tp.add + 9*tp.mul );
+}
+
+double tscheb_sin_memory(double alpha) {
+    return 1;
+}
 
 double tscheb_cos(double alpha) {
     return tscheb_sin(alpha + M_PI_2);
@@ -119,7 +150,7 @@ double tscheb_sin(double alpha) {
     }
 
     // Make sure alpha is in (-PI, PI]
-    float coeffs[] = {
+    double coeffs[] = {
         -0.10132118,          // x
          0.0066208798,        // x^3
         -0.00017350505,       // x^5
@@ -140,7 +171,6 @@ double tscheb_sin(double alpha) {
     (alpha + pi_major + pi_minor) * p1 * alpha;
 }
 
-
 __m256d tscheb_cos_avx(__m256d alphas) {
     alphas = _mm256_add_pd(alphas, pi_2_vec);
     return tscheb_sin_avx(alphas);
@@ -157,6 +187,7 @@ __m256d  simple_pi_to_pi_avx(__m256d alphas) {
     alphas = _mm256_blendv_pd(alphas, alpha_plus, lt_minuspi_mask );
     return alphas;    
 }
+
 __m256d tscheb_sin_avx(__m256d alphas) {
     alphas = simple_pi_to_pi_avx(alphas);
 
@@ -221,7 +252,7 @@ __m256d tscheb_sin_avx(__m256d alphas) {
 double tscheb_dsine(double alpha, bool angle_is_normalized) {
     if (!angle_is_normalized) { alpha = pi_to_pi(alpha); }
     // Make sure alpha is in (-PI, PI]
-        float coeffs[] = {
+        double coeffs[] = {
         -0.10132118,          // x
          0.0066208798,        // x^3
         -0.00017350505,       // x^5

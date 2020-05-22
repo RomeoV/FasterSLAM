@@ -53,12 +53,12 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&predict_base, "base", 0.0);
     bench.funcFlops[0] = predict_base_flops(&p, V, G, Q, WB, dt);
-    bench.funcBytes[0] = predict_base_memory(&p, V, G, Q, WB, dt);
+    bench.funcBytes[0] = 8*predict_base_memory(&p, V, G, Q, WB, dt);
 
     // predict simply calls predict_base at the moment
     bench.add_function(&predict, "active", 0.0);
     bench.funcFlops[1] = predict_base_flops(&p, V, G, Q, WB, dt);
-    bench.funcBytes[1] = predict_base_memory(&p, V, G, Q, WB, dt);
+    bench.funcBytes[1] = 8*predict_base_memory(&p, V, G, Q, WB, dt);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, V, G, Q, WB, dt);

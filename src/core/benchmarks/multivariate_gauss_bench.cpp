@@ -38,11 +38,11 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&multivariate_gauss_base, "base", 0.0);
     bench.funcFlops[0] = multivariate_gauss_base_flops(x, P, result);
-    bench.funcBytes[0] = multivariate_gauss_base_memory(x, P, result);
+    bench.funcBytes[0] = 8*multivariate_gauss_base_memory(x, P, result);
     //bench.add_function(&multivariate_gauss_fast_rand, "fast pseudo RNG", work);
     bench.add_function(&multivariate_gauss, "active", 0.0);
     bench.funcFlops[1] = multivariate_gauss_active_flops(x, P, result);
-    bench.funcBytes[1] = multivariate_gauss_active_memory(x, P, result);
+    bench.funcBytes[1] = 8*multivariate_gauss_active_memory(x, P, result);
 
     bench.run_benchmark(x, P, result);
 
