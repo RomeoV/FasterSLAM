@@ -28,7 +28,7 @@ void feature_update(Particle* particle,
                     Matrix23d Hv[],
                     Matrix2d Hf[],
                     Matrix2d Sf[]) {
-    feature_update_base(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    feature_update_active(particle, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 }
 
 // z is the list of measurements conditioned on the particle.
@@ -95,32 +95,41 @@ void feature_update_active(Particle* particle,
   // assumed perfect and each feature update maybe computed independently and
   // without pose uncertainty
 
-  Vector2d xf[N_idf] __attribute__((aligned(32)));
-  Matrix2d Pf[N_idf] __attribute__((aligned(32)));
 
-  for (size_t i = 0; i < N_idf; i++) {
-    copy(particle->xf + (2 * idf[i]), 2, xf[i]);  // means
-    copy(particle->Pf + (4 * idf[i]), 4, Pf[i]);  // covariances
-  }
+  
+  compute_jacobians_fast(particle, idf, N_idf, R, zp, Hv, Hf, Sf);
 
-  Vector2d feat_diff[N_idf] __attribute__((aligned(32)));  // difference btw feature prediciton and
+  Vector2d feat_diff;  // difference btw feature prediciton and
                             // measurement (used to update mean)
-  for (int i = 0; i < N_idf; i++) {
-    sub(z[i], zp[i], 2, feat_diff[i]);
-    feat_diff[i][1] = pi_to_pi_active(feat_diff[i][1]);
-  }
-
-
-  for (int i = 0; i < N_idf; i++) {
-    KF_cholesky_update_active(xf[i], Pf[i], 
-                       feat_diff[i], R, 
-                       Hf[i]);
-  }
+  double xf0, xf1, Pf0, Pf1, Pf2, Pf3, feat_diff0, feat_diff1;
 
   for (size_t i = 0; i < N_idf; i++) {
-    set_xfi(particle, xf[i], idf[i]);
-    set_Pfi(particle, Pf[i], idf[i]);
+    Vector2d xf;
+    Matrix2d Pf;
+
+    xf[0] = (particle->xf + (2 * idf[i]))[0];
+    xf[1] = (particle->xf + (2 * idf[i]))[1];
+    Pf[0] = (particle->Pf + (4 * idf[i]))[0];
+    Pf[1] = (particle->Pf + (4 * idf[i]))[1];
+    Pf[2] = (particle->Pf + (4 * idf[i]))[2];
+    Pf[3] = (particle->Pf + (4 * idf[i]))[3];
+  
+    feat_diff[0] = z[i][0] - zp[i][0];
+    feat_diff1 = z[i][1] - zp[i][1];
+    feat_diff[1] = pi_to_pi_active(feat_diff1);
+
+    KF_cholesky_update_reduced_flops(xf, Pf, 
+                       feat_diff, R, 
+                       Hf[i]);
+
+    particle->xf[2*idf[i]+0] = xf[0];
+    particle->xf[2*idf[i]+1] = xf[1];
+    particle->Pf[4*idf[i]] = Pf[0];
+    particle->Pf[4*idf[i] + 1] = Pf[1];
+    particle->Pf[4*idf[i] + 2] = Pf[2];
+    particle->Pf[4*idf[i] + 3] = Pf[3];
   }
+
 }
 
 // Work / Memory instrumenting

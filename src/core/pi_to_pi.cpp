@@ -1,6 +1,7 @@
 #include "pi_to_pi.h"
 
 #include <math.h>
+int TWOPI = 2*M_PI;
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -14,7 +15,13 @@ double pi_to_pi(double ang) {
 }
 
 double pi_to_pi_active(double ang) {
-    return pi_to_pi_while(ang);
+    if (ang > M_PI) {
+        while (ang > M_PI) ang -= TWOPI; // precompute_two_pi
+    }
+    else if (ang <= -M_PI) {
+        while (ang <= -M_PI) ang += TWOPI;
+    }
+    return ang;
 }
 
 /*****************************************************************************
