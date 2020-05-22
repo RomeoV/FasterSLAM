@@ -1,4 +1,4 @@
-import warnings; warnings.simplefilter('error', UserWarning)
+# import warnings; warnings.simplefilter('error', UserWarning)
 import argparse
 from pathlib import Path
 import pandas as pd
@@ -18,8 +18,8 @@ matplotlib.rcParams['font.weight'] = 'semibold'
 sns.set_color_codes()
 
 ## SETUP CONSTANTS
-peak_perf_seq = 2.0
-peak_perf_avx = 8.0
+peak_perf_seq = 4.0
+peak_perf_avx = 16.0
 peak_memory = 6.0
 
 ## PARSE INPUTS
@@ -40,7 +40,7 @@ assert(output_path.is_dir())
 
 ## SETUP DATAFRAME
 df = pd.read_csv(infile_path, sep=';',
-                           names=['benchmark', 'version', 'work', 'memory', 'time', 'performance', 'speedup', '_'])
+                           names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'])
 df.fillna(1, axis='columns', inplace=True)
 df['op_intensity'] = df['work'] / df['memory']
 benchmarks = df['benchmark'].unique()
@@ -198,5 +198,5 @@ def plot_roofline(i, ax):
     bench_base.plot.scatter('op_intensity', 'performance', marker='v', c='c', s=80,
                           loglog=True, ax=ax, label='base')
 
-#plt.tight_layout()
-plt.show()
+plt.tight_layout()
+#plt.show()
