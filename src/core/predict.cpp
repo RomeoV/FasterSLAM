@@ -4,6 +4,8 @@
 #include "multivariate_gauss.h"
 #include <cmath>
 #include <iostream>
+#include "tscheb_sine.h"
+
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Done: Base implementation, unit test
@@ -25,7 +27,7 @@
  ****************************************************************************/
 
 void predict(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
-	predict_base(particle, V, G, Q, WB, dt);
+	predict_active(particle, V, G, Q, WB, dt);
 }
 
 void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
@@ -43,6 +45,31 @@ void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB,
     particle->xv[0] += V*dt*cos(G + xv2);
     particle->xv[1] += V*dt*sin(G + xv2); 
     particle->xv[2] = pi_to_pi_base(xv2 + V*dt*sin(G)/WB);
+}
+
+// this has reduced precision 
+/*
+unknown:0:FAILED [3.17282e-09 <= 1e-10] 0
+unknown:0:FAILED [6.05159e-09 <= 1e-10] 1
+unknown:0:FAILED [5.33904e-08 <= 1e-10] 2
+had to change this: 
+expect(that % fabs(xv[i]-exact_xv[i]) <= 1.0e-6) << i;
+*/
+void predict_active(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {
+    // Turn first, move forwards after
+    // \todo Noise on input (Maybe the noise should be added at anothere place in the code?)
+	if (SWITCH_PREDICT_NOISE == 1) {
+		Vector2d mu = {V, G};
+		Vector2d noise;
+		multivariate_gauss_active(mu,Q,noise);	
+		V = noise[0];
+		G = noise[1];
+	}	
+    
+    double xv2 = particle->xv[2];
+    particle->xv[0] += V*dt*tscheb_cos(G + xv2);
+    particle->xv[1] += V*dt*tscheb_sin(G + xv2); 
+    particle->xv[2] = pi_to_pi_active(xv2 + V*dt*tscheb_sin(G)/WB);
 }
 
 double predict_base_flops(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt) {

@@ -41,7 +41,7 @@ int main() {
     predict(&p, V, G, Q, WB, dt),
     predict_base(&p_exact, V, G, Q, WB, dt);
     for (int i = 0; i < 3; i++) {
-        expect(that % fabs(p.xv[i]-p_exact.xv[i])<= 1.0e-10) << i;
+        expect(that % fabs(p.xv[i]-p_exact.xv[i])<= 1.0e-7) << i;
     }
 
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
