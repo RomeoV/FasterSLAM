@@ -41,7 +41,7 @@ int main() {
             __m256d v_intr[2];
             for (size_t i = 0; i < 2; i++) { v_intr[i] = _mm256_load_pd(v[2*i]); }
 
-            Matrix2d avx_results;
+            Matrix2d avx_results __attribute__((aligned(32)));
             __m256d avx_results_intr = mm_vT_M_v_avx2(M_intr[0], M_intr[1],
                                                       M_intr[2], M_intr[3],
                                                       v_intr[0], v_intr[1]);

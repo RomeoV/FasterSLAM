@@ -1,5 +1,6 @@
 #include "compute_jacobians.h"  // import file to test
 #include "linalg.h"
+#include "alignment_utils.h"
 
 #include <vector>  // used for test input
 #include "ut.hpp"  // import functionality and namespaces from single header file
@@ -17,10 +18,22 @@ auto compute_jacobians_fast_4particles_factory = [](auto compute_jacobians_fast_
       Vector2d zp[], Matrix23d Hv[],
       Matrix2d Hf[], Matrix2d Sf[]) {
       Particle* particle4[4] = {particle, particle, particle, particle};
-      Vector2d*  zp4[4] = {(Vector2d* )aligned_alloc(32, N_z*sizeof(Vector2d )), (Vector2d* )aligned_alloc(32, N_z*sizeof(Vector2d )), (Vector2d* )aligned_alloc(32, N_z*sizeof(Vector2d )), (Vector2d* )aligned_alloc(32, N_z*sizeof(Vector2d ))}; // measurement (range, bearing)
-      Matrix23d* Hv4[4] = {(Matrix23d*)aligned_alloc(32, N_z*sizeof(Matrix23d)), (Matrix23d*)aligned_alloc(32, N_z*sizeof(Matrix23d)), (Matrix23d*)aligned_alloc(32, N_z*sizeof(Matrix23d)), (Matrix23d*)aligned_alloc(32, N_z*sizeof(Matrix23d))}; // jacobians of function h (deriv of h wrt pose)
-      Matrix2d*  Hf4[4] = {(Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d ))}; // jacobians of function h (deriv of h wrt mean)
-      Matrix2d*  Sf4[4] = {(Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d )), (Matrix2d* )aligned_alloc(32, N_z*sizeof(Matrix2d ))}; // Measurement covariance of feature observation given the vehicle.
+      Vector2d*  zp4[4] = {(Vector2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Vector2d ), 32)),
+                           (Vector2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Vector2d ), 32)),
+                           (Vector2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Vector2d ), 32)),
+                           (Vector2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Vector2d ), 32))}; // measurement (range, bearing)
+      Matrix23d* Hv4[4] = {(Matrix23d*) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix23d), 32)), 
+                           (Matrix23d*) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix23d), 32)), 
+                           (Matrix23d*) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix23d), 32)), 
+                           (Matrix23d*) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix23d), 32))}; // jacobians of function h (deriv of h wrt pose)
+      Matrix2d*  Hf4[4] = {(Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32))}; // jacobians of function h (deriv of h wrt mean)
+      Matrix2d*  Sf4[4] = {(Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32)),
+                           (Matrix2d* ) aligned_alloc(32, aligned_alloc_size(N_z*sizeof(Matrix2d ), 32))}; // Measurement covariance of feature observation given the vehicle.
 
       compute_jacobians_fast_4particles_func(particle4, idf, N_z, R, zp4, Hv4, Hf4, Sf4);
 

@@ -2,74 +2,84 @@
 #include <iostream>
 #include "feature_update.h"
 #include "particle.h"
+#include "linalg.h"
 
 #include "ut.hpp"
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 void data_loader(Particle *p, Vector2d *z, int *idf, size_t N_idf, double *R, Vector2d *zp, Matrix23d *Hv, Matrix2d *Hf, Matrix2d *Sf) {
-    // Initialize Input
-    Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
-    initParticle(p, 300000, xv);
-    Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
-    for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
+    
+    Vector3d xv = {1.293967823315060, -0.054066219251330, -0.012642858479510};
+    
+	copy(xv, 3, p->xv);
+    
+    Vector2d xf[2] = { {3.227460886446243, -25.613382543676146},
+                       {25.570128848983597, 3.630650683089399} }; // Transposed from MATLAB
+
+    Matrix2d Pf[2] = { {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843},
+                       {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
+
+    for(int i = 0; i < 2; i++){ //! 2d means of EKF in cartesian world coordinates
         set_xfi(p, xf[i], i);
-    }
-    Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
-        for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
         set_Pfi(p, Pf[i], i);
     }
 }
 
 int main() {
-    
-    Particle p;
-    double xv_initial[3] = {0,0,0};
-    initParticle(&p, 0, xv_initial);
-    int idf[3] = {0,0,0};
-    size_t N_idf = 3;
 
-    Vector2d z[2] = {{25.77444969441645, -1.4733774573801159}, {25.276107769232738, 0.13836675004531551}};
-    const int zlen = 2;
-    double R[4] = {0.010000000000000002, 0, 0, 0.00030461741909055634};
-    const int addnoise = 1;
+    Vector3d xv = {1.293967823315060, -0.054066219251330, -0.012642858479510};
 
-    Vector2d zp[3] __attribute__((aligned(32)));
-    Matrix23d Hv[3] __attribute__((aligned(32)));
-    Matrix2d Hf[3] __attribute__((aligned(32)));
-    Matrix2d Sf[3] __attribute__((aligned(32)));
-    compute_jacobians_base(&p, idf, 3, R, zp, Hv, Hf, Sf);
+    Particle* particle = newParticle(3, xv);
 
-    // sanity check
-    Particle p_base, p_new;
-    double xv[3] = {1., 1., acos(4. / 5.)};
-    initParticle(&p_base, 3, xv);
-    (&p_base)->Nfa = 3;
-    initParticle(&p_new, 3, xv);
-    (&p_new)->Nfa = 3;
-    // need to set before updating
-    Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
-    for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
-        set_xfi(&p_base, xf[i], i);
-        set_xfi(&p_new, xf[i], i);
+    Vector2d xf[2] = { {3.227460886446243, -25.613382543676146},
+                       {25.570128848983597, 3.630650683089399} }; // Transposed from MATLAB
+
+    Matrix2d Pf[2] = { {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843},
+                       {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
+
+    for(int i = 0; i < 2; i++){ //! 2d means of EKF in cartesian world coordinates
+        set_xfi(particle, xf[i], i);
+        set_Pfi(particle, Pf[i], i);
     }
-    Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
-    for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
-        set_Pfi(&p_base, Pf[i], i);
-        set_Pfi(&p_new, Pf[i], i);
-    }
+
+    Vector2d z[2] = { {25.761106705273054, -1.462835729968151},
+                      {24.622003552182658, 0.206077227346340} }; // Transposed from MATLAB
+        
+    size_t N_z = 2; 
+    int idf[2] = {0, 1};
+    Matrix2d R = {0.010000000000000, 0, 0, 0.000304617419787}; 
+
+    Vector2d zp[2] = { };
+    Matrix23d Hv[2] = { };
+    Matrix2d Hf[2] = { };
+    Matrix2d Sf[2] = { };
+
+    feature_update(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
     
-    // not necessary to set xf and Pf 
-    feature_update_base(&p_base, z, idf, N_idf, R, zp, Hv, Hf, Sf);
-    feature_update(&p_new, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    auto is_close = [](double lhs, double rhs) { return fabs(lhs-rhs) < 1e-8; };
 
-    // check one feature
-    for(int i=0; i<2; i++){
-        double xfi_new = p_new.xf[2*2+i];
-        double xfi_base = p_base.xf[2*2+i];
-        expect(that % fabs(xfi_new - xfi_base) < 1.0e-10);
-    } 
+    Vector2d target_xf[2] = { {3.470171202213126, -25.656742169761873},
+                              {25.523980084381321, 4.170480246835258} };
 
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            expect(that % is_close(particle->xf[i*2+j], target_xf[i][j]) == true);
+        }
+    }
+
+    Matrix2d target_Pf[3] = {{0.099441292170602, 0.008341518741166, 0.008341518741166, 0.005737523050281},
+                             {0.006932154241992, -0.012983119323818, -0.012983119323818, 0.092241962970569}};
+
+    for (int i = 0; i < 2; i++) {
+        for (int j = 0; j < 2; j++) {
+            expect(that % is_close(particle->Pf[i*4+j], target_Pf[i][j]) == true);
+        }
+    }
+
+    //
+    // Benchmark
+    //
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");
     
@@ -85,11 +95,11 @@ int main() {
     bench.funcBytes[1] = feature_update_active_memory(&p, z, idf, N_idf, R, zp, Hv, Hf, Sf);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(&p, z, idf, N_idf, R, zp, Hv, Hf, Sf);
+    bench.run_benchmark(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
 
 
     // Free memory
-    delParticleMembers(&p);
+    delParticleMembersAndFreePtr(particle);
 
     return 0;
 }

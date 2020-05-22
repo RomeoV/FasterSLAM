@@ -53,7 +53,15 @@ int main() {
     //bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particles, N, weights, N_min, 1);
+    bench.run_benchmark(particles, N, weights,N_min, 1);
+
+    // Free memory
+    // destroy(A);
+    // destroy(x);
+    // destroy(y);
+    for (size_t i = 0; i < N; i++) {
+        delParticleMembers(&particles[i]);
+    }
 
     return 0;
 }

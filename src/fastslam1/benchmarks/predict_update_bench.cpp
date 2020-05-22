@@ -166,7 +166,8 @@ int main() {
     bench_scale.add_function(&predict_update_fast, "fast", 0.0);
 
     bench_scale.data_loader = data_loader;
-    bench.destructor_output = false;
+    bench_scale.csv_path = "predict_update_scale_particles.csv";
+    bench_scale.destructor_output = false;
 
     int Np = 100;
     for (int i = 0; i< 10; i++) {
