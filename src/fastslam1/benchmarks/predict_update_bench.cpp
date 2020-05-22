@@ -73,6 +73,13 @@ void set_work(Benchmark<decltype(&predict_update)>& bench,
     }
 }
 
+
+void cleanup_members(Particle* particles, int N) {
+    for(int i = 0; i<N; i++) {
+        delParticleMembers_prealloc(particles+i);
+    }
+}
+
 int main() {
     //init_sin();
     //init_sin2();
@@ -153,5 +160,27 @@ int main() {
 
     //bench.destructor_output = false;
     bench.details();
+
+    Benchmark<decltype(&predict_update_base)> bench_scale("predict_update with Particles");
+    bench_scale.add_function(&predict_update_base, "base", 0.0);
+    bench_scale.add_function(&predict_update_fast, "fast", 0.0);
+
+    bench_scale.data_loader = data_loader;
+    bench.destructor_output = false;
+
+    int Np = 100;
+    for (int i = 0; i< 10; i++) {
+        const int Npi = std::pow(2,i) * Np;
+        Particle* ps = (Particle*) aligned_alloc(32, Npi * sizeof(Particle));
+        double xvi[3*Npi] __attribute__ ((aligned(32)));
+        double Pvi[9*Npi] __attribute__ ((aligned(32)));
+        fill(xvi, 2*Npi, 0.0);
+        init_particles_contigous(ps, xvi, Pvi, Npi);
+        set_work(bench_scale, wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
+        bench_scale.run_benchmark(wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
+        cleanup_members(ps, Npi);
+        free(ps);
+    }
+    bench_scale.details();
     return 0;
 }
