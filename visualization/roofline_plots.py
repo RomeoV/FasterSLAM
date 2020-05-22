@@ -90,12 +90,13 @@ def get_memory_bounds_points(ax):
     x_min = min(min(l.get_xdata()) for l in ax.get_lines())  # will be from hline
     x_max = max(max(l.get_xdata()) for l in ax.get_lines())  # will be from hline
     # x_min = 1/10 * x_min - (0.1*x_max+0.0*x_min)
-    x_min = 1 * ax.get_xlim()[0]
-    y_max = 2*peak_perf_avx
+    #x_min = 1 * ax.get_xlim()[0]
+    #y_max = 2*peak_perf_avx
 
-    ret_min = (x_min, peak_memory * x_min)
-    ret_max = (1/peak_memory * y_max, y_max)
-    return (ret_min, ret_max)
+    #ret_min = (x_min, peak_memory * x_min)
+    #ret_max = (1/peak_memory * y_max, y_max)
+    #return (ret_min, ret_max)
+    return (x_min, x_max)
 
 def setup_axis(ax):
     ax.xaxis.set_label_coords(1, -0.075)
@@ -117,7 +118,13 @@ def setup_axis(ax):
                     verticalalignment='bottom',
                     fontstyle='italic')
     (ret_min, ret_max) = get_memory_bounds_points(ax)
-    l3, = ax.plot([ret_min[0], ret_max[0]], [ret_min[1], ret_max[1]], '--', c='r')
+    x_beta = peak_perf_seq/peak_memory
+    y_beta = peak_perf_seq
+    x_beta2 = x_beta *5
+    y_beta2 = peak_memory * x_beta2
+    x_beta3 = x_beta /100
+    y_beta3 = peak_memory * x_beta3
+    l3, = ax.plot([x_beta3, x_beta2], [y_beta3, y_beta2], '--', c='r')
     #plt.annotate(f"Read/write limit\n({peak_memory:2.1f} bytes/cycle)",
     #                (0.0, 0.), 
     #                rotation=atan2((ret_max[1]-ret_min[1]),(ret_max[0]-ret_min[0])) * 180/pi,
@@ -184,6 +191,7 @@ def plot_in_grid(elements):
 #    bench_base.plot.scatter('op_intensity', 'performance', marker='v', c='c', s=40,
 #                          loglog=True, ax=ax, label='base')
 
+#@plot_in_style(range(2))
 @plot_in_style(range(num_benches))
 def plot_roofline(i, ax):
     bench_df = df[df['benchmark'] == benchmarks[i]]
@@ -195,8 +203,9 @@ def plot_roofline(i, ax):
                      loglog=True, ax=ax)
     bench_active.plot.scatter('op_intensity', 'performance', marker='^', c='g', s=80,
                           loglog=True, ax=ax, label='active')
+    for (size, op, perf) in zip(bench_active['size'], bench_active['op_intensity'], bench_active['performance']):
+        plt.annotate(f"{size}", (op, perf))
     bench_base.plot.scatter('op_intensity', 'performance', marker='v', c='c', s=80,
                           loglog=True, ax=ax, label='base')
 
-plt.tight_layout()
-#plt.show()
+plt.show()
