@@ -55,17 +55,17 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&mmT_2x2, "base", 0.0); 
     bench.funcFlops[0] = mmT_2x2_flops(A, B, C);
-    bench.funcBytes[0] = mmT_2x2_memory(A, B, C);
+    bench.funcBytes[0] = 8*mmT_2x2_memory(A, B, C);
 #ifdef __AVX2__
     bench.add_function(&mmT_2x2_avx_v1, "avx_v1", 0.0);
     bench.funcFlops[1] = mmT_2x2_flops(A, B, C);
-    bench.funcBytes[1] = mmT_2x2_memory(A, B, C);
+    bench.funcBytes[1] = 8*mmT_2x2_memory(A, B, C);
     bench.add_function(&mmT_2x2_avx_v2, "avx_v2", 0.0);
     bench.funcFlops[2] = mmT_2x2_flops(A, B, C);
-    bench.funcBytes[2] = mmT_2x2_memory(A, B, C);
+    bench.funcBytes[2] = 8*mmT_2x2_memory(A, B, C);
     bench.add_function(&mmT_2x2_avx_v3, "avx_v3", 0.0);
     bench.funcFlops[3] = mmT_2x2_flops(A, B, C);
-    bench.funcBytes[3] = mmT_2x2_memory(A, B, C);
+    bench.funcBytes[3] = 8*mmT_2x2_memory(A, B, C);
 #endif
 
     bench.run_benchmark(A, B, C);

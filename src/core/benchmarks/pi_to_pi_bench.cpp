@@ -74,19 +74,19 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&pi_to_pi_base, "pi_to_pi_base", 0.0);
     bench.funcFlops[0] = pi_to_pi_base_flops(angles[0]);
-    bench.funcBytes[0] = pi_to_pi_base_memory(angles[0]);
+    bench.funcBytes[0] = 8*pi_to_pi_base_memory(angles[0]);
     bench.add_function(&pi_to_pi, "pi_to_pi", 0.0);
     bench.funcFlops[1] = pi_to_pi_active_flops(angles[0]);
-    bench.funcBytes[1] = pi_to_pi_active_memory(angles[0]);
+    bench.funcBytes[1] = 8*pi_to_pi_active_memory(angles[0]);
     bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 0.0);
     bench.funcFlops[2] = pi_to_pi_active_flops(angles[0]);
-    bench.funcBytes[2] = pi_to_pi_active_memory(angles[0]);
+    bench.funcBytes[2] = 8*pi_to_pi_active_memory(angles[0]);
     bench.add_function(&pi_to_pi_nongeneral, "pi_to_pi_nongeneral", 0.0); // 2
     bench.funcFlops[3] = pi_to_pi_active_flops(angles[0]);
-    bench.funcBytes[3] = pi_to_pi_active_memory(angles[0]);
+    bench.funcBytes[3] = 8*pi_to_pi_active_memory(angles[0]);
     bench.add_function(&pi_to_pi_while, "pi_to_pi_while", 0.0); // 4 // on average
     bench.funcFlops[4] = pi_to_pi_active_flops(angles[0]);
-    bench.funcBytes[4] = pi_to_pi_active_memory(angles[0]);
+    bench.funcBytes[4] = 8*pi_to_pi_active_memory(angles[0]);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(angles[0]);
@@ -100,21 +100,21 @@ int main() {
     bench_lambda.add_function(lambda_pi_to_pi_base, "pi_to_pi_base", 0.0);
     for(int i=0; i<N; i++){
         work += pi_to_pi_base_flops(angles[i]);
-        memory += pi_to_pi_base_memory(angles[i]);
+        memory += 8*pi_to_pi_base_memory(angles[i]);
     }
     bench.funcFlops[0] = work;
     bench.funcBytes[0] = memory;
     bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", 0.0);
     for(int i=0; i<N; i++){
         work += pi_to_pi_active_flops(angles[i]);
-        memory += pi_to_pi_active_memory(angles[i]);
+        memory += 8*pi_to_pi_active_memory(angles[i]);
     }
     bench.funcFlops[1] = work;
     bench.funcBytes[1] = memory;
     bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", 0.0);
      for(int i=0; i<N; i++){
         work += pi_to_pi_active_flops(angles[i]);
-        memory += pi_to_pi_active_memory(angles[i]);
+        memory += 8*pi_to_pi_active_memory(angles[i]);
     }
     bench.funcFlops[2] = work;
     bench.funcBytes[2] = memory;

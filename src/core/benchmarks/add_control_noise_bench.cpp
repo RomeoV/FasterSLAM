@@ -34,11 +34,11 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&add_control_noise_base, "add_control_noise_base", 0.0);
     bench.funcFlops[0] = add_control_noise_base_flops(V,G,Q,addnoise,VnGn_base);
-    bench.funcBytes[0] = add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
+    bench.funcBytes[0] = 8*add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
 
     bench.add_function(&add_control_noise, "add_control_noise", 0.0);
     bench.funcFlops[1] = add_control_noise_base_flops(V,G,Q,addnoise,VnGn_base);
-    bench.funcBytes[1] = add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
+    bench.funcBytes[1] = 8*add_control_noise_base_memory(V,G,Q,addnoise,VnGn_base);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(V,G,Q,addnoise,VnGn);

@@ -60,12 +60,12 @@ int main() {
     bench.add_function(&stratified_resample_base, "base", work);
     // we assume the weights do not influence flops or memory
     bench.funcFlops[0] = stratified_resample_base_flops(w, N_w, &Neff, keep);
-    bench.funcBytes[0] = stratified_resample_base_memory(w, N_w, &Neff, keep);
+    bench.funcBytes[0] = 8*stratified_resample_base_memory(w, N_w, &Neff, keep);
 
     // at the moment stratified_resample simply calls stratified_resample_base
     bench.add_function(&stratified_resample, "active", work);
     bench.funcFlops[1] = stratified_resample_base_flops(w, N_w, &Neff, keep);
-    bench.funcBytes[1] = stratified_resample_base_memory(w, N_w, &Neff, keep);
+    bench.funcBytes[1] = 8*stratified_resample_base_memory(w, N_w, &Neff, keep);
 
     // Linear weights
     bench.run_benchmark(w, N_w, &Neff, keep);

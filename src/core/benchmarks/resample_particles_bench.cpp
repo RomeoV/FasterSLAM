@@ -46,10 +46,10 @@ int main() {
 
     bench.add_function(&resample_particles_base, "resample_particles_base", 0.0); // cycles scale exponentially with #Particles!!!
     bench.funcFlops[0] = resample_particles_base_flops(particles, N, weights, N_min, 1);
-    bench.funcBytes[0] = resample_particles_base_memory(particles, N, weights, N_min, 1);
+    bench.funcBytes[0] = 8*resample_particles_base_memory(particles, N, weights, N_min, 1);
     bench.add_function(&resample_particles_dag, "resample_particles_dag", 0.0);
     bench.funcFlops[1] = resample_particles_dag_flops(particles, N, weights, N_min, 1);
-    bench.funcBytes[1] = resample_particles_dag_memory(particles, N, weights, N_min, 1);
+    bench.funcBytes[1] = 8*resample_particles_dag_memory(particles, N, weights, N_min, 1);
     //bench.add_function(&resample_particles_orig, "resample_particles_orig", work);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 

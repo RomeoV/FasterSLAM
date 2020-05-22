@@ -50,10 +50,10 @@ int main() {
 //    // First function should always be the base case you want to benchmark against!
 //    bench.add_function(&compute_steering_base, "base", 0.0);
 //    bench.funcFlops[0] = compute_steering_base_flops(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
-//    bench.funcBytes[0] = compute_steering_base_memory(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
+//    bench.funcBytes[0] = 8*compute_steering_base_memory(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
 //    bench.add_function(&compute_steering, "active", 0.0);
 //    bench.funcFlops[1] = compute_steering_active_flops(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
-//    bench.funcBytes[1] = compute_steering_active_memory(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
+//    bench.funcBytes[1] = 8*compute_steering_active_memory(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
 //
 //    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
 //    bench.run_benchmark(x, wp, N_wp, minD, rateG, maxG, dt, &iwp, &G);
