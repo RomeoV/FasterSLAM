@@ -32,6 +32,14 @@ void predict_true_base(const double V,const double G,const double WB,
 	xv[2] = pi_to_pi_base(xv[2] + V*dt*sin(G)/WB);		
 }
 
+// this has reduced precision 
+/*
+unknown:0:FAILED [5.01203e-08 <= 1e-10] 0
+unknown:0:FAILED [4.63311e-08 <= 1e-10] 1
+unknown:0:FAILED [2.81244e-07 <= 1e-10] 2
+had to change this: 
+expect(that % fabs(xv[i]-exact_xv[i]) <= 1.0e-6) << i;
+*/
 void predict_true_active(const double V,const double G,const double WB,
                 const double dt, Vector3d xv) {
 	xv[0] = xv[0] + V*dt*tscheb_cos(G+xv[2]);		
