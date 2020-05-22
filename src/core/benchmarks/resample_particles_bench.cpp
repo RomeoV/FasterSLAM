@@ -56,6 +56,9 @@ int main() {
     // destroy(A);
     // destroy(x);
     // destroy(y);
+    for (size_t i = 0; i < N; i++) {
+        delParticleMembers(&particles[i]);
+    }
 
     return 0;
 }

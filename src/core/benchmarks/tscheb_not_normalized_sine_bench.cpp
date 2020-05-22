@@ -4,6 +4,7 @@
 #include <functional>
 #include "tscheb_sine.h"
 #include "pi_to_pi.h"
+#include "alignment_utils.h"
 
 #define NR 256
 
@@ -23,8 +24,8 @@ void rand_angles(FT * m)
 template <typename FT>
 void build(FT **a, size_t N)
 {
-    *a = static_cast<FT *>(aligned_alloc(32, N * sizeof(FT)));
-    results = static_cast<double*>(aligned_alloc(32, N*sizeof(double)));
+    *a = static_cast<FT *>(aligned_alloc(32, aligned_alloc_size(N * sizeof(FT), 32)));
+    results = static_cast<double*>(aligned_alloc(32, aligned_alloc_size(N*sizeof(double), 32)));
 }
 
 template <typename FT>
@@ -76,7 +77,7 @@ void calc_unrolled_dsines(double* alphas) {
 }
 
 void calc_avx_dsines(double* alphas) {
-  double normalized_alphas[NR];
+  double normalized_alphas[NR] __attribute__((aligned(32)));
   for (size_t i = 0; i < NR; i++) {
       normalized_alphas[i] = pi_to_pi_while(alphas[i]);
   }

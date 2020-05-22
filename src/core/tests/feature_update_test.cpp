@@ -15,24 +15,24 @@ int main() {
       // prepare particle
       Vector3d xv = {0,0,0};  //! robot pose: x,y,theta (heading dir)
       Particle* particle = newParticle(3, xv);
-      Vector2d xf[3] = {{1,0.1},{1,0.2},{1,0.3}}; 
+      Vector2d xf[3] __attribute__((aligned(32))) = {{1,0.1},{1,0.2},{1,0.3}}; 
       for(int i=0; i<3; i++){ //! 2d means of EKF in cartesian world coordinates
         set_xfi(particle, xf[i], i);
       }
-      Matrix2d Pf[3] = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
+      Matrix2d Pf[3] __attribute__((aligned(32))) = {{1,0,1,0},{1,0,1,0},{1,0,1,0}}; //! covariance matrices for EKF in polar robot coordinates
       for(int i=0; i<3; i++){ //! covariance matrices for EKF (=Extended Kalman Filter) in polar robot coordinates
         set_Pfi(particle, Pf[i], i);
       }
 
-      Vector2d z[3] = {{0,0}, {0,0}, {0,0}};  // vector of map features
+      Vector2d z[3] __attribute__((aligned(32))) = {{0,0}, {0,0}, {0,0}};  // vector of map features
       size_t N_z = 3; // number of features.
-      int idf[3] = {0,0,0};  // vector of map indices
-      Matrix2d R = {1,0,0,1};   // matrix of observation noises
+      int idf[3] __attribute__((aligned(32))) = {0,0,0};  // vector of map indices
+      Matrix2d R __attribute__((aligned(32))) = {1,0,0,1};   // matrix of observation noises
 
-      Vector2d zp[3];
-      Matrix23d Hv[3];
-      Matrix2d Hf[3];
-      Matrix2d Sf[3];
+      Vector2d zp[3] __attribute__((aligned(32)));
+      Matrix23d Hv[3] __attribute__((aligned(32)));
+      Matrix2d Hf[3] __attribute__((aligned(32)));
+      Matrix2d Sf[3] __attribute__((aligned(32)));
       compute_jacobians_base(particle, idf, 3, R, zp, Hv, Hf, Sf);
 
       when("I update features of the particle") = [&](){
@@ -64,32 +64,32 @@ int main() {
     given("A particle with three known features and vehicle position ") = [] {
       // prepare particle
 
-      Vector3d xv = {1.293967823315060, -0.054066219251330, -0.012642858479510};
+      Vector3d xv __attribute__((aligned(32))) = {1.293967823315060, -0.054066219251330, -0.012642858479510};
       
       Particle* particle = newParticle(3, xv);
       
-      Vector2d xf[2] = { {3.227460886446243, -25.613382543676146},
-                         {25.570128848983597, 3.630650683089399} }; // Transposed from MATLAB
+      Vector2d xf[2] __attribute__((aligned(32))) = { {3.227460886446243, -25.613382543676146},
+                                                      {25.570128848983597, 3.630650683089399} }; // Transposed from MATLAB
       
-      Matrix2d Pf[2] = { {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843},
-                         {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
+      Matrix2d Pf[2] __attribute__((aligned(32))) = { {0.199855490073439, 0.019180472296076, 0.019180472296076, 0.011937739684843},
+                                                      {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
 
       for(int i = 0; i < 2; i++){ //! 2d means of EKF in cartesian world coordinates
         set_xfi(particle, xf[i], i);
         set_Pfi(particle, Pf[i], i);
       }
 
-      Vector2d z[2] = { {25.761106705273054, -1.462835729968151},
-                        {24.622003552182658, 0.206077227346340} }; // Transposed from MATLAB
+      Vector2d z[2] __attribute__((aligned(32))) = { {25.761106705273054, -1.462835729968151},
+                                                     {24.622003552182658, 0.206077227346340} }; // Transposed from MATLAB
 
       size_t N_z = 2; 
-      int idf[2] = {0, 1};
-      Matrix2d R = {0.010000000000000, 0, 0, 0.000304617419787}; 
+      int idf[2] __attribute__((aligned(32))) = {0, 1};
+      Matrix2d R __attribute__((aligned(32))) = {0.010000000000000, 0, 0, 0.000304617419787}; 
 
-      Vector2d zp[2] = { };
-      Matrix23d Hv[2] = { };
-      Matrix2d Hf[2] = { };
-      Matrix2d Sf[2] = { };
+      Vector2d zp[2] __attribute__((aligned(32))) = { };
+      Matrix23d Hv[2] __attribute__((aligned(32))) = { };
+      Matrix2d Hf[2] __attribute__((aligned(32))) = { };
+      Matrix2d Sf[2] __attribute__((aligned(32))) = { };
       //compute_jacobians_base(particle, idf, 2, R, zp, Hv, Hf, Sf);
 
       when("I update features of the particle") = [&](){
@@ -104,7 +104,7 @@ int main() {
         then("I expect that the xf are equal to the arr elements.") = [=] {
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
-                    expect(that % is_close(particle->xf[i*2+j], target_xf[i][j]) == true);
+                    expect(that % is_close(particle->xf[i*2+j], target_xf[i][j]) == true) << particle->xf[i*2+j] << " != " << target_xf[i][j];
                 }
             }
         };
@@ -114,7 +114,7 @@ int main() {
         then("I expect that the Pf are equal to the arr elements.") = [=] {
             for (int i = 0; i < 2; i++) {
                 for (int j = 0; j < 2; j++) {
-                    expect(that % is_close(particle->Pf[i*4+j], target_Pf[i][j]) == true);
+                    expect(that % is_close(particle->Pf[i*4+j], target_Pf[i][j]) == true) << particle->Pf[i*4+j] << " != " << target_Pf[i][j];
                 }
             }
         };
