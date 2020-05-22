@@ -79,15 +79,26 @@ void multivariate_gauss_fast(cVector2d x, cMatrix2d P, Vector2d result)
 void multivariate_gauss_active(cVector2d x, cMatrix2d P, Vector2d result)
 {
     double S[4]; //! 2x2 matrix, lower triangular cholesky factor
-    llt_2x2(P, S); //! P = S * S^T
+    //inline llt_2x2(P, S); //! P = S * S^T
+    // 2 to 2.14
+    S[0] = sqrt( P[0] );             // 0*2+0 -> (0,0)
+    S[1] = 0.0;                      // 0*2+1 -> (0,1)
+    S[2] = P[2] / S[0];              // 1*2+0 -> (1,0)
+    S[3] = sqrt( P[3] - S[2]*S[2] ); // 1*2+1 -> (1,1)
 
-    double X[2]; //! 2-vector
-    fill_rand(X, 2, -1.0, 1.0);
-    
+    double Rand[2]; //! 2-vector
+    // inline fill rand
+    // 1.74 to 1.99 speed up
+    Rand[0] = -1.0 + 2 * ((double)rand())/((double)RAND_MAX);
+    Rand[1] = -1.0 + 2 * ((double)rand())/((double)RAND_MAX);
+
     //! result = S*X + x
     result[0] = x[0];
     result[1] = x[1];
-    mvadd_2x2(S, X, result);
+    mvadd_2x2(S, Rand, result);
+    // somehow inlining seems slower
+    //result[0] += S[0]*Rand[0] + S[1]*Rand[1];
+    //result[1] += S[2]*Rand[0] + S[3]*Rand[1];
 }
 
 double multivariate_gauss_active_flops(cVector2d x, cMatrix2d P, Vector2d result) {
