@@ -39,14 +39,18 @@ int main() {
     }
 
     Benchmark<decltype(&stratified_random)> bench("strafified_random Benchmark");
-    double work = 4*N+1; //How much does rand() cost??
+    data_loader(N, di);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&stratified_random_base, "base", work);
-    bench.add_function(&stratified_random, "active", work);
+    bench.add_function(&stratified_random_base, "base", 0.0);
+    bench.funcFlops[0] = stratified_random_base_flops(N, di);
+    bench.funcBytes[0] = stratified_random_base_flops(N, di);
+    bench.add_function(&stratified_random, "active", 0.0);
+    bench.funcFlops[1] = stratified_random_flops(N, di);
+    bench.funcBytes[1] = stratified_random_flops(N, di);
 
-    bench.run_benchmark(N,di);
+    bench.run_benchmark(N, di);
 
     return 0;
 }

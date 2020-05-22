@@ -69,8 +69,8 @@ int main() {
 #ifdef __AVX2__
     
     const int N = 10000;
-    double angles[N] __attribute__((aligned(32)));
-    double vec_angles[N];
+    double angles[N]  __attribute__((aligned(32)));
+    double vec_angles[N]  __attribute__((aligned(32)));
     double lower_bound = -3* M_PI;
     double upper_bound = 3* M_PI;
 
@@ -110,7 +110,8 @@ int main() {
 
     Benchmark<decltype(std_sin_lambda)> bench("Trigonometry Benchmark");
 
-    // Add lambda functions to aggregate over range of inputs.
+    // Add lambda functions to aggregate over range of inputs. 
+    // there is no instrumentation available
     bench.add_function(std_sin_lambda, "base", N);
     bench.add_function(read_sin_lambda, "read_sin", N);
     bench.add_function(tscheb_sin_lambda, "tscheb_sine",N);

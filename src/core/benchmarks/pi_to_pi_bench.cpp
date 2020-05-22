@@ -45,7 +45,7 @@ int main() {
 
     double(*lambda_pi_to_pi)(double* angles) = [](double* angles){
         double sum=0;
-        for (int i = 0; i<N;i++) {
+        for (int i = 0; i<N; i++) {
             sum+=pi_to_pi(angles[i]);
         }
         return sum;
@@ -53,7 +53,7 @@ int main() {
 
     double(*lambda_pi_to_pi_base)(double* angles) = [](double* angles){
         double sum=0;
-        for (int i = 0; i<N;i++) {
+        for (int i = 0; i<N; i++) {
             sum+=pi_to_pi_base(angles[i]);
         }
         return sum;
@@ -61,7 +61,7 @@ int main() {
 
     double(*lambda_pi_to_pi_fmod)(double* angles) = [](double* angles){
         double sum = 0;
-        for (int i = 0; i<N;i++) {
+        for (int i = 0; i<N; i++) {
             sum+=pi_to_pi_fmod(angles[i]);
         }
         return sum;
@@ -70,15 +70,23 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&pi_to_pi)> bench("pi_to_pi Benchmark");
 
-    double work = 6.0; // best-case in flops
-
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&pi_to_pi_base, "pi_to_pi_base", work);
-    bench.add_function(&pi_to_pi, "pi_to_pi", work);
-    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", work);
-    bench.add_function(&pi_to_pi_nongeneral, "pi_to_pi_nongeneral", 2);
-    bench.add_function(&pi_to_pi_while, "pi_to_pi_while", 4);  // on average
+    bench.add_function(&pi_to_pi_base, "pi_to_pi_base", 0.0);
+    bench.funcFlops[0] = pi_to_pi_base_flops(angles[0]);
+    bench.funcBytes[0] = pi_to_pi_base_memory(angles[0]);
+    bench.add_function(&pi_to_pi, "pi_to_pi", 0.0);
+    bench.funcFlops[1] = pi_to_pi_active_flops(angles[0]);
+    bench.funcBytes[1] = pi_to_pi_active_memory(angles[0]);
+    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 0.0);
+    bench.funcFlops[2] = pi_to_pi_active_flops(angles[0]);
+    bench.funcBytes[2] = pi_to_pi_active_memory(angles[0]);
+    bench.add_function(&pi_to_pi_nongeneral, "pi_to_pi_nongeneral", 0.0); // 2
+    bench.funcFlops[3] = pi_to_pi_active_flops(angles[0]);
+    bench.funcBytes[3] = pi_to_pi_active_memory(angles[0]);
+    bench.add_function(&pi_to_pi_while, "pi_to_pi_while", 0.0); // 4 // on average
+    bench.funcFlops[4] = pi_to_pi_active_flops(angles[0]);
+    bench.funcBytes[4] = pi_to_pi_active_memory(angles[0]);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(angles[0]);
@@ -87,9 +95,29 @@ int main() {
     Benchmark<decltype(lambda_pi_to_pi)> bench_lambda("pi_to_pi on array Benchmark");
 
     // Add lambda functions to aggregate over range of inputs.
-    bench_lambda.add_function(lambda_pi_to_pi_base, "pi_to_pi_base", work*N);
-    bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", work);
-    bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", work*N);
+    double work = 0.0;
+    double memory = 0.0;
+    bench_lambda.add_function(lambda_pi_to_pi_base, "pi_to_pi_base", 0.0);
+    for(int i=0; i<N; i++){
+        work += pi_to_pi_base_flops(angles[i]);
+        memory += pi_to_pi_base_memory(angles[i]);
+    }
+    bench.funcFlops[0] = work;
+    bench.funcBytes[0] = memory;
+    bench_lambda.add_function(lambda_pi_to_pi, "pi_to_pi", 0.0);
+    for(int i=0; i<N; i++){
+        work += pi_to_pi_active_flops(angles[i]);
+        memory += pi_to_pi_active_memory(angles[i]);
+    }
+    bench.funcFlops[1] = work;
+    bench.funcBytes[1] = memory;
+    bench_lambda.add_function(lambda_pi_to_pi_fmod, "pi_to_pi_fmod", 0.0);
+     for(int i=0; i<N; i++){
+        work += pi_to_pi_active_flops(angles[i]);
+        memory += pi_to_pi_active_memory(angles[i]);
+    }
+    bench.funcFlops[2] = work;
+    bench.funcBytes[2] = memory;
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench_lambda.run_benchmark(angles);

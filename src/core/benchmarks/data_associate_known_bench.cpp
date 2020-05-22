@@ -50,12 +50,16 @@ int main() {
     }
 
     Benchmark<decltype(&data_associate_known)> bench("data_associate_known benchmark");
-    double work = 10; // TODO Count work
+    data_loader(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&data_associate_known_base, "base", work);
-    bench.add_function(&data_associate_known, "active", work);
+    bench.add_function(&data_associate_known_base, "base", 0.0);
+    bench.funcFlops[0] = data_associate_known_base_flops(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
+    bench.funcBytes[0] = data_associate_known_base_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
+    bench.add_function(&data_associate_known, "active", 0.0);
+    bench.funcFlops[1] = data_associate_known_active_flops(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
+    bench.funcBytes[1] = data_associate_known_active_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
 
     bench.run_benchmark(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
 
