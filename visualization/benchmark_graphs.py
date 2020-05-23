@@ -8,6 +8,17 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib.cbook import flatten
+import matplotlib.pyplot as plt
+from matplotlib.ticker import StrMethodFormatter
+import matplotlib
+
+## SETUP MATPLOTLIB
+plt.style.use('seaborn')
+matplotlib.rcParams['axes.labelweight'] = 'bold'
+matplotlib.rcParams['axes.titleweight'] = 'bold'
+matplotlib.rcParams['font.weight'] = 'semibold'
+sns.set_color_codes()
+sns.set(style="darkgrid")
 
 #data = pd.read_csv('../src/build/core/benchmarks/benchmark.csv')
 data = pd.read_csv('./benchmark_sample.csv').values
@@ -54,21 +65,65 @@ print(prev_key, prev_array)
 plot_arrays.append(prev_array)
 benchmark_names.append(prev_key)
 
-sns.set(style="darkgrid")
+def setup_axis(ax):
+    ax.xaxis.set_label_coords(1, -0.075)
+    ax.yaxis.set_label_coords(0, 1.005)
+    ax.set_ylabel(ax.get_ylabel(), rotation='horizontal')
+    ax.labelweight = 'bold'
+    ax.set_xlabel("function\n", horizontalalignment='right')
+    ax.set_ylabel("cycles\n", rotation='horizontal', horizontalalignment='left')
+    ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
+    ax.get_yaxis().set_major_formatter(StrMethodFormatter('{x:2.2f}'))
+    ax.tick_params('x', direction='in')
+    ax.legend(loc='lower left')
 
-for index, benchmark in enumerate(plot_arrays):
-    print(plot_arrays[index])
-    titanic = pd.DataFrame(data=plot_arrays[index],
-                columns=['bench','function','flops','cycles','performance','speedup',''])
-    print(titanic)
-    sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=titanic)
+def plot_in_style(elements):
+    def new_plot(f):
+      for i, el in enumerate(elements):
+          fig, ax = plt.subplots(figsize=(5,4))
+          f(el, ax)
+          setup_axis(ax)
+          fig.tight_layout()
+          print(i)
+          print(benchmark_names[i])
+          #fig.savefig("test_benchmark.png")
+    return new_plot
+
+@plot_in_style(range(len(benchmark_names)))
+def plot_performance(i, ax):
+    print("123")
+    plot_data = pd.DataFrame(data=plot_arrays[i],
+      columns=['bench','function','flops','cycles','performance','speedup',''])
+    print(plot_data)
+
+    plot_data.plot.scatter('bench', 'cycles', s=80,
+      title="{0}".format(benchmark_names[i]),
+      loglog=False, ax=ax)
+    # hide dots for data points
+    '''
+    bench_df = plot_data
+    bench_active = bench_df[bench_df['function'].str.contains('active') | (bench_df['function'].str.contains('fast') & ~bench_df['function'].str.contains('base')) | bench_df['function'].str.contains('dag')]
+    bench_base = bench_df[bench_df['function'].str.contains('base')]
+
+    bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
+    bench_df.plot.scatter('bench', 'cycles', s=80,
+                     title="{0}".format(benchmark_names[i]),
+                     loglog=False, ax=ax)
+
+    sns.lineplot(x="bench", y="cycles", data=bench_base)
+    sns.lineplot(x="bench", y="cycles", data=bench_active)'''
+
+    sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=plot_data)
     plt.show()
 
+plt.tight_layout()
+plt.show()
+
 print(optim)
-titanic = pd.DataFrame(data=optim,
+plot_data = pd.DataFrame(data=optim,
             columns=['bench','function','flops','cycles','performance','speedup',''])
-print(titanic)
-sns.catplot(x="bench", y="speedup", hue="function", kind="bar", data=titanic)
+print(plot_data)
+sns.catplot(x="bench", y="speedup", hue="function", kind="bar", data=plot_data)
 plt.show()
 
 # Load an example dataset with long-form data
