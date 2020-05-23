@@ -324,12 +324,13 @@ struct Benchmark {
             for (int i = 0; i<numFuncs;i++){
                 fstream<<name
                         <<separator<<left(funcNames[i], cell_width)
+                        <<separator<<right("",cell_width)
                         <<separator<<prd(flops_sum[i] / num_runs, 0,  cell_width)
                         <<separator<<prd(bytes_sum[i] / num_runs, 0,  cell_width)
                         <<separator<<prd(cycles[i] / num_runs, 4,  cell_width) 
                         <<separator<<prd(performances[i], 4,  cell_width) 
                         <<separator<<prd(speedups[i], 4,  cell_width) 
-                        <<separator<<std::endl;
+                        <<std::endl;
             }
             fstream.close();
         }
@@ -346,15 +347,14 @@ struct Benchmark {
                 double cyc = cycles_capture[i][j];
                 double flops = flops_capture[i][j];
                 double bytes = bytes_capture[i][j];
-                fstream<<prd(i, 0,0)<<separator<<left(funcNames[i], cell_width)
+                fstream<<name<<separator<<left(funcNames[i], cell_width)
                         <<separator<<right(run_names[j],cell_width)
                         <<separator<<prd(flops, 0, cell_width)
                         <<separator<<prd(bytes, 0, cell_width)
                         <<separator<<prd(cyc, 4, cell_width) 
                         <<separator<<prd(flops/cyc, 4, cell_width) 
-                        <<separator<<prd(cyc/flops, 4, cell_width) 
                         <<separator<<prd(cycles_capture[0][j]/cyc, 4, cell_width) 
-                        <<separator<<std::endl;
+                        <<std::endl;
             }
         }
         fstream.close();
