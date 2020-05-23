@@ -49,7 +49,7 @@ int main(int argc, char *argv[]) {
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     int N= 100;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 5; i++) {
+    for (int i = 0; i < 6; i++) {
         NPARTICLES = pow(2,i) * N;
         std::cout<< "Benchmarking N="<<NPARTICLES<<" Particles..."<<std::endl;
         NUMBER_LOOPS=2;

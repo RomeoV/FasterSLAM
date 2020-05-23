@@ -29,6 +29,7 @@ void data_loader(double* wp, size_t N_waypoints, double V, double* Q, double dt,
     pcg32_srand(1,1);
 
     avx2_pcg32_srand(init_state, init_seq);
+    avx_xorshift128plus_init(1,1);
     xtrue[0]= 1.0;
     xtrue[1]= 2.0;
     xtrue[2]= 0.0;
@@ -167,10 +168,10 @@ int main() {
 
     bench_scale.data_loader = data_loader;
     bench_scale.csv_path = "predict_update_scale_particles.csv";
-    bench_scale.destructor_output = false;
+    bench_scale.csv_output = false;
 
     int Np = 100;
-    for (int i = 0; i< 10; i++) {
+    for (int i = 0; i< 8; i++) {
         const int Npi = std::pow(2,i) * Np;
         Particle* ps = (Particle*) aligned_alloc(32, Npi * sizeof(Particle));
         double xvi[3*Npi] __attribute__ ((aligned(32)));
@@ -178,10 +179,12 @@ int main() {
         fill(xvi, 2*Npi, 0.0);
         init_particles_contigous(ps, xvi, Pvi, Npi);
         set_work(bench_scale, wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
+        bench_scale.run_name = std::to_string(Npi);
         bench_scale.run_benchmark(wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
         cleanup_members(ps, Npi);
         free(ps);
     }
     bench_scale.details();
+    bench_scale.write_csv_details();
     return 0;
 }

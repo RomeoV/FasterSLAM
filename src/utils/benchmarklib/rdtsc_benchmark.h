@@ -316,24 +316,22 @@ struct Benchmark {
     }
 
     void write_csv() {
-        if (csv_output) {
-            std::ofstream fstream;
-            fstream.open(csv_path, std::ios::out | std::ios::app);
-            const char* separator = ";";
-            const int cell_width = 0;
-            for (int i = 0; i<numFuncs;i++){
-                fstream<<name
-                        <<separator<<left(funcNames[i], cell_width)
-                        <<separator<<right("",cell_width)
-                        <<separator<<prd(flops_sum[i] / num_runs, 0,  cell_width)
-                        <<separator<<prd(bytes_sum[i] / num_runs, 0,  cell_width)
-                        <<separator<<prd(cycles[i] / num_runs, 4,  cell_width) 
-                        <<separator<<prd(performances[i], 4,  cell_width) 
-                        <<separator<<prd(speedups[i], 4,  cell_width) 
-                        <<std::endl;
-            }
-            fstream.close();
+        std::ofstream fstream;
+        fstream.open(csv_path, std::ios::out | std::ios::app);
+        const char* separator = ";";
+        const int cell_width = 0;
+        for (int i = 0; i<numFuncs;i++){
+            fstream<<name
+                    <<separator<<left(funcNames[i], cell_width)
+                    <<separator<<right("",cell_width)
+                    <<separator<<prd(flops_sum[i] / num_runs, 0,  cell_width)
+                    <<separator<<prd(bytes_sum[i] / num_runs, 0,  cell_width)
+                    <<separator<<prd(cycles[i] / num_runs, 4,  cell_width) 
+                    <<separator<<prd(performances[i], 4,  cell_width) 
+                    <<separator<<prd(speedups[i], 4,  cell_width) 
+                    <<std::endl;
         }
+        fstream.close();
     }
 
     void write_csv_details() {
@@ -364,7 +362,9 @@ struct Benchmark {
         if (destructor_output) {
             summary();
         }
-        write_csv();
+        if (csv_output) {
+            write_csv();
+        }
     }
 
     
