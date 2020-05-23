@@ -92,7 +92,7 @@ def plot_in_style(elements):
             f(el, ax)
             setup_axis(ax)
             fig.tight_layout()
-            fig.savefig("./{0}_performance.png".format(file_titles[i]))
+            fig.savefig("./plots/performance/{0}_performance.png".format(file_titles[i]))
     return new_plot
 
 @plot_in_style(range(len(file_names)))
