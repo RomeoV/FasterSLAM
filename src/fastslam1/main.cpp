@@ -3,6 +3,7 @@
 #include "particle.h"
 #include "fastslam1_utils.h"
 #include "configfile.h"
+#include <cstdlib>
 
 
 int main (int argc, char *argv[])
@@ -20,7 +21,12 @@ int main (int argc, char *argv[])
 	Particle *particles;
 	double *weights;
 
-	if (argc == 2 || bool(argv[2])) {
+    int flag = 1;
+    if ( argc == 3 ) {
+        flag = atoi(argv[2]);
+    }
+
+	if ( flag ) {
 		//Active routine
 		fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
 
