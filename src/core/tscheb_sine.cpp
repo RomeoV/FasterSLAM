@@ -208,7 +208,7 @@ double tscheb_sin_avx_flops(__m256d alphas) {
     double flops = 0.0;
     flops += simple_pi_to_pi_avx_flops(alphas);
     flops += 4*(9*tp.mul + 7*tp.add) + 2*tp.add + 1*tp.negation;
-    return 0.0;
+    return flops;
 }
 
 double tscheb_sin_avx_memory(__m256d alphas) {
