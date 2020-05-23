@@ -98,6 +98,11 @@ void setup(Particle* particles, double* weights, const int Nf, Vector3d xtrue,
     setup_measurements(z, zf, zn, idf, ftag_visible, Nf);
 }
 
+void cleanup_members(Particle* particles, int N) {
+    for(int i = 0; i<N; i++) {
+        delParticleMembers_prealloc(particles+i);
+    }
+}
 
 int main() {
     SWITCH_PREDICT_NOISE=1;
@@ -227,7 +232,7 @@ int main() {
     bench.add_function(&observe_update_fast, "observe_update_fast", 0.0);
     bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", 0.0);
 #ifndef KF_YGLEE
-    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_fast_KF_Nik", 0.0);
+    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_all_unrolled", 0.0);
 #endif
 
     set_work(bench, lm,Nf, xtrue, *R, ftag, 
@@ -237,5 +242,42 @@ int main() {
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn_exact, particles, weights);
 
+    Benchmark<decltype(&observe_update_base)> bench_scale("observe_update Scale Particles");
+
+    bench_scale.data_loader=data_loader;
+    bench_scale.controls.NUM_RUNS = 3;
+    bench_scale.add_function(&observe_update_base, "observe_update_base", 0.0);
+#ifndef KF_YGLEE
+    bench_scale.add_function(&observe_update_fast_KF_Nik, "observe_update_fast", 0.0);
+#endif    
+
+    bench_scale.data_loader = data_loader;
+    bench_scale.csv_path = "observe_update_scale_particles.csv";
+    bench_scale.csv_output = false;
+
+    int Np = 100;
+    for (int i = 0; i< 8; i++) {
+        NPARTICLES = std::pow(2,i) * Np;
+         double* ws = (double*) aligned_alloc(32, NPARTICLES * sizeof(double));
+        Particle* ps = (Particle*) aligned_alloc(32, NPARTICLES* sizeof(Particle));
+        double xvi[3*NPARTICLES] __attribute__ ((aligned(32)));
+        double Pvi[9*NPARTICLES] __attribute__ ((aligned(32)));
+        fill(xvi, 2*NPARTICLES, 0.0);
+        init_particles_contigous(ps, xvi, Pvi, ws, NPARTICLES, Nf);
+        set_work(bench_scale, lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn_exact, ps, ws);
+        bench_scale.run_name = std::to_string(NPARTICLES);
+        bench_scale.run_benchmark(lm,Nf, xtrue, *R, ftag, 
+            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+            zn_exact, ps, ws);
+
+        cleanup_members(ps, NPARTICLES);
+        free(ps);
+        free(ws);
+    }
+
+    bench_scale.details();
+    bench_scale.write_csv_details();
     return 0;
 }

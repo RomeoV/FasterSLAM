@@ -27,16 +27,16 @@ void predict_true(const double V,const double G,const double WB,
 void predict_true_base(const double V,const double G,const double WB,
                 const double dt, Vector3d xv) {
 	xv[0] = xv[0] + V*dt*cos(G+xv[2]);		
-	xv[1]= xv[1] + V*dt*sin(G+xv[2]);
+	xv[1] = xv[1] + V*dt*sin(G+xv[2]);
 	xv[2] = pi_to_pi_base(xv[2] + V*dt*sin(G)/WB);		
 }
 
 double predict_true_base_flops(const double V,const double G,const double WB,
                 const double dt, Vector3d xv) {
-	return 6*tp.mul + tp.div +5*tp.add + pi_to_pi_base_flops(xv[2] + V*dt*sin(G)/WB);	
+	return 6*tp.mul + tp.div +5*tp.add + pi_to_pi_base_flops(xv[2] + V*dt*sin(G)/WB) + tp.cos + 2*tp.sin;	
 }
 
 double predict_true_base_memory(const double V,const double G,const double WB,
                 const double dt, Vector3d xv) {
-	return 2* 3;	
+	return 2 * 3;	
 }

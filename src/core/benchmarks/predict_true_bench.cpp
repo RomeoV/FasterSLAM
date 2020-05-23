@@ -46,12 +46,12 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&predict_true_base, "base", 0.0);
     bench.funcFlops[0] = predict_true_base_flops(V, G, WB, dt, xv);
-    bench.funcBytes[0] = predict_true_base_memory(V, G, WB, dt, xv);
+    bench.funcBytes[0] = 8*predict_true_base_memory(V, G, WB, dt, xv);
 
     // at the moment predict_true simply calls predict_true_base
     bench.add_function(&predict_true, "active", 0.0);
     bench.funcFlops[1] = predict_true_base_flops(V, G, WB, dt, xv);
-    bench.funcBytes[1] = predict_true_base_memory(V, G, WB, dt, xv);
+    bench.funcBytes[1] = 8*predict_true_base_memory(V, G, WB, dt, xv);
 
     bench.run_benchmark(V, G, WB, dt, xv);
 

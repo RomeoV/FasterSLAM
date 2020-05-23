@@ -1,4 +1,4 @@
-# import warnings; warnings.simplefilter('error', UserWarning)
+import warnings; warnings.simplefilter('error', UserWarning)
 import argparse
 from pathlib import Path
 import pandas as pd
@@ -41,7 +41,8 @@ assert(output_path.is_dir())
 ## SETUP DATAFRAME
 df = pd.read_csv(infile_path, sep=';',
                            names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'])
-df.fillna(1, axis='columns', inplace=True)
+# df.fillna(1, axis='columns', inplace=True)
+df['memory'] = df['memory'] * 8
 df['op_intensity'] = df['work'] / df['memory']
 benchmarks = df['benchmark'].unique()
 num_benches = benchmarks.size
@@ -137,20 +138,20 @@ def setup_axis(ax):
     ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
     ax.get_yaxis().set_major_formatter(StrMethodFormatter('{x:2.2f}'))
     ax.tick_params('x', direction='in')
-    ax.legend(loc='lower left')
+    ax.legend(bbox_to_anchor=(1.02,1), loc="upper left")
+    ax.set_title("Base (▼) vs best (▲) roofline\ncomparison for chosen functions")
+    plt.tight_layout()
     # ax.set_aspect('equal', adjustable='box')
     return l3
 
 ## DECORATORS
 def plot_in_style(elements):
     def new_plot(f):
+        ax = plt.gca()
         for i, el in enumerate(elements):
-            fig, ax = plt.subplots(figsize=(5,4))
             f(el, ax)
-            memory_line = setup_axis(ax)
-            fig.tight_layout()
-            label_line(ax, memory_line, f"Read/write limit\n({peak_memory:2.1f} bytes/cycle)")
-            fig.savefig(f"{output_path}/{benchmarks[i]}.png")
+        memory_line = setup_axis(ax)
+        label_line(ax, memory_line, f"Read/write limit\n({peak_memory:2.1f} bytes/cycle)")
     return new_plot
 
 def plot_in_grid(elements):
@@ -191,21 +192,24 @@ def plot_in_grid(elements):
 #    bench_base.plot.scatter('op_intensity', 'performance', marker='v', c='c', s=40,
 #                          loglog=True, ax=ax, label='base')
 
+plt.figure(figsize=(10,5))
+palette = sns.color_palette("hls", num_benches)
 #@plot_in_style(range(2))
 @plot_in_style(range(num_benches))
 def plot_roofline(i, ax):
     bench_df = df[df['benchmark'] == benchmarks[i]]
-    bench_base = bench_df[bench_df['version'].str.contains('base')]
-    bench_active = bench_df[bench_df['version'].str.contains('active')]
+    bench_df = bench_df.sort_values('performance')
+    bench_base = bench_df.iloc[[0]]
+    bench_active = bench_df.iloc[[-1]]
     bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
-    bench_df.plot.scatter('op_intensity', 'performance', s=80,
-                     title=benchmarks[i].split(' ')[0],
-                     loglog=True, ax=ax)
-    bench_active.plot.scatter('op_intensity', 'performance', marker='^', c='g', s=80,
-                          loglog=True, ax=ax, label='active')
-    for (size, op, perf) in zip(bench_active['size'], bench_active['op_intensity'], bench_active['performance']):
-        plt.annotate(f"{size}", (op, perf))
-    bench_base.plot.scatter('op_intensity', 'performance', marker='v', c='c', s=80,
-                          loglog=True, ax=ax, label='base')
+    #bench_df.plot.scatter('op_intensity', 'performance', s=80,
+    #                 loglog=True, ax=ax)
+    bench_active.plot.scatter('op_intensity', 'performance', marker='^', c=[palette[i]], s=80,
+                          loglog=True, ax=ax, label=bench_active['benchmark'].iloc[0].split(' ')[0])
+    # for (size, op, perf) in zip(bench_active['size'], bench_active['op_intensity'], bench_active['performance']):
+    #    plt.annotate(f"{size}", (op, perf))
+    bench_base.plot.scatter('op_intensity', 'performance', marker='v', c=[palette[i]], s=80,
+                          loglog=True, ax=ax)
 
+plt.savefig(f"{output_path}/roofline_all.png")
 plt.show()

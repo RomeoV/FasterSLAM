@@ -45,10 +45,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&add_feature_base, "add_feature_base", 0.0);
     bench.funcFlops[0] = add_feature_base_flops(&p, landmarks, 2, R);
-    bench.funcBytes[0] = add_feature_base_memory(&p, landmarks, 2, R);
+    bench.funcBytes[0] = 8*add_feature_base_memory(&p, landmarks, 2, R);
     bench.add_function(&add_feature, "add_feature", 0.0);
     bench.funcFlops[1] = add_feature_active_flops(&p, landmarks, 2, R);
-    bench.funcBytes[1] = add_feature_active_memory(&p, landmarks, 2, R);
+    bench.funcBytes[1] = 8*add_feature_active_memory(&p, landmarks, 2, R);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
     bench.run_benchmark(&p, landmarks, 2, R);

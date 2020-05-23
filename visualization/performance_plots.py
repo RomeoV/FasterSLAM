@@ -42,14 +42,15 @@ if(args.input):
     file_titles = [args.title]
 else:
     file_names = ["polybox/fastslam1_particle.csv", "polybox/fastslam1_feature.csv", "polybox/observe_update_scale_particles.csv", "polybox/predict_update_scale_particles.csv", "polybox/resample_particles_scale_particles.csv"]
-    file_titles = ["particles", "features", "observe update", "predict update", "resample particles"]
+    file_titles = ["Fastslam1 Scaling with Particles", "Fastslam1 Scaling with Particles", "observe_update  Scaling with Particles", "predict_update  Scaling with Particles", "resample_particles  Scaling with Particles"]
 
 ## SETUP DATAFRAME
 dfs = []
 
 for i in range(len(file_names)):
     df = pd.read_csv(file_names[i], sep=';',
-                            names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'])
+                            names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'], \
+                            dtype={'benchmark': str, 'version':str, 'size':int, 'work':int, 'memory':int, 'time':float, 'performance':float, 'speedup':float})
     df.fillna(1, axis='columns', inplace=True)
     dfs.append(df)
     versions = df['version'].unique()
@@ -78,7 +79,7 @@ def setup_axis(ax):
                     fontstyle='italic')'''
     ax.set_xlabel("input size\n", horizontalalignment='right')
     ax.set_ylabel("performance\n[ops/cycle]", rotation='horizontal', horizontalalignment='left')
-    ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
+    # ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
     ax.get_yaxis().set_major_formatter(StrMethodFormatter('{x:2.2f}'))
     ax.tick_params('x', direction='in')
     ax.legend(loc='lower left')
@@ -88,7 +89,7 @@ def setup_axis(ax):
 def plot_in_style(elements):
     def new_plot(f):
         for i, el in enumerate(elements):
-            fig, ax = plt.subplots(figsize=(5,4))
+            fig, ax = plt.subplots(figsize=(10,6))
             f(el, ax)
             setup_axis(ax)
             fig.tight_layout()
@@ -98,11 +99,13 @@ def plot_in_style(elements):
 @plot_in_style(range(len(file_names)))
 def plot_performance(i, ax):
     bench_df = dfs[i]
+    print(bench_df)
     # hide dots for data points
     bench_active = bench_df[bench_df['version'].str.contains('active') | (bench_df['version'].str.contains('fast') & ~bench_df['version'].str.contains('base')) | bench_df['version'].str.contains('dag')]
     bench_base = bench_df[bench_df['version'].str.contains('base')]
 
-    bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
+    #bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
+    print(bench_df)
     bench_df.plot.scatter('size', 'performance', s=80,
                      title="{0}".format(file_titles[i]),
                      loglog=False, ax=ax)

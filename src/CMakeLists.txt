@@ -11,7 +11,7 @@ set(WITHOUT_AVX2 FALSE CACHE BOOL "Simulate environment without AVX2/FMA, useful
 
 if(${WITHOUT_AVX2})
   set(BUILD_BENCHMARKS FALSE)
-  set(CMAKE_CXX_FLAGS "-mno-avx2 -mno-fma ${CMAKE_CXX_FLAGS}")
+  set(CMAKE_CXX_FLAGS "-mno-avx2 -mno-fma -o3 ${CMAKE_CXX_FLAGS}")
 endif()
 
 set(USE_YGLEE_KF_CHOLESKY FALSE CACHE BOOL "Use KF_cholesky_update() as in Yglee's C++ code.")

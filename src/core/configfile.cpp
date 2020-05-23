@@ -42,7 +42,7 @@ double R[2][2] __attribute__((aligned(32))) = {
 };
 
 // waypoint proximity
-double AT_WAYPOINT = 5.0; // metres, distance from current waypoint at which to switch to next waypoint
+double AT_WAYPOINT = 1.0; // metres, distance from current waypoint at which to switch to next waypoint
 int NUMBER_LOOPS = 2; // number of loops through the waypoint list
 
 // resampling

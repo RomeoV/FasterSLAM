@@ -82,7 +82,7 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 }
 
 double fill_rand_flops(double *x, size_t size, double lo, double hi) {
-    return 1+size*(tp.add + tp.mul+ tp.mul + tp.div + tp.rand);
+    return tp.add + size*(tp.add + tp.mul + tp.div + tp.rand);
 }
 
 double fill_rand_memory(double *x, size_t size, double lo, double hi) {
@@ -276,7 +276,7 @@ double mm_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mm_2x2_memory(const double *A, const double *B, double *C) {
-    return 2*4 + 4*4;
+    return 2*4 + 2*4;
 }
 
 //! Matrix x Matrix Multiplication ( 2x2 ) [ AVX ]
@@ -373,7 +373,7 @@ double mmT_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mmT_2x2_memory(const double *A, const double *B, double *C) {
-    return 2*4 + 4*4;
+    return 2*4 + 2*4;
 }
 
 //! Matrix x Matrix Transpose Multiplication ( 2x2 ) [ AVX ]
@@ -472,7 +472,7 @@ double mmadd_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mmadd_2x2_memory(const double *A, const double *B, double *C) {
-    return 2*4 + 4*4;
+    return 2*4 + 2*4;
 }
 
 #ifdef __AVX__
@@ -576,7 +576,7 @@ double mv_2x2_flops(const double *A, const double *b, double *c) {
 }
 
 double mv_2x2_memory(const double *A, const double *b, double *c) {
-    return 2*2 + 4*2;
+    return 4 + 2 + 2*2;
 }
 
 //! c += A*b ( 2x2 )
@@ -590,7 +590,7 @@ double mvadd_2x2_flops(const double *A, const double *b, double *c) {
 }
 
 double mvadd_2x2_memory(const double *A, const double *b, double *c) {
-    return 2*2 + 4*2;
+    return 4 + 2 + 2*2;
 }
 
 //! Matrix x Vector Multiplication ( 2x2 ) [ AVX ]

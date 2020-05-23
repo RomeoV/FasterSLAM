@@ -48,10 +48,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&add_observation_noise_base, "base", 0.0);
     bench.funcFlops[0] = add_observation_noise_base_flops(z, zlen, R, addnoise);
-    bench.funcBytes[0] = add_observation_noise_base_memory(z, zlen, R, addnoise);
+    bench.funcBytes[0] = 8*add_observation_noise_base_memory(z, zlen, R, addnoise);
     bench.add_function(&add_observation_noise, "active", 0.0);
     bench.funcFlops[1] = add_observation_noise_flops(z, zlen, R, addnoise);
-    bench.funcBytes[1] = add_observation_noise_memory(z, zlen, R, addnoise);
+    bench.funcBytes[1] = 8*add_observation_noise_memory(z, zlen, R, addnoise);
 
     bench.run_benchmark(z, zlen, R, addnoise);
 
