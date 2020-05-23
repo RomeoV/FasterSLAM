@@ -109,6 +109,7 @@ int main() {
     auto std_sin_lambda = trig_lambda(&sine);
     auto read_sin_lambda = trig_lambda(&read_sin);
     auto tscheb_sin_lambda = trig_lambda(&tscheb_sine);
+    auto tscheb_sin_simple_lambda = trig_lambda(&tscheb_sin);
     auto tscheb_sin_not_normalized_lambda = trig_lambda(&tscheb_sine_nn);
 
     auto read_sin_vec_lambda = trig_vec_lambda(&read_sin_vec);
@@ -126,22 +127,28 @@ int main() {
     bench.add_function(read_sin_lambda, "read_sin", N);
     bench.funcFlops[1] = 1;
     bench.funcBytes[1] = 1;
+
     bench.add_function(tscheb_sin_lambda, "tscheb_sine_normalized",N);
     bench.funcFlops[2] = N * tscheb_dsine_flops(3, true);
     bench.funcBytes[2] = N;
-    bench.add_function(tscheb_sin_not_normalized_lambda, "tscheb_sine_not_normalized", N);
-    bench.funcFlops[3] = N * tscheb_dsine_flops(4, false);
+
+     bench.add_function(tscheb_sin_simple_lambda , "tscheb_sine_partially_normalized",N);
+    bench.funcFlops[3] = N * tscheb_dsine_flops(3, true)+ 2* N * tp.add;
     bench.funcBytes[3] = N;
 
-    bench.add_function(read_sin_vec_lambda, "read_sin_avx", N);
-    bench.funcFlops[4] = 1;
+    bench.add_function(tscheb_sin_not_normalized_lambda, "tscheb_sine_not_normalized", N);
+    bench.funcFlops[4] = N * tscheb_dsine_flops(4, false);
     bench.funcBytes[4] = N;
-    bench.add_function(read_sin2_vec_lambda, "read_sin_symmetry_avx", N);
+
+    bench.add_function(read_sin_vec_lambda, "read_sin_avx", N);
     bench.funcFlops[5] = 1;
     bench.funcBytes[5] = N;
-    bench.add_function(tscheb_sin_vec_lambda, "tscheb_sin_avx_partially_normalized",N);
-    bench.funcFlops[6] = N/4 * tscheb_sin_avx_flops(_mm256_load_pd(angles));
+    bench.add_function(read_sin2_vec_lambda, "read_sin_symmetry_avx", N);
+    bench.funcFlops[6] = 1;
     bench.funcBytes[6] = N;
+    bench.add_function(tscheb_sin_vec_lambda, "tscheb_sin_avx_partially_normalized",N);
+    bench.funcFlops[7] = N/4 * tscheb_sin_avx_flops(_mm256_load_pd(angles));
+    bench.funcBytes[7] = N;
 
     auto loader = data_loader_lambda(fill_angles, lower_bound, upper_bound);
 

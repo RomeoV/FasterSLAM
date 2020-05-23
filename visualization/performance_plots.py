@@ -41,9 +41,9 @@ if(args.input):
     file_names = [args.input]
     file_titles = [args.title]
 else:
-    # "polybox/fastslam1_particle.csv", "polybox/fastslam1_feature.csv", "polybox/resample_particles_scale_particles.csv" 
-    file_names = ["polybox/observe_update_scale_particles.csv", "polybox/predict_update_scale_particles.csv"]
-    file_titles = ["Fastslam1 Scaling with Particles", "Fastslam1 Scaling with Particles", "observe_update  Scaling with Particles", "predict_update  Scaling with Particles", "resample_particles  Scaling with Particles"]
+    file_names = "polybox/fastslam1_particle.csv", "polybox/fastslam1_feature.csv", "polybox/resample_particles_scale_particles.csv" 
+    #file_names = ["polybox/observe_update_scale_particles.csv", "polybox/predict_update_scale_particles.csv"]
+    file_titles = ["Fastslam1 Scaling with Particles", "Fastslam1 Scaling with Features", "resample_particles  Scaling with Particles"]
     fun_names = ["observe_update", "predict_update"]
 ## SETUP DATAFRAME
 dfs = []
@@ -83,16 +83,17 @@ def setup_axis(ax):
     # ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
     ax.get_yaxis().set_major_formatter(StrMethodFormatter('{x:2.2f}'))
     ax.tick_params('x', direction='in')
-    ax.set_ylim([0,4])
-    ax.set_xlim([0,14000])
+    ax.set_ylim([0,6])
+    #ax.set_xlim([0,14000])
     ax.legend(loc='lower left')
     # ax.set_aspect('equal', adjustable='box')
 
 ## DECORATORS
 def plot_in_style(elements):
     def new_plot(f):
-        fig, ax = plt.subplots(figsize=(10,6))
+        
         for i, el in enumerate(elements):
+            fig, ax = plt.subplots(figsize=(10,6))
             # fig, ax = plt.subplots(figsize=(10,6))
             f(el, ax)
             setup_axis(ax)
@@ -103,23 +104,22 @@ def plot_in_style(elements):
 @plot_in_style(range(len(file_names)))
 def plot_performance(i, ax):
     bench_df = dfs[i]
-    print(bench_df)
     # hide dots for data points
     bench_active = bench_df[bench_df['version'].str.contains('active') | (bench_df['version'].str.contains('fast') & ~bench_df['version'].str.contains('base')) | bench_df['version'].str.contains('dag')]
     bench_base = bench_df[bench_df['version'].str.contains('base')]
 
     #bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
-    print(bench_base)
-    print(bench_active)
     # bench_df.plot.scatter('size', 'performance', s=80,
     #                  title="{0}".format(file_titles[i]),
     #                  loglog=False, ax=ax)
-
-    sns.lineplot(x="size", y="performance", color=sns.color_palette("Paired")[2*i], marker="o", label=fun_names[i]+" base", data=bench_base)
-    sns.lineplot(x="size", y="performance", color=sns.color_palette("Paired")[2*i+1], marker="o", label=fun_names[i]+" fast", data=bench_active)
-    print(bench_df)
+    sns.lineplot(x="size", y="performance", marker="o",data=bench_base)
+    sns.lineplot(x="size", y="performance", marker="o", data=bench_active)
+    ax.set_title(file_titles[i])
+    #ax.set_yscale("log")
+    #sns.lineplot(x="size", y="performance", color=sns.color_palette("Paired")[2*i], marker="o", label=fun_names[i]+" base", data=bench_base)
+    #sns.lineplot(x="size", y="performance", color=sns.color_palette("Paired")[2*i+1], marker="o", label=fun_names[i]+" fast", data=bench_active)
     #sns.lineplot(x="size", y="performance", hue="version",data=bench_df)
-plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
+#plt.legend(bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.)
 plt.tight_layout()
 
 plt.show()
