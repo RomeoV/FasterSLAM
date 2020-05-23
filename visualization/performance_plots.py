@@ -27,24 +27,35 @@ peak_memory = 6.0
 
 ## PARSE INPUTS
 parser = argparse.ArgumentParser(description='Generate FasterSlam performance plots from benchmark data')
-parser.add_argument('-i', '--input', required=True, help="Path to benchmark.csv file")
-parser.add_argument('-t', '--type', required=True, help="Choose features/particles")
+parser.add_argument('-i', '--input', required=False, help="Path to benchmark.csv file")
+parser.add_argument('-t', '--title', required=False, help="Choose features/particles")
 
 args = parser.parse_args()
-print(args.input)
-infile_path = Path(args.input)
-assert(infile_path.exists())
-assert(infile_path.is_file())
-assert(infile_path.parts[-1].endswith('.csv'))
+
+if(args.input):
+    print(args.input)
+    infile_path = Path(args.input)
+    assert(infile_path.exists())
+    assert(infile_path.is_file())
+    assert(infile_path.parts[-1].endswith('.csv'))
+    file_names = [args.input]
+    file_titles = [args.title]
+else:
+    file_names = ["polybox/fastslam1_particle.csv", "polybox/fastslam1_feature.csv", "polybox/observe_update_scale_particles.csv", "polybox/predict_update_scale_particles.csv", "polybox/resample_particles_scale_particles.csv"]
+    file_titles = ["particles", "features", "observe update", "predict update", "resample particles"]
 
 ## SETUP DATAFRAME
-df = pd.read_csv(infile_path, sep=';',
-                           names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'])
-df.fillna(1, axis='columns', inplace=True)
-versions = df['version'].unique()
-num_versions = versions.size
-print(num_versions)
-print(df.head())
+dfs = []
+
+for i in range(len(file_names)):
+    df = pd.read_csv(file_names[i], sep=';',
+                            names=['benchmark', 'version', 'size', 'work', 'memory', 'time', 'performance', 'speedup'])
+    df.fillna(1, axis='columns', inplace=True)
+    dfs.append(df)
+    versions = df['version'].unique()
+    num_versions = versions.size
+    print(num_versions)
+    print(df.head())
 
 def setup_axis(ax):
     ax.xaxis.set_label_coords(1, -0.075)
@@ -65,7 +76,7 @@ def setup_axis(ax):
                     horizontalalignment='right',
                     verticalalignment='bottom',
                     fontstyle='italic')'''
-    ax.set_xlabel("{0}\n".format(args.type), horizontalalignment='right')
+    ax.set_xlabel("input size\n", horizontalalignment='right')
     ax.set_ylabel("performance\n[ops/cycle]", rotation='horizontal', horizontalalignment='left')
     ax.get_xaxis().set_major_formatter(StrMethodFormatter('{x:3.2f}'))
     ax.get_yaxis().set_major_formatter(StrMethodFormatter('{x:2.2f}'))
@@ -81,32 +92,19 @@ def plot_in_style(elements):
             f(el, ax)
             setup_axis(ax)
             fig.tight_layout()
-            fig.savefig(f"./{0}_performance.png".format(args.type))
+            fig.savefig(f"./{0}_performance.png".format(file_titles[i]))
     return new_plot
 
-def plot_in_grid(elements):
-    def repeat_plot(f):
-        num_elements = len(elements)
-        M = int(floor(sqrt(num_elements)))
-        N = int(ceil(num_elements/M))
-        assert(M*N >= num_elements)
-        plt.figure()
-        for i, el in enumerate(elements):
-            ax = plt.subplot(M, N, i+1)
-            f(el, ax)
-            setup_axis(ax)
-    return repeat_plot
-
-@plot_in_style(range(1))
+@plot_in_style(range(len(file_names)))
 def plot_performance(i, ax):
-    bench_df = df
+    bench_df = dfs[i]
     # hide dots for data points
-    bench_active = bench_df[bench_df['version'].str.contains('active')]
+    bench_active = bench_df[bench_df['version'].str.contains('active') | (bench_df['version'].str.contains('fast') & ~bench_df['version'].str.contains('base')) | bench_df['version'].str.contains('dag')]
     bench_base = bench_df[bench_df['version'].str.contains('base')]
 
     bench_df = bench_df[(~bench_df.index.isin(bench_base.index)) & (~bench_df.index.isin(bench_active.index))]
     bench_df.plot.scatter('size', 'performance', s=80,
-                     title="Performance/{0}".format(args.type),
+                     title="{0}".format(file_titles[i]),
                      loglog=False, ax=ax)
 
     sns.lineplot(x="size", y="performance", data=bench_base)
