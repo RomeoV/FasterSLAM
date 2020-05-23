@@ -82,7 +82,7 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
 }
 
 double fill_rand_flops(double *x, size_t size, double lo, double hi) {
-    return 1+size*(tp.add + tp.mul+ tp.mul + tp.div + tp.rand);
+    return tp.add + size*(tp.add + tp.mul + tp.div + tp.rand);
 }
 
 double fill_rand_memory(double *x, size_t size, double lo, double hi) {
