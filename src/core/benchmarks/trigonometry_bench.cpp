@@ -19,9 +19,11 @@ using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
 
 void fill_angles(double* angles, int N, double lower_bound, double upper_bound) {
-    for (int i = 0; i<N; i++) {
-        angles[i] = lower_bound + (upper_bound -lower_bound) / (N-1) * i;
-    }
+    // for (int i = 0; i<N; i++) {
+    //     angles[i] = lower_bound + (upper_bound -lower_bound) / (N-1) * i;
+    // }
+    srand(0);
+    fill_rand(angles, N, lower_bound, upper_bound);
 }
 
 template<typename func>
@@ -65,6 +67,9 @@ inline double tscheb_sine(double angle) {
     return tscheb_dsine(angle, true);
 }
 
+inline double tscheb_sine_nn(double angle) {
+    return tscheb_dsine(angle, false);
+}
 int main() {
 #ifdef __AVX2__
     
@@ -103,8 +108,11 @@ int main() {
     auto std_sin_lambda = trig_lambda(&sine);
     auto read_sin_lambda = trig_lambda(&read_sin);
     auto tscheb_sin_lambda = trig_lambda(&tscheb_sine);
+    auto tscheb_sin_not_normalized_lambda = trig_lambda(&tscheb_sine_nn);
+    auto tscheb_sin_simple_lambda = trig_lambda(&tscheb_sin);
 
     auto read_sin_vec_lambda = trig_vec_lambda(&read_sin_vec);
+    auto tscheb_sin_vec_lambda = trig_vec_lambda(&tscheb_sin_avx);
     auto read_sin2_vec_lambda = trig_vec_lambda(&read_sin2_vec);
 
 
@@ -115,9 +123,12 @@ int main() {
     bench.add_function(std_sin_lambda, "base", N);
     bench.add_function(read_sin_lambda, "read_sin", N);
     bench.add_function(tscheb_sin_lambda, "tscheb_sine",N);
+    bench.add_function(tscheb_sin_simple_lambda, "tscheb_sin_partially_normalized",N);
+    bench.add_function(tscheb_sin_not_normalized_lambda, "tscheb_sine_not_normalized", N);
 
-    bench.add_function(read_sin_vec_lambda, "read_sin_vec", N);
-    bench.add_function(read_sin2_vec_lambda, "read_sin2_vec", N);
+    bench.add_function(read_sin_vec_lambda, "read_sin_avx", N);
+    bench.add_function(read_sin2_vec_lambda, "read_sin_symmetry_avx", N);
+    bench.add_function(tscheb_sin_vec_lambda, "tscheb_sin_avx_partially_normalized",N);
 
     auto loader = data_loader_lambda(fill_angles, lower_bound, upper_bound);
 

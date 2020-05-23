@@ -14,6 +14,7 @@ from bokeh.plotting import figure
 import shutil
 
 from selenium import webdriver
+import cv2
 
 from create_video import save_video
 
@@ -39,7 +40,7 @@ def covariance_ellipse(cov,scale=1.0):
     width=lambda_[0]*2*scale
     height=lambda_[1]*2*scale
     angle=np.arccos(v[0, 0])
-    return [width, height, angle]
+    return [3,3, angle]
     
 
 
@@ -322,25 +323,27 @@ if __name__=="__main__":
 
 
     # Run simulation
-    video_name = "video.mp4"
+    video_name = "example_without_observations.mp4"
 
     p.toolbar.logo = None
     p.toolbar_location = None
-    
-    frames=[]
+
+    framerate = 80
     print("Creating frames...")
+    #framerate (frames/second)
+    video= cv2.VideoWriter(video_name, cv2.VideoWriter_fourcc(*'mp4v'), framerate, (1400, 1400))
     for observation_index, index in enumerate(ids):
         if observation_index==0:
             continue
-        if observation_index%10 !=0:
+        if observation_index%5 !=0:
             continue
         print(observation_index)
         update_observations(observation_index)
         update_ground_truth(index)
-        frames.append(get_screenshot_as_png(p, driver=driver, width=800, height=800))
+        video.write(cv2.cvtColor(np.array(get_screenshot_as_png(p, driver=driver, width=1400, height=1400)), cv2.COLOR_RGB2BGR))
         # push updates to the plot continuously using the handle (intererrupt the notebook kernel to stop)
         #push_notebook(handle=target)
-    print("Found", len(frames), "frames...")
+    video.release()
+    
     print("Saving video as", video_name, "...")
-    save_video(frames, video_name)
     

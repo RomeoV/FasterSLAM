@@ -38,7 +38,7 @@ int main() {
         expect(that % error < 1e-12) << i;
     }
 
-    Benchmark<decltype(&stratified_random)> bench("strafified_random Benchmark");
+    Benchmark<decltype(&stratified_random)> bench("stratified_random Benchmark");
     data_loader(N, di);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
