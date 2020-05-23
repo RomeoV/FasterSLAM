@@ -53,6 +53,7 @@ double predict_base_flops(Particle *particle, double V, double G, Matrix2d Q, do
 		flop_count+= multivariate_gauss_base_flops(mu, Q, noise);
 	}
 	flop_count+= 6*tp.mul + tp.div +5*tp.add + pi_to_pi_base_flops(particle->xv[2] + V*dt*sin(G)/WB);
+    flop_count+= 2*tp.sin + tp.cos;
 	return flop_count;
 }
 

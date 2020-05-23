@@ -188,8 +188,8 @@ double add_feature_active_memory(Particle* particle, Vector2d z[], size_t N_z, M
 
   double memory_called = copy_memory(particle->xv, 3, xv) + N_z * (
     copy_memory(measurement, 2, xf[0]) +
-    mm_2x2_flops(Gz, R, MatResult_1) + // the same as mm_2x2_avx_v1_memory(Gz, R, MatResult_1) + 
-    mm_2x2_flops(MatResult_1, Gz, Pf[0]) + // the same as mmT_2x2_avx_v1_memory(MatResult_1, Gz, Pf[i]) +
+    mm_2x2_memory(Gz, R, MatResult_1) + // the same as mm_2x2_avx_v1_memory(Gz, R, MatResult_1) + 
+    mm_2x2_memory(MatResult_1, Gz, Pf[0]) + // the same as mmT_2x2_avx_v1_memory(MatResult_1, Gz, Pf[i]) +
     2 * (2 + 1) + // set_xfi(particle, xf[i], i + N_x) + 
     2 * (2 + 1) // set_Pfi(particle, Pf[i], i + N_x)
   );
