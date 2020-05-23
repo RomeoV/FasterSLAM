@@ -13,3 +13,4 @@ src/build*
 callgrind*
 *.mp4
 *.log
+*.ipynb
