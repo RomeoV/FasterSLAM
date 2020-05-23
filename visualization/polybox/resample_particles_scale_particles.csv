@@ -1,0 +1,16 @@
+resample_particles Benchmark;resample_particles_base;100;6009;98392;247924.3568;0.0242;1.0000
+resample_particles Benchmark;resample_particles_base;200;12009;196792;1549818.5824;0.0077;1.0000
+resample_particles Benchmark;resample_particles_base;400;24009;393592;3933068.2306;0.0061;1.0000
+resample_particles Benchmark;resample_particles_base;800;48009;787192;8619736.2808;0.0056;1.0000
+resample_particles Benchmark;resample_particles_base;1600;96009;1574392;18451170.2764;0.0052;1.0000
+resample_particles Benchmark;resample_particles_base;3200;192009;3148792;39425720.3080;0.0049;1.0000
+resample_particles Benchmark;resample_particles_base;6400;384009;6297592;80959835.4644;0.0047;1.0000
+resample_particles Benchmark;resample_particles_base;12800;768009;12595192;166535808.4346;0.0046;1.0000
+resample_particles Benchmark;resample_particles_dag;100;5909;45592;9718.4359;0.6080;25.5107
+resample_particles Benchmark;resample_particles_dag;200;11809;91192;20611.0940;0.5729;75.1934
+resample_particles Benchmark;resample_particles_dag;400;23609;182392;39665.3244;0.5952;99.1563
+resample_particles Benchmark;resample_particles_dag;800;47209;364792;67469.3333;0.6997;127.7578
+resample_particles Benchmark;resample_particles_dag;1600;94409;729592;138952.3492;0.6794;132.7878
+resample_particles Benchmark;resample_particles_dag;3200;188809;1459192;306576.5415;0.6159;128.5999
+resample_particles Benchmark;resample_particles_dag;6400;377609;2918392;984270.6152;0.3836;82.2536
+resample_particles Benchmark;resample_particles_dag;12800;755209;5836792;3485445.3688;0.2167;47.7804

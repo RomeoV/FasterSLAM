@@ -1,0 +1,16 @@
+observe_update Scale Particles;observe_update_base;100;240993;2460360;1942560.0762;0.1241;1.0000
+observe_update Scale Particles;observe_update_base;200;480393;4917160;3945385.3552;0.1218;1.0000
+observe_update Scale Particles;observe_update_base;400;959193;9830760;7711182.0538;0.1244;1.0000
+observe_update Scale Particles;observe_update_base;800;1916793;19657960;15509222.3300;0.1236;1.0000
+observe_update Scale Particles;observe_update_base;1600;3831993;39312360;31322661.8667;0.1223;1.0000
+observe_update Scale Particles;observe_update_base;3200;7662393;78621160;52871571.0400;0.1449;1.0000
+observe_update Scale Particles;observe_update_base;6400;15323193;157238760;109722175.4267;0.1397;1.0000
+observe_update Scale Particles;observe_update_base;12800;30644793;314473960;218247282.7533;0.1404;1.0000
+observe_update Scale Particles;observe_update_fast;100;145693;773480;203632.2238;0.7155;9.5396
+observe_update Scale Particles;observe_update_fast;200;289793;1543080;385731.4375;0.7513;10.2283
+observe_update Scale Particles;observe_update_fast;400;577993;3082280;759908.7826;0.7606;10.1475
+observe_update Scale Particles;observe_update_fast;800;1154393;6160680;1531529.5396;0.7538;10.1266
+observe_update Scale Particles;observe_update_fast;1600;2307193;12317480;3078689.8659;0.7494;10.1740
+observe_update Scale Particles;observe_update_fast;3200;4612793;24631080;5813375.9900;0.7935;9.0948
+observe_update Scale Particles;observe_update_fast;6400;9223993;49258280;12201815.4500;0.7560;8.9923
+observe_update Scale Particles;observe_update_fast;12800;18446393;98512680;24621042.9733;0.7492;8.8643
