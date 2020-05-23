@@ -1,0 +1,16 @@
+predict_update with Particles;base;100;13584;22616;58819.0185;0.2309;1.0000
+predict_update with Particles;base;200;26984;45016;114407.1762;0.2359;1.0000
+predict_update with Particles;base;400;53784;89816;227967.4590;0.2359;1.0000
+predict_update with Particles;base;800;107384;179416;449030.8163;0.2391;1.0000
+predict_update with Particles;base;1600;214584;358616;875424.1994;0.2451;1.0000
+predict_update with Particles;base;3200;428984;717016;1759387.5968;0.2438;1.0000
+predict_update with Particles;base;6400;857784;1433816;3540781.0920;0.2423;1.0000
+predict_update with Particles;base;12800;1715384;2867416;7104612.3782;0.2414;1.0000
+predict_update with Particles;fast;100;11184;5016;5127.2649;2.1813;11.4718
+predict_update with Particles;fast;200;22184;9816;9451.1225;2.3472;12.1051
+predict_update with Particles;fast;400;44184;19416;18025.7588;2.4512;12.6468
+predict_update with Particles;fast;800;88184;38616;35194.3433;2.5056;12.7586
+predict_update with Particles;fast;1600;176184;77016;68844.9675;2.5591;12.7159
+predict_update with Particles;fast;3200;352184;153816;137160.8686;2.5677;12.8272
+predict_update with Particles;fast;6400;704184;307416;273992.5340;2.5701;12.9229
+predict_update with Particles;fast;12800;1408184;614616;539788.9488;2.6088;13.1618

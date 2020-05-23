@@ -1,0 +1,92 @@
+KF_cholesky_update_unrolled4_avx benchmark;unrolled4_avx;;312;136;294.1141;1.0608;1.0000
+KF_cholesky_update benchmark;base;;141;226;924.6889;0.1525;1.0000
+KF_cholesky_update benchmark;fused-ops-noAVX;;141;226;308.0851;0.4577;3.0014
+KF_cholesky_update benchmark;fused-ops-AVX;;141;226;217.3808;0.6486;4.2538
+KF_cholesky_update benchmark;reduced-flops-noAVX;;78;136;180.7180;0.4316;5.1168
+KF_cholesky_update benchmark;reduced-flops-AVX;;78;136;131.0839;0.5950;7.0542
+KF_cholesky_update benchmark;active;;78;136;130.1871;0.5991;7.1028
+add_control_noise Benchmark;add_control_noise_base;;108;32;230.4414;0.4687;1.0000
+add_control_noise Benchmark;add_control_noise;;108;32;190.1375;0.5680;1.2120
+add_feature Benchmark;add_feature_base;;140;140;2470.5291;0.0567;1.0000
+add_feature Benchmark;add_feature;;124;100;1880.2703;0.0659;1.3139
+add_observation_noise benchmark;base;;176;22;428.4248;0.4108;1.0000
+add_observation_noise benchmark;active;;176;22;402.0828;0.4377;1.0655
+compute_jacobians Benchmark;compute_jacobians_base;;956;8280;7065.1208;0.1353;1.0000
+compute_jacobians Benchmark;compute_jacobians_fast;;979;3656;2043.1859;0.4790;3.4579
+compute_jacobians Benchmark;compute_jacobians_jonathan;;979;3656;1955.9747;0.5004;3.6121
+compute_jacobians Benchmark;compute_jacobians_simd;;979;3656;3066.4702;0.3192;2.3040
+compute_jacobians Benchmark;compute_jacobians_nik;;979;3656;4436.9886;0.2206;1.5923
+compute_jacobians Benchmark;compute_jacobians_scalar_replacement;;979;3656;6434.5240;0.1521;1.0980
+compute_jacobians Benchmark;compute_jacobians_linalg_inplace;;979;3656;3415.2918;0.2866;2.0687
+compute_weight Benchmark;compute_weight_base;;456;459;2996.2416;0.1522;1.0000
+compute_weight Benchmark;compute_weight;;195;189;3057.3147;0.0638;0.9800
+data_associate_known benchmark;base;;0;12;108.4924;0.0000;1.0000
+data_associate_known benchmark;active;;0;12;105.4143;0.0000;1.0292
+Example Benchmark;Kernel base;;3104;nan;5197.5025;0.5972;1.0000
+Example Benchmark;Kernel fast;;3104;nan;2646.4999;1.1729;1.9639
+feature_update Benchmark;feature_update_base;;476;712;3680.1241;0.1293;1.0000
+feature_update Benchmark;feature_update;;180;348;3519.3793;0.0511;1.0457
+mmT_2x2 benchmark;base;;12;24;13.2270;0.9072;1.0000
+mmT_2x2 benchmark;avx_v1;;12;24;10.5637;1.1360;1.2521
+mmT_2x2 benchmark;avx_v2;;12;24;9.1322;1.3140;1.4484
+mmT_2x2 benchmark;avx_v3;;12;24;10.7836;1.1128;1.2266
+mm_2x2 benchmark;base;;12;24;13.8333;0.8675;1.0000
+mm_2x2 benchmark;avx_v1;;12;24;11.0565;1.0853;1.2511
+mm_2x2 benchmark;avx_v2;;12;24;8.8696;1.3529;1.5596
+mm_2x2 benchmark;avx_v2;;12;24;9.0626;1.3241;1.5264
+mmadd_2x2 benchmark;base;;16;24;20.1922;0.7924;1.0000
+mmadd_2x2 benchmark;avx_v1;;16;24;16.4790;0.9709;1.2253
+mmadd_2x2 benchmark;avx_v2;;16;24;16.3317;0.9797;1.2364
+multivariate_gauss benchmark;base;;108;22;240.7246;0.4486;1.0000
+multivariate_gauss benchmark;active;;108;22;146.6514;0.7364;1.6415
+pi_to_pi on array Benchmark;pi_to_pi_base;;0;nan;36562.4676;0.0000;1.0000
+pi_to_pi on array Benchmark;pi_to_pi;;0;nan;22593.1079;0.0000;1.6183
+pi_to_pi on array Benchmark;pi_to_pi_fmod;;0;nan;51255.7992;0.0000;0.7133
+pi_to_pi Benchmark;pi_to_pi_base;;19;0;15.4704;1.2282;1.0000
+pi_to_pi Benchmark;pi_to_pi;;19;0;10.8594;1.7496;1.4246
+pi_to_pi Benchmark;pi_to_pi_fmod;;19;0;34.9447;0.5437;0.4427
+pi_to_pi Benchmark;pi_to_pi_nongeneral;;19;0;6.8747;2.7638;2.2503
+pi_to_pi Benchmark;pi_to_pi_while;;19;0;11.8651;1.6013;1.3039
+predict Benchmark;base;;26;6;280.8083;0.0926;1.0000
+predict Benchmark;active;;26;6;277.0125;0.0939;1.0137
+predict_true Benchmark;base;;35;6;485.8636;0.0720;1.0000
+predict_true Benchmark;active;;35;6;484.6920;0.0722;1.0024
+fastrand Benchmark;random_base;;10000;nan;436995.0088;0.0229;1.0000
+fastrand Benchmark;fastrand;;10000;nan;81946.9695;0.1220;5.3327
+fastrand Benchmark;lehmer64;;10000;nan;142053.4892;0.0704;3.0763
+fastrand Benchmark;wyrng;;10000;nan;149003.6715;0.0671;2.9328
+fastrand Benchmark;wyhash64;;10000;nan;159571.4044;0.0627;2.7386
+fastrand Benchmark;pcg32;;10000;nan;134724.8752;0.0742;3.2436
+fastrand Benchmark;xorshift128plus;;10000;nan;127627.4186;0.0784;3.4240
+fastrand Benchmark;xorshf96;;10000;nan;117791.1729;0.0849;3.7099
+fastrand Benchmark;read_rand;;10000;nan;120285.8450;0.0831;3.6330
+fastrand Benchmark;avx_xorshift128plus;;10000;nan;36287.9331;0.2756;12.0424
+fastrand Benchmark;avx_fast_rand;;10000;nan;61815.3477;0.1618;7.0694
+fastrand Benchmark;avx2_pcg32;;10000;nan;37576.1179;0.2661;11.6296
+resample_particles Benchmark;resample_particles_base;;6009;98392;251395.1533;0.0239;1.0000
+resample_particles Benchmark;resample_particles_dag;;5909;45592;9011.2433;0.6557;27.8979
+strafified_random Benchmark;base;;3805;3805;4308.5808;0.8831;1.0000
+strafified_random Benchmark;active;;3805;3805;4318.3401;0.8811;0.9977
+stratified_resample Benchmark;base;;4809;1399;7464.3433;0.6443;1.0000
+stratified_resample Benchmark;active;;4809;1399;7524.6958;0.6391;0.9920
+Trigonometry Benchmark;base;;10000;nan;420529.9613;0.0238;1.0000
+Trigonometry Benchmark;read_sin;;10000;nan;123941.5142;0.0807;3.3930
+Trigonometry Benchmark;tscheb_sine;;10000;nan;152789.2922;0.0654;2.7524
+Trigonometry Benchmark;read_sin_vec;;10000;nan;46241.1379;0.2163;9.0943
+Trigonometry Benchmark;read_sin2_vec;;10000;nan;49230.8783;0.2031;8.5420
+normalized_sine;Cmath sines;;3584;nan;18316.5186;0.1957;1.0000
+normalized_sine;Tscheb. sines on norm. floats;;4608;nan;4492.4113;1.0257;4.0772
+normalized_sine;Tscheb. sines on norm. doubles;;4608;nan;4040.3727;1.1405;4.5334
+normalized_sine;Vect. tscheb. sines on norm. doubles;;4608;nan;592.7273;7.7742;30.9021
+normalized_sine;Unrld. tscheb. sines on norm. doubles;;4608;nan;602.8740;7.6434;30.3820
+normalized_sine;AVX. tscheb. sines on norm. doubles;;4608;nan;571.1909;8.0674;32.0672
+normalized_sine;read_sine;;1536;nan;3562.2637;0.4312;5.1418
+normalized_sine;read_sine_vec;;1536;nan;1008.1273;1.5236;18.1689
+not_normalized_sine;Cmath sines;;3584;nan;22282.0766;0.1608;1.0000
+not_normalized_sine;Tscheb. sines on floats;;7168;nan;10514.2483;0.6817;2.1192
+not_normalized_sine;Tscheb. sines on doubles;;7168;nan;8220.8859;0.8719;2.7104
+not_normalized_sine;Vect. tscheb. sines on doubles;;4608;nan;5774.2249;0.7980;3.8589
+not_normalized_sine;Unrld. tscheb. sines on doubles;;4608;nan;5788.3280;0.7961;3.8495
+not_normalized_sine;AVX tscheb. sines on doubles;;4608;nan;5837.3295;0.7894;3.8172
+v.T @ M T v;vTMv base;;2700;nan;42288.7696;0.0638;1.0000
+v.T @ M T v;vTMv avx2;;2700;nan;1430.2743;1.8877;29.5669
