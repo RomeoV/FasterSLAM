@@ -1724,9 +1724,9 @@ double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double
                 den = 2 * M_PI * sqrt(determinant_2x2(Sf[j]));
                 num = exp(-0.5 * vT_S_inv_v);
                 w *= (double)num / (double)den;
-                memory_moved += KF_cholesky_update_active_memory(_particles[i].xf + 2 * _idf[j], _particles[i].Pf + 4 * _idf[j], 
-                                feat_diff[j], R, 
-                                Hf[j]);
+                // memory_moved += KF_cholesky_update_active_memory(_particles[i].xf + 2 * _idf[j], _particles[i].Pf + 4 * _idf[j], 
+                //                 feat_diff[j], R, 
+                //                 Hf[j]);
                 KF_cholesky_update_base(_particles[i].xf + 2 * _idf[j], _particles[i].Pf + 4 * _idf[j], 
                                 feat_diff[j], R, 
                                 Hf[j]);

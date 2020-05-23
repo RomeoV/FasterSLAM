@@ -73,7 +73,7 @@ inline double tscheb_sine_nn(double angle) {
 int main() {
 #ifdef __AVX2__
     
-    const int N = 10000;
+    const int N = 100000;
     double angles[N]  __attribute__((aligned(32)));
     double vec_angles[N]  __attribute__((aligned(32)));
     double lower_bound = -3* M_PI;

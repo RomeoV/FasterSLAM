@@ -1,0 +1,104 @@
+normalized_sine;Cmath sines;32;480;32;1622.5600;0.2958;1.0000
+normalized_sine;Cmath sines;64;960;64;2554.7040;0.3758;1.0000
+normalized_sine;Cmath sines;128;1920;128;5550.0560;0.3459;1.0000
+normalized_sine;Cmath sines;256;3840;256;15096.4800;0.2544;1.0000
+normalized_sine;Cmath sines;512;7680;512;30534.4640;0.2515;1.0000
+normalized_sine;Cmath sines;1024;15360;1024;109812.7000;0.1399;1.0000
+normalized_sine;Cmath sines;2048;30720;2048;108833.5320;0.2823;1.0000
+normalized_sine;Cmath sines;4096;61440;4096;241476.7200;0.2544;1.0000
+normalized_sine;Cmath sines;8192;122880;8192;600567.7400;0.2046;1.0000
+normalized_sine;Cmath sines;16384;245760;16384;1423966.5440;0.1726;1.0000
+normalized_sine;Cmath sines;32768;491520;32768;2738623.7640;0.1795;1.0000
+normalized_sine;Cmath sines;65536;983040;65536;4908091.1200;0.2003;1.0000
+normalized_sine;Tscheb. sines on norm. floats;32;896;32;357.6480;2.5053;4.5368
+normalized_sine;Tscheb. sines on norm. floats;64;1792;64;682.4800;2.6257;3.7433
+normalized_sine;Tscheb. sines on norm. floats;128;3584;128;1331.1520;2.6924;4.1694
+normalized_sine;Tscheb. sines on norm. floats;256;7168;256;2644.5280;2.7105;5.7086
+normalized_sine;Tscheb. sines on norm. floats;512;14336;512;11593.1240;1.2366;2.6338
+normalized_sine;Tscheb. sines on norm. floats;1024;28672;1024;19414.1440;1.4769;5.6563
+normalized_sine;Tscheb. sines on norm. floats;2048;57344;2048;22121.6560;2.5922;4.9198
+normalized_sine;Tscheb. sines on norm. floats;4096;114688;4096;42942.5120;2.6707;5.6233
+normalized_sine;Tscheb. sines on norm. floats;8192;229376;8192;92119.9120;2.4900;6.5194
+normalized_sine;Tscheb. sines on norm. floats;16384;458752;16384;170014.3040;2.6983;8.3756
+normalized_sine;Tscheb. sines on norm. floats;32768;917504;32768;336852.2160;2.7238;8.1300
+normalized_sine;Tscheb. sines on norm. floats;65536;1835008;65536;830069.3760;2.2107;5.9129
+normalized_sine;Tscheb. sines on norm. doubles;32;896;32;321.2880;2.7888;5.0502
+normalized_sine;Tscheb. sines on norm. doubles;64;1792;64;609.1520;2.9418;4.1939
+normalized_sine;Tscheb. sines on norm. doubles;128;3584;128;1183.9840;3.0271;4.6876
+normalized_sine;Tscheb. sines on norm. doubles;256;7168;256;2419.8000;2.9622;6.2387
+normalized_sine;Tscheb. sines on norm. doubles;512;14336;512;9075.7520;1.5796;3.3644
+normalized_sine;Tscheb. sines on norm. doubles;1024;28672;1024;20732.1920;1.3830;5.2967
+normalized_sine;Tscheb. sines on norm. doubles;2048;57344;2048;34516.8400;1.6613;3.1531
+normalized_sine;Tscheb. sines on norm. doubles;4096;114688;4096;38306.6080;2.9939;6.3038
+normalized_sine;Tscheb. sines on norm. doubles;8192;229376;8192;76888.7520;2.9832;7.8109
+normalized_sine;Tscheb. sines on norm. doubles;16384;458752;16384;151099.4400;3.0361;9.4240
+normalized_sine;Tscheb. sines on norm. doubles;32768;917504;32768;298841.5280;3.0702;9.1641
+normalized_sine;Tscheb. sines on norm. doubles;65536;1835008;65536;604861.8800;3.0338;8.1144
+normalized_sine;Vect. tscheb. sines on norm. doubles;32;576;32;61.7360;9.3301;26.2822
+normalized_sine;Vect. tscheb. sines on norm. doubles;64;1152;64;102.4160;11.2482;24.9444
+normalized_sine;Vect. tscheb. sines on norm. doubles;128;2304;128;189.7600;12.1417;29.2478
+normalized_sine;Vect. tscheb. sines on norm. doubles;256;4608;256;367.0640;12.5537;41.1277
+normalized_sine;Vect. tscheb. sines on norm. doubles;512;9216;512;1093.6400;8.4269;27.9200
+normalized_sine;Vect. tscheb. sines on norm. doubles;1024;18432;1024;2178.1520;8.4622;50.4155
+normalized_sine;Vect. tscheb. sines on norm. doubles;2048;36864;2048;4748.3600;7.7635;22.9202
+normalized_sine;Vect. tscheb. sines on norm. doubles;4096;73728;4096;6462.9200;11.4078;37.3634
+normalized_sine;Vect. tscheb. sines on norm. doubles;8192;147456;8192;14366.8240;10.2636;41.8024
+normalized_sine;Vect. tscheb. sines on norm. doubles;16384;294912;16384;26633.4480;11.0730;53.4653
+normalized_sine;Vect. tscheb. sines on norm. doubles;32768;589824;32768;55846.1480;10.5616;49.0387
+normalized_sine;Vect. tscheb. sines on norm. doubles;65536;1179648;65536;112028.2960;10.5299;43.8112
+normalized_sine;Unrld. tscheb. sines on norm. doubles;32;576;32;187.1040;3.0785;8.6720
+normalized_sine;Unrld. tscheb. sines on norm. doubles;64;1152;64;369.1040;3.1211;6.9214
+normalized_sine;Unrld. tscheb. sines on norm. doubles;128;2304;128;729.6160;3.1578;7.6068
+normalized_sine;Unrld. tscheb. sines on norm. doubles;256;4608;256;1456.1280;3.1646;10.3676
+normalized_sine;Unrld. tscheb. sines on norm. doubles;512;9216;512;4145.1360;2.2233;7.3663
+normalized_sine;Unrld. tscheb. sines on norm. doubles;1024;18432;1024;8404.7760;2.1930;13.0655
+normalized_sine;Unrld. tscheb. sines on norm. doubles;2048;36864;2048;16615.5520;2.2186;6.5501
+normalized_sine;Unrld. tscheb. sines on norm. doubles;4096;73728;4096;23291.9200;3.1654;10.3674
+normalized_sine;Unrld. tscheb. sines on norm. doubles;8192;147456;8192;46613.9120;3.1633;12.8839
+normalized_sine;Unrld. tscheb. sines on norm. doubles;16384;294912;16384;93464.4960;3.1553;15.2354
+normalized_sine;Unrld. tscheb. sines on norm. doubles;32768;589824;32768;186988.7120;3.1543;14.6459
+normalized_sine;Unrld. tscheb. sines on norm. doubles;65536;1179648;65536;375181.6720;3.1442;13.0819
+normalized_sine;AVX. tscheb. sines on norm. doubles;32;576;32;57.9440;9.9406;28.0022
+normalized_sine;AVX. tscheb. sines on norm. doubles;64;1152;64;105.3120;10.9389;24.2584
+normalized_sine;AVX. tscheb. sines on norm. doubles;128;2304;128;203.7840;11.3061;27.2350
+normalized_sine;AVX. tscheb. sines on norm. doubles;256;4608;256;378.1600;12.1853;39.9209
+normalized_sine;AVX. tscheb. sines on norm. doubles;512;9216;512;1347.6560;6.8385;22.6575
+normalized_sine;AVX. tscheb. sines on norm. doubles;1024;18432;1024;3300.6440;5.5844;33.2701
+normalized_sine;AVX. tscheb. sines on norm. doubles;2048;36864;2048;7252.9840;5.0826;15.0053
+normalized_sine;AVX. tscheb. sines on norm. doubles;4096;73728;4096;6056.8880;12.1726;39.8681
+normalized_sine;AVX. tscheb. sines on norm. doubles;8192;147456;8192;12481.5920;11.8139;48.1163
+normalized_sine;AVX. tscheb. sines on norm. doubles;16384;294912;16384;25191.7600;11.7067;56.5251
+normalized_sine;AVX. tscheb. sines on norm. doubles;32768;589824;32768;52285.8320;11.2808;52.3779
+normalized_sine;AVX. tscheb. sines on norm. doubles;65536;1179648;65536;104906.8160;11.2447;46.7852
+normalized_sine;read_sine;32;1;32;343.7280;0.0029;4.7205
+normalized_sine;read_sine;64;1;64;720.1680;0.0014;3.5474
+normalized_sine;read_sine;128;1;128;1306.0320;0.0008;4.2496
+normalized_sine;read_sine;256;1;256;2668.0880;0.0004;5.6582
+normalized_sine;read_sine;512;1;512;7560.6960;0.0001;4.0386
+normalized_sine;read_sine;1024;1;1024;28564.7520;0.0000;3.8443
+normalized_sine;read_sine;2048;1;2048;44850.1600;0.0000;2.4266
+normalized_sine;read_sine;4096;1;4096;117953.0440;0.0000;2.0472
+normalized_sine;read_sine;8192;1;8192;215763.3280;0.0000;2.7835
+normalized_sine;read_sine;16384;1;16384;457133.2720;0.0000;3.1150
+normalized_sine;read_sine;32768;1;32768;960819.2240;0.0000;2.8503
+normalized_sine;read_sine;65536;1;65536;2384692.6560;0.0000;2.0582
+normalized_sine;read_sine_vec;32;1;32;134.6880;0.0074;12.0468
+normalized_sine;read_sine_vec;64;1;64;257.6000;0.0039;9.9173
+normalized_sine;read_sine_vec;128;1;128;497.8560;0.0020;11.1479
+normalized_sine;read_sine_vec;256;1;256;1153.2080;0.0009;13.0909
+normalized_sine;read_sine_vec;512;1;512;3783.1360;0.0003;8.0712
+normalized_sine;read_sine_vec;1024;1;1024;9423.4080;0.0001;11.6532
+normalized_sine;read_sine_vec;2048;1;2048;46798.7280;0.0000;2.3256
+normalized_sine;read_sine_vec;4096;1;4096;116213.7520;0.0000;2.0779
+normalized_sine;read_sine_vec;8192;1;8192;235876.3920;0.0000;2.5461
+normalized_sine;read_sine_vec;16384;1;16384;502714.8760;0.0000;2.8326
+normalized_sine;read_sine_vec;32768;1;32768;1003999.8000;0.0000;2.7277
+normalized_sine;read_sine_vec;65536;1;65536;2130585.4880;0.0000;2.3036
+normalized_sine;Cmath sines;;163800;10920;848894.1987;0.1930;1.0000
+normalized_sine;Tscheb. sines on norm. floats;;305760;10920;127511.9210;2.3979;6.6574
+normalized_sine;Tscheb. sines on norm. doubles;;305760;10920;103238.1013;2.9617;8.2227
+normalized_sine;Vect. tscheb. sines on norm. doubles;;196560;10920;18673.2303;10.5263;45.4605
+normalized_sine;Unrld. tscheb. sines on norm. doubles;;196560;10920;63120.6773;3.1140;13.4487
+normalized_sine;AVX. tscheb. sines on norm. doubles;;196560;10920;17797.4477;11.0443;47.6975
+normalized_sine;read_sine;;1;10920;351864.5957;0.0000;2.4126
+normalized_sine;read_sine_vec;;1;10920;337619.9110;0.0000;2.5143
