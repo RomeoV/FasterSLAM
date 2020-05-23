@@ -45,10 +45,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&stratified_random_base, "base", 0.0);
     bench.funcFlops[0] = stratified_random_base_flops(N, di);
-    bench.funcBytes[0] = stratified_random_base_flops(N, di);
+    bench.funcBytes[0] = 8*stratified_random_base_memory(N, di);
     bench.add_function(&stratified_random, "active", 0.0);
     bench.funcFlops[1] = stratified_random_flops(N, di);
-    bench.funcBytes[1] = stratified_random_flops(N, di);
+    bench.funcBytes[1] = 8*stratified_random_memory(N, di);
 
     bench.run_benchmark(N, di);
 

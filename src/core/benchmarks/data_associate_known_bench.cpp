@@ -56,10 +56,10 @@ int main() {
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&data_associate_known_base, "base", 0.0);
     bench.funcFlops[0] = data_associate_known_base_flops(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
-    bench.funcBytes[0] = data_associate_known_base_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
+    bench.funcBytes[0] = 8*data_associate_known_base_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
     bench.add_function(&data_associate_known, "active", 0.0);
     bench.funcFlops[1] = data_associate_known_active_flops(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
-    bench.funcBytes[1] = data_associate_known_active_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
+    bench.funcBytes[1] = 8*data_associate_known_active_memory(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
 
     bench.run_benchmark(z, idz, 2, table, 0, zf, idf, &count_zf, zn, &count_zn);
 

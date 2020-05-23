@@ -124,44 +124,44 @@ int main() {
     // Base
     bench.add_function(&KF_cholesky_update_base, "base", 0.0);
     bench.funcFlops[0] = KF_cholesky_update_base_flops(x, P, v, R, H);
-    bench.funcBytes[0] = KF_cholesky_update_base_memory(x, P, v, R, H);
+    bench.funcBytes[0] = 8*KF_cholesky_update_base_memory(x, P, v, R, H);
     // Fused Ops
     bench.add_function(&KF_cholesky_update_fused_ops, "fused-ops-noAVX", 0.0);
     bench.funcFlops[1] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[1] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[1] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
     // Fused Ops + AVX
     bench.add_function(&KF_cholesky_update_fused_ops_avx, "fused-ops-AVX", 0.0);
     bench.funcFlops[2] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[2] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[2] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
     // Active = Fused Ops + AVX
     bench.add_function(&KF_cholesky_update, "active", 0.0);
     bench.funcFlops[3] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[3] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[3] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
 #else
     // Base
     bench.add_function(&KF_cholesky_update_base, "base", 0.0);
     bench.funcFlops[0] = KF_cholesky_update_base_flops(x, P, v, R, H);
-    bench.funcBytes[0] = KF_cholesky_update_base_memory(x, P, v, R, H);
+    bench.funcBytes[0] = 8*KF_cholesky_update_base_memory(x, P, v, R, H);
     // Fused Ops
     bench.add_function(&KF_cholesky_update_fused_ops, "fused-ops-noAVX", 0.0);
     bench.funcFlops[1] = KF_cholesky_update_base_flops(x, P, v, R, H);
-    bench.funcBytes[1] = KF_cholesky_update_base_memory(x, P, v, R, H);
+    bench.funcBytes[1] = 8*KF_cholesky_update_base_memory(x, P, v, R, H);
     // Fused Ops + AVX
     bench.add_function(&KF_cholesky_update_fused_ops_avx, "fused-ops-AVX", 0.0);
     bench.funcFlops[2] = KF_cholesky_update_base_flops(x, P, v, R, H);
-    bench.funcBytes[2] = KF_cholesky_update_base_memory(x, P, v, R, H);
+    bench.funcBytes[2] = 8*KF_cholesky_update_base_memory(x, P, v, R, H);
     // Reduced Flops  
     bench.add_function(&KF_cholesky_update_reduced_flops, "reduced-flops-noAVX", 0.0);
     bench.funcFlops[3] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[3] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[3] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
     // Reduced Flops + AVX
     bench.add_function(&KF_cholesky_update_reduced_flops_avx, "reduced-flops-AVX", 0.0);
     bench.funcFlops[4] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[4] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[4] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
     // Active
     bench.add_function(&KF_cholesky_update, "active", 0.0);
     bench.funcFlops[5] = KF_cholesky_update_active_flops(x, P, v, R, H);
-    bench.funcBytes[5] = KF_cholesky_update_active_memory(x, P, v, R, H);
+    bench.funcBytes[5] = 8*KF_cholesky_update_active_memory(x, P, v, R, H);
 #endif
 
     bench.run_benchmark(x, P, v, R, H);
@@ -227,7 +227,7 @@ int main() {
 
     bench_u4avx.add_function(&KF_cholesky_update_unrolled4_avx, "unrolled4_avx", 0.0);
     bench_u4avx.funcFlops[0] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
-    bench_u4avx.funcBytes[0] = KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
+    bench_u4avx.funcBytes[0] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
 
     bench_u4avx.run_benchmark(&x0x2, &x1x3, &P0, &P1, &P2, &P3, v0v2, v1v3, RR, H0, H1, H2, H3);
     

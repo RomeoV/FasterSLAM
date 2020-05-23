@@ -57,9 +57,9 @@ int main(int argc, char *argv[]) {
         NUMBER_LOOPS=2;
         bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
         NUMBER_LOOPS=2;
-        bench.funcBytes[0] = fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        bench.funcBytes[0] = 8*fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
         NUMBER_LOOPS=2;
-        bench.funcBytes[1] = fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        bench.funcBytes[1] = 8*fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
         NUMBER_LOOPS=2;
         bench.run_name = std::to_string(NPARTICLES); // Set name of run to identify it easier
         bench.run_benchmark(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);

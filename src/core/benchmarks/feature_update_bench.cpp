@@ -30,7 +30,7 @@ int main() {
 
     Vector3d xv = {1.293967823315060, -0.054066219251330, -0.012642858479510};
 
-    Particle* particle = newParticle(3, xv);
+    Particle* p = newParticle(3, xv);
 
     Vector2d xf[2] = { {3.227460886446243, -25.613382543676146},
                        {25.570128848983597, 3.630650683089399} }; // Transposed from MATLAB
@@ -39,8 +39,8 @@ int main() {
                        {0.013819565896226, -0.026186052088964, -0.026186052088964, 0.189525459865311} };
 
     for(int i = 0; i < 2; i++){ //! 2d means of EKF in cartesian world coordinates
-        set_xfi(particle, xf[i], i);
-        set_Pfi(particle, Pf[i], i);
+        set_xfi(p, xf[i], i);
+        set_Pfi(p, Pf[i], i);
     }
 
     Vector2d z[2] = { {25.761106705273054, -1.462835729968151},
@@ -55,7 +55,7 @@ int main() {
     Matrix2d Hf[2] = { };
     Matrix2d Sf[2] = { };
 
-    feature_update(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    feature_update(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
     
     auto is_close = [](double lhs, double rhs) { return fabs(lhs-rhs) < 1e-8; };
 
@@ -64,7 +64,7 @@ int main() {
 
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
-            expect(that % is_close(particle->xf[i*2+j], target_xf[i][j]) == true);
+            expect(that % is_close(p->xf[i*2+j], target_xf[i][j]) == true);
         }
     }
 
@@ -73,7 +73,7 @@ int main() {
 
     for (int i = 0; i < 2; i++) {
         for (int j = 0; j < 2; j++) {
-            expect(that % is_close(particle->Pf[i*4+j], target_Pf[i][j]) == true);
+            expect(that % is_close(p->Pf[i*4+j], target_Pf[i][j]) == true);
         }
     }
 
@@ -83,23 +83,23 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&feature_update)> bench("feature_update Benchmark");
     
-    data_loader(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    data_loader(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&feature_update_base, "feature_update_base", 0.0);
-    bench.funcFlops[0] = feature_update_base_flops(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[0] = feature_update_base_memory(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcFlops[0] = feature_update_base_flops(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[0] = 8*feature_update_base_memory(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
     bench.add_function(&feature_update, "feature_update", 0.0);
-    bench.funcFlops[1] = feature_update_active_flops(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
-    bench.funcBytes[1] = feature_update_active_memory(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcFlops[1] = feature_update_active_flops(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.funcBytes[1] = 8*feature_update_active_memory(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    bench.run_benchmark(particle, z, idf, N_z, R, zp, Hv, Hf, Sf);
+    bench.run_benchmark(p, z, idf, N_z, R, zp, Hv, Hf, Sf);
 
 
     // Free memory
-    delParticleMembersAndFreePtr(particle);
+    delParticleMembersAndFreePtr(p);
 
     return 0;
 }
