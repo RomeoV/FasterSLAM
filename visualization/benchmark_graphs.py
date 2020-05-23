@@ -61,26 +61,18 @@ sns.set(style="darkgrid")
 
 for index, benchmark in enumerate(plot_arrays):
     print(plot_arrays[index])
-    titanic = pd.DataFrame(data=plot_arrays[index],
+    plot_data = pd.DataFrame(data=plot_arrays[index],
                 columns=['bench','function','flops','bytes','cycles','performance','speedup',''])
-    print(titanic)
-    sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=titanic)
+    print(plot_data)
+    sns.catplot(x="bench", y="cycles", hue="function", kind="bar", data=plot_data)
+    plt.xlabel("")
+    plt.savefig("./{0}_benchmark.png".format(benchmark_names[index]))
     plt.show()
 
 print(optim)
-titanic = pd.DataFrame(data=optim,
+plot_data = pd.DataFrame(data=optim,
             columns=['bench','function','flops','bytes','cycles','performance','speedup',''])
-print(titanic)
-sns.catplot(x="bench", y="speedup", hue="function", kind="bar", data=titanic)
-plt.show()
-
-# Load an example dataset with long-form data
-fmri = sns.load_dataset("fmri")
-
-# Plot the responses for different events and regions
-'''g = sns.lineplot(x="timepoint", y="signal",
-             hue="region", style="event",
-             data=fmri)
-g.figure.savefig("testing.png")'''
-
+print(plot_data)
+sns.catplot(x="bench", y="speedup", hue="function", kind="bar", data=plot_data)
+plt.savefig("./speedup_benchmark.png")
 plt.show()
