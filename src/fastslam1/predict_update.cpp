@@ -26,6 +26,35 @@ void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double 
 #endif
 }
 
+void predict_VP(Vector3d state, double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
+    V_ = V_/(1.0-tan(G_) *0.76/2.83);
+    if (add_control_noise) {
+        double VG[2] = {V_,G_};
+        double VnGn[2];
+        multivariate_gauss_base(VG,Q,VnGn);
+        V_=VnGn[0];
+        G_=VnGn[1];
+    }
+
+    double a=3.78;
+    double b=0.5;
+    
+
+    state[0]+= V_*dt*cos(state[2]) - V_ /WB *tan(G_) * dt* (a*sin(state[2]) + b * cos(state[2]));
+    state[1]+= V_*dt*sin(state[2]) + V_ /WB *tan(G_) * dt* (a*cos(state[2]) - b * sin(state[2]));
+    state[2] = pi_to_pi_base(state[2] + V_*dt*tan(G_)/WB);
+}
+
+void predict_update_VP_base(double* controls, size_t N_controls, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    predict_VP(xtrue,V,*G, Q, WHEELBASE, dt, false);
+
+    double VnGn[2];
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+    for (size_t i = 0; i < N; i++) {
+        predict_VP(particles[i].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt,SWITCH_PREDICT_NOISE);
+    }
+}
 
 /*****************************************************************************
  * PERFORMANCE STATUS (N=NPARTICLES)

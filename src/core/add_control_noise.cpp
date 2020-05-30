@@ -17,6 +17,8 @@ void add_control_noise_base(double V, double G, double* Q, int addnoise, double*
 		VnGn[0] = result[0];
 		VnGn[1] = result[1];
 	}
+  VnGn[0] = V;
+  VnGn[1] = G;
 }
 
 // Work / Memory instrumenting

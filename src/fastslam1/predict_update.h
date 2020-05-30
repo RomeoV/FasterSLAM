@@ -37,3 +37,8 @@ double predict_update_active_flops(double *wp, size_t N_waypoints, double V, dou
 
 double predict_update_active_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_VP(Vector3d state, double V, double G, double *Q, double WB, double dt, bool add_control_noise);
+
+void predict_update_VP_base(double* controls, size_t N_controls, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);

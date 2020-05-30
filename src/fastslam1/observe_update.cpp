@@ -119,6 +119,55 @@ void observe_update(double * lm, int N_features, Vector3d xtrue, double* R, int*
 #endif
 }
 
+void observe_update_VP_base(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    // Compute true data, then add noise
+    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+
+    // for (size_t i = 0; i < N_features; i++) {
+    //     ftag_visible[i] = ftag[i];
+    // }
+
+    // //z is the range and bearing of the observed landmark
+    
+
+    // get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
+    // //print(*z,*Nf_visible,2,std::cout);
+    if ( *Nf_visible == 0 ) {
+        return;
+    }
+    
+    add_observation_noise_base(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    data_associate_known_base(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    // perform update    
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            // std::cout<<"HiBase"<<std::endl;
+            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
+            // this will half the processing need of compute_jacobians
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            double w = compute_weight_base(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
+            w *= weights[i];
+            weights[i] = w;
+            feature_update_base(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            add_feature_base(&particles[i], zn, count_zn, R);
+        }
+    }
+    resample_particles_dag(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);             
+}
+
 double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {

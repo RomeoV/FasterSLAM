@@ -22,3 +22,5 @@ void read_input_file(const std::string s, double **lm, double **wp, size_t& N_lm
  4 5 6
  4 5 6 */
 void read_input_file_and_scale(const std::string s, const int scale, double **lm, double **wp, size_t& N_lm, size_t& N_wp);
+
+void read_sequential_input_file(const std::string s, double **lm, size_t& N_lm, size_t& N_features);

@@ -60,6 +60,10 @@ std::function<void (double*, int)> trig_vec_lambda(func trig_func) {
 
 
 
+
+
+
+
 inline double sine(double angle) {
     return std::sin(angle);
 }
