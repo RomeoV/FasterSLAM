@@ -615,3 +615,105 @@ void fastslam1_sim_base_VP(double* lm, const size_t lm_rows, const size_t lm_col
     *particles_ = particles;
     *weights_ = weights;
 }
+
+void fastslam1_sim_active_VP(double* lm, const size_t lm_rows, const size_t lm_cols, 
+        const size_t N_features, Particle **particles_, double** weights_)
+{
+    const size_t N_waypoints = 0;
+    double *wp = NULL; // dummy
+
+    Particle *particles;
+    double *weights;
+    Vector3d xtrue = {-67.6493, -41.7142, 35.5*M_PI/180};
+    setup_initial_particles(&particles, &weights, N_features, xtrue);
+    setup_initial_Q_R();  // modifies global variables
+
+    int *ftag;
+    int *da_table;
+    setup_landmarks(&ftag, &da_table, N_features);
+
+    Vector2d *z;  // This is a dynamic array of Vector2d - see https://stackoverflow.com/a/13597383/5616591
+    Vector2d *zf;
+    Vector2d *zn;
+    int *idf, *ftag_visible;
+    setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
+
+    //    if ( SWITCH_PREDICT_NOISE ) {
+    //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
+    //    }
+
+    srand( SWITCH_SEED_RANDOM );
+#ifdef __AVX2__
+    avx_xorshift128plus_init(1,1);
+#endif
+
+    double dt        = DT_CONTROLS; // change in time btw predicts
+    double dtsum     = 0;           // change in time since last observation
+    double T         = lm[0];
+    int iwp          = 0;           // index to first waypoint
+    double G         = 0;           // initialize steering angle
+    double V         = 0.0;//V_; 
+    size_t Nf_visible = 0;
+
+    // Main loop
+    int index = 0;
+    while ( index < lm_rows -1 ) {
+
+        //////////////////////////////////////////////////////////////////
+        // Prediction
+        //////////////////////////////////////////////////////////////////
+
+        dt = (lm[4*(index+1)] - lm[4*(index)]) / 1000.0;
+
+        V = lm[4*(index) +2];
+        G = lm[4*(index) +3];
+        predict_update_VP_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+
+        /////////////////////////////////////////////////////////////////
+
+        //Update time
+        dtsum = dtsum + dt;
+        T += dt*1000.0;
+
+        // Observation condition
+        if ( lm[4*(index+1) + 1] > -1 ) {
+            dtsum = 0;
+
+            ///Setup z, ftag_visible, Nf_visible
+            Nf_visible = 0;
+            while ( lm[4*(index+1) + 1] > -1 ) {
+                index++;
+                double r = lm[4*(index) +2];
+                double phi = lm[4*(index) +3];
+
+                z[Nf_visible][0] = r;
+                z[Nf_visible][1] = pi_to_pi_base(phi - M_PI_2);
+
+                ftag_visible[Nf_visible] = lm[4*(index) +1] -1;
+                Nf_visible++;
+            }
+
+            //////////////////////////////////////////////////////////////
+            // Observation
+            //////////////////////////////////////////////////////////////
+
+            observe_update_VP_base(lm, N_features, xtrue, *R, ftag, 
+                    da_table, ftag_visible, z, &Nf_visible, zf, idf, 
+                    zn, particles, weights);
+
+            dt = (lm[4*(index+1)] - lm[4*(index)]) / 1000.0;
+
+            T += dt*1000.0;
+
+            predict_update_VP_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G, particles);
+
+            //////////////////////////////////////////////////////////////
+        }
+        index++;
+    }
+
+    cleanup_landmarks(&ftag, &da_table);
+    cleanup_measurements(&z, &zf, &zn, &idf, &ftag_visible);
+    *particles_ = particles;
+    *weights_ = weights;
+}

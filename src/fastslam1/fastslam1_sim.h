@@ -50,3 +50,6 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
 void fastslam1_sim_base_VP(double* lm, const size_t lm_rows, const size_t lm_cols, 
                            const size_t N_features, Particle **particles_, double** weights_);
 
+void fastslam1_sim_active_VP(double* lm, const size_t lm_rows, const size_t lm_cols, 
+                           const size_t N_features, Particle **particles_, double** weights_);
+

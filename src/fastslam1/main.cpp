@@ -9,35 +9,39 @@
 int main (int argc, char *argv[])
 {
 
-	double *lm; // landmark positions
-	double *wp; // way points
+    double *lm; // landmark positions
+    double *wp; // way points
     size_t lm_rows, wp_rows;
 
-	if (argc < 2)
-		return -1;
+    if (argc < 2)
+        return -1;
 
-	read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
+    read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
 
-	Particle *particles;
-	double *weights;
+    Particle *particles;
+    double *weights;
 
     int flag = 1;
     if ( argc == 3 ) {
         flag = atoi(argv[2]);
     }
 
-	if ( flag ) {
-		//Active routine
-		fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+    if ( flag ) {
+        //Active routine
+        std::cout << "Running Active" << std::endl;
 
-		cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
+        fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
 
-	} else {
-		// Base routine
-		fastslam1_sim_base(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
 
-		cleanup_particles(&particles, &weights);
-	}
-	free(lm);
-	free(wp);
+    } else {
+        // Base routine
+        std::cout << "Running Base" << std::endl;
+
+        fastslam1_sim_base(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+
+        cleanup_particles(&particles, &weights);
+    }
+    free(lm);
+    free(wp);
 }
