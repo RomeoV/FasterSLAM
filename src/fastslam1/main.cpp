@@ -28,13 +28,13 @@ int main (int argc, char *argv[])
 
 	if ( flag ) {
 		//Active routine
-		fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
+		fastslam1_sim(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
 
 		cleanup_particles_and_pose(&particles, &weights, &xv, &Pv, NPARTICLES);
 
 	} else {
 		// Base routine
-		fastslam1_sim_base(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights); // TODO: Return data
+		fastslam1_sim_base(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
 
 		cleanup_particles(&particles, &weights);
 	}
