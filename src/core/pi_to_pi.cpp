@@ -1,7 +1,7 @@
 #include "pi_to_pi.h"
 
 #include <math.h>
-int TWOPI = 2*M_PI;
+const double TWOPI = 2*M_PI;
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
