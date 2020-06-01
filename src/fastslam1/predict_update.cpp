@@ -88,6 +88,94 @@ void predict_VP_active(Vector3d state, double V_, double G_, double *Q, double W
     state[2] = pi_to_pi_active(state[2] + alpha);
 }
 
+void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d state2, Vector3d state3, 
+                                    double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
+    V_ = V_ / ( 1.0 - tan(G_)*0.76/2.83 );
+    double V0_ = V_;
+    double V1_ = V_;
+    double V2_ = V_;
+    double V3_ = V_;
+    double G0_ = G_;
+    double G1_ = G_;
+    double G2_ = G_;
+    double G3_ = G_;
+    if (add_control_noise) {
+        double VG0[2] = {V_, G_};
+        double VG1[2] = {V_, G_};
+        double VG2[2] = {V_, G_};
+        double VG3[2] = {V_, G_};
+        double VnGn0[2];
+        double VnGn1[2];
+        double VnGn2[2];
+        double VnGn3[2];
+        multivariate_gauss_active(VG0, Q, VnGn0);
+        multivariate_gauss_active(VG1, Q, VnGn1);
+        multivariate_gauss_active(VG2, Q, VnGn2);
+        multivariate_gauss_active(VG3, Q, VnGn3);
+        V0_ = VnGn0[0];
+        V1_ = VnGn1[0];
+        V2_ = VnGn2[0];
+        V3_ = VnGn3[0];
+        G0_ = VnGn0[1];
+        G1_ = VnGn1[1];
+        G2_ = VnGn2[1];
+        G3_ = VnGn3[1];
+    }
+
+    const double a = 3.78;
+    const double b = 0.5;
+
+    const double V0_dt = V0_*dt;
+    const double V1_dt = V1_*dt;
+    const double V2_dt = V2_*dt;
+    const double V3_dt = V3_*dt;
+
+    const double alpha0 = V0_dt * tan(G0_) / WB;
+    const double alpha1 = V1_dt * tan(G1_) / WB;
+    const double alpha2 = V2_dt * tan(G2_) / WB;
+    const double alpha3 = V3_dt * tan(G3_) / WB;
+    
+    const double cos02 = cos(state0[2]);
+    const double cos12 = cos(state1[2]);
+    const double cos22 = cos(state2[2]);
+    const double cos32 = cos(state3[2]);
+
+    const double sin02 = sin(state0[2]);
+    const double sin12 = sin(state1[2]);
+    const double sin22 = sin(state2[2]);
+    const double sin32 = sin(state3[2]);
+
+    const double alpha0_a = alpha0*a;
+    const double alpha1_a = alpha1*a;
+    const double alpha2_a = alpha2*a;
+    const double alpha3_a = alpha3*a;
+    
+    const double alpha0_b = alpha0*b;
+    const double alpha1_b = alpha1*b;
+    const double alpha2_b = alpha2*b;
+    const double alpha3_b = alpha3*b;
+    
+    const double beta0 = V0_dt - alpha0_b;
+    const double beta1 = V1_dt - alpha1_b;
+    const double beta2 = V2_dt - alpha2_b;
+    const double beta3 = V3_dt - alpha3_b;
+
+    state0[0] += beta0*cos02 - alpha0_a*sin02;
+    state1[0] += beta1*cos12 - alpha1_a*sin12;
+    state2[0] += beta2*cos22 - alpha2_a*sin22;
+    state3[0] += beta3*cos32 - alpha3_a*sin32;
+    
+    state0[1] += beta0*sin02 + alpha0_a*cos02;
+    state1[1] += beta1*sin12 + alpha1_a*cos12;
+    state2[1] += beta2*sin22 + alpha2_a*cos22;
+    state3[1] += beta3*sin32 + alpha3_a*cos32;
+    
+    state0[2] = pi_to_pi_active(state0[2] + alpha0);
+    state1[2] = pi_to_pi_active(state1[2] + alpha1);
+    state2[2] = pi_to_pi_active(state2[2] + alpha2);
+    state3[2] = pi_to_pi_active(state3[2] + alpha3);
+}
+
 // __m256d tscheb_sin_avx(__m256d alphas)
 // __m256d tscheb_cos_avx(__m256d alphas)
 void predict_update_VP_active(double* controls, size_t N_controls, double V, double* Q, double dt, 
@@ -98,10 +186,11 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
     add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
 
     for (size_t i = 0; i < N; i+=4) {
-        predict_VP_active(particles[i+0].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
-        predict_VP_active(particles[i+1].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
-        predict_VP_active(particles[i+2].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
-        predict_VP_active(particles[i+3].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        predict_VP_unrolledx4_active(particles[i+0].xv,
+                                     particles[i+1].xv,
+                                     particles[i+2].xv,
+                                     particles[i+3].xv,
+                                     VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
     }
 }
 
