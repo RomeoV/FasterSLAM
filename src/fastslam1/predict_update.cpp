@@ -26,6 +26,10 @@ void predict_update(double* wp, size_t N_waypoints, double V, double* Q, double 
 #endif
 }
 
+//! --------------- !//
+//! --- VP BASE --- !//
+//! --------------- !//
+
 void predict_VP(Vector3d state, double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
     V_ = V_/(1.0-tan(G_) *0.76/2.83);
     if (add_control_noise) {
@@ -39,7 +43,6 @@ void predict_VP(Vector3d state, double V_, double G_, double *Q, double WB, doub
     double a=3.78;
     double b=0.5;
     
-
     state[0]+= V_*dt*cos(state[2]) - V_ /WB *tan(G_) * dt* (a*sin(state[2]) + b * cos(state[2]));
     state[1]+= V_*dt*sin(state[2]) + V_ /WB *tan(G_) * dt* (a*cos(state[2]) - b * sin(state[2]));
     state[2] = pi_to_pi_base(state[2] + V_*dt*tan(G_)/WB);
@@ -53,6 +56,52 @@ void predict_update_VP_base(double* controls, size_t N_controls, double V, doubl
     add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
     for (size_t i = 0; i < N; i++) {
         predict_VP(particles[i].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt,SWITCH_PREDICT_NOISE);
+    }
+}
+
+//! --------------- !//
+//! -- VP ACTIVE -- !//
+//! --------------- !//
+
+void predict_VP_active(Vector3d state, double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
+    V_ = V_ / ( 1.0 - tan(G_)*0.76/2.83 );
+    if (add_control_noise) {
+        double VG[2] = {V_, G_};
+        double VnGn[2];
+        multivariate_gauss_active(VG, Q, VnGn);
+        V_ = VnGn[0];
+        G_ = VnGn[1];
+    }
+
+    double a = 3.78;
+    double b = 0.5;
+    const double V_dt = V_*dt;
+    const double alpha = V_dt * tan(G_) / WB;
+    const double cos2 = cos(state[2]);
+    const double sin2 = sin(state[2]);
+    const double alpha_a = alpha*a;
+    const double alpha_b = alpha*b;
+    const double beta = V_dt - alpha_b;
+
+    state[0] += beta*cos2 - alpha_a*sin2;
+    state[1] += beta*sin2 + alpha_a*cos2;
+    state[2] = pi_to_pi_active(state[2] + alpha);
+}
+
+// __m256d tscheb_sin_avx(__m256d alphas)
+// __m256d tscheb_cos_avx(__m256d alphas)
+void predict_update_VP_active(double* controls, size_t N_controls, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    predict_VP_active(xtrue, V, *G, Q, WHEELBASE, dt, false);
+
+    double VnGn[2];
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
+
+    for (size_t i = 0; i < N; i+=4) {
+        predict_VP_active(particles[i+0].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        predict_VP_active(particles[i+1].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        predict_VP_active(particles[i+2].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        predict_VP_active(particles[i+3].xv, VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
     }
 }
 
