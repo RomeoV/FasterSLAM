@@ -89,33 +89,42 @@ void predict_VP_active(Vector3d state, double V_, double G_, double *Q, double W
 }
 
 void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d state2, Vector3d state3, 
-                                    double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
+                                    double V_, double G_, double *S, double WB, double dt, bool add_control_noise) {
+    
     V_ = V_ / ( 1.0 - tan(G_)*0.76/2.83 );
+
     double V0_ = V_;
     double V1_ = V_;
     double V2_ = V_;
     double V3_ = V_;
+
     double G0_ = G_;
     double G1_ = G_;
     double G2_ = G_;
     double G3_ = G_;
-    if (add_control_noise) {
-        double VG0[2] = {V_, G_};
-        double VG1[2] = {V_, G_};
-        double VG2[2] = {V_, G_};
-        double VG3[2] = {V_, G_};
-        double VnGn0[2];
-        double VnGn1[2];
-        double VnGn2[2];
-        double VnGn3[2];
-        multivariate_gauss_active(VG0, Q, VnGn0);
-        multivariate_gauss_active(VG1, Q, VnGn1);
-        multivariate_gauss_active(VG2, Q, VnGn2);
-        multivariate_gauss_active(VG3, Q, VnGn3);
+
+    if (add_control_noise) { 
+        double VnGn0[2] = {V_, G_};
+        double VnGn1[2] = {V_, G_};
+        double VnGn2[2] = {V_, G_};
+        double VnGn3[2] = {V_, G_};
+         
+        double X0[2], X1[2], X2[2], X3[2];
+        fill_rand(X0, 2, -1.0, 1.0);
+        fill_rand(X1, 2, -1.0, 1.0);
+        fill_rand(X2, 2, -1.0, 1.0);
+        fill_rand(X3, 2, -1.0, 1.0);
+        
+        mvadd_2x2(S, X0, VnGn0);
+        mvadd_2x2(S, X1, VnGn1);
+        mvadd_2x2(S, X2, VnGn2);
+        mvadd_2x2(S, X3, VnGn3);
+        
         V0_ = VnGn0[0];
         V1_ = VnGn1[0];
         V2_ = VnGn2[0];
         V3_ = VnGn3[0];
+        
         G0_ = VnGn0[1];
         G1_ = VnGn1[1];
         G2_ = VnGn2[1];
@@ -130,20 +139,20 @@ void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d sta
     const double V2_dt = V2_*dt;
     const double V3_dt = V3_*dt;
 
-    const double alpha0 = V0_dt * tan(G0_) / WB;
-    const double alpha1 = V1_dt * tan(G1_) / WB;
-    const double alpha2 = V2_dt * tan(G2_) / WB;
-    const double alpha3 = V3_dt * tan(G3_) / WB;
+    const double alpha0 = V0_dt * tan( G0_ ) / WB;
+    const double alpha1 = V1_dt * tan( G1_ ) / WB;
+    const double alpha2 = V2_dt * tan( G2_ ) / WB;
+    const double alpha3 = V3_dt * tan( G3_ ) / WB;
     
-    const double cos02 = cos(state0[2]);
-    const double cos12 = cos(state1[2]);
-    const double cos22 = cos(state2[2]);
-    const double cos32 = cos(state3[2]);
+    const double cos02 = cos( state0[2] );
+    const double cos12 = cos( state1[2] );
+    const double cos22 = cos( state2[2] );
+    const double cos32 = cos( state3[2] );
 
-    const double sin02 = sin(state0[2]);
-    const double sin12 = sin(state1[2]);
-    const double sin22 = sin(state2[2]);
-    const double sin32 = sin(state3[2]);
+    const double sin02 = sin( state0[2] );
+    const double sin12 = sin( state1[2] );
+    const double sin22 = sin( state2[2] );
+    const double sin32 = sin( state3[2] );
 
     const double alpha0_a = alpha0*a;
     const double alpha1_a = alpha1*a;
@@ -185,12 +194,18 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
     double VnGn[2];
     add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
 
+    double S[4] = {};
+    if (SWITCH_PREDICT_NOISE) {
+        llt_2x2(Q, S);
+    }
+    
     for (size_t i = 0; i < N; i+=4) {
         predict_VP_unrolledx4_active(particles[i+0].xv,
                                      particles[i+1].xv,
                                      particles[i+2].xv,
                                      particles[i+3].xv,
-                                     VnGn[0], VnGn[1], Q, WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+                                     VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
+                                     WHEELBASE, dt, SWITCH_PREDICT_NOISE);
     }
 }
 
