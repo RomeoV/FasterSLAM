@@ -63,12 +63,17 @@ void predict_update_VP_base(double* controls, size_t N_controls, double V, doubl
 //! -- VP ACTIVE -- !//
 //! --------------- !//
 
-void predict_VP_active(Vector3d state, double V_, double G_, double *Q, double WB, double dt, bool add_control_noise) {
+void predict_VP_active(Vector3d state, double V_, double G_, double *S, double WB, double dt, bool add_control_noise) {
+
     V_ = V_ / ( 1.0 - tan(G_)*0.76/2.83 );
+    
     if (add_control_noise) {
-        double VG[2] = {V_, G_};
-        double VnGn[2];
-        multivariate_gauss_active(VG, Q, VnGn);
+        double X[2];
+        fill_rand(X, 2, -1.0, 1.0);
+        
+        double VnGn[2] = {V_, G_};    
+        mvadd_2x2(S, X, VnGn);
+
         V_ = VnGn[0];
         G_ = VnGn[1];
     }
@@ -189,16 +194,15 @@ void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d sta
 // __m256d tscheb_cos_avx(__m256d alphas)
 void predict_update_VP_active(double* controls, size_t N_controls, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
-    predict_VP_active(xtrue, V, *G, Q, WHEELBASE, dt, false);
+    
+    double S[4] = {};
+    llt_2x2(Q, S);
+    
+    predict_VP_active(xtrue, V, *G, S, WHEELBASE, dt, false); // Pass Cholesky factor S instead of Q
 
     double VnGn[2];
-    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn); // TODO
-
-    double S[4] = {};
-    if (SWITCH_PREDICT_NOISE) {
-        llt_2x2(Q, S);
-    }
-    
+    add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
+ 
     for (size_t i = 0; i < N; i+=4) {
         predict_VP_unrolledx4_active(particles[i+0].xv,
                                      particles[i+1].xv,

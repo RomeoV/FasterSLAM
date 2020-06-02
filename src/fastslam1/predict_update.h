@@ -49,7 +49,8 @@ void predict_update_VP_base(double* controls, size_t N_controls, double V, doubl
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
 //! ACTIVE
-void predict_VP_active(Vector3d state, double V, double G, double *Q, double WB, double dt, bool add_control_noise);
+//! Takes as input the Cholesky factor S of Q ( reuse )
+void predict_VP_active(Vector3d state, double V, double G, double *S, double WB, double dt, bool add_control_noise);
 
 void predict_update_VP_active(double* controls, size_t N_controls, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
