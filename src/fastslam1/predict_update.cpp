@@ -95,9 +95,6 @@ void predict_VP_active(Vector3d state, double V_, double G_, double *S, double W
 
 void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d state2, Vector3d state3, 
                                     double V_, double G_, double *S, double WB, double dt, bool add_control_noise) {
-    
-    V_ = V_ / ( 1.0 - tan(G_)*0.76/2.83 );
-
     double V0_ = V_;
     double V1_ = V_;
     double V2_ = V_;
@@ -199,6 +196,7 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
     double VnGn[2];
     add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
  
+    VnGn[0] = VnGn[0] / ( 1.0 - tan( VnGn[1] )*0.76/2.83 ); // predict_VP_unrolledx4 takes as input the transformed VnGn[0] ( reuse )
     for (size_t i = 0; i < N; i+=4) {
         predict_VP_unrolledx4_active(particles[i+0].xv,
                                      particles[i+1].xv,
