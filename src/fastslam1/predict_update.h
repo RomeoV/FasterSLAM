@@ -60,3 +60,8 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
 void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d state2, Vector3d state3, 
                                     double V_, double G_, double *S, double WB, double dt, bool add_control_noise);
 
+//! Takes as input the Cholesky factor S of Q ( reuse )
+//! Takes as input the transformed VnGn[0] ( reuse )
+void predict_VP_unrolledx4_active_avx(Vector3d state0, Vector3d state1, Vector3d state2, Vector3d state3, 
+                                    double V_, double G_, double *S, double WB, double dt, bool add_control_noise);
+

@@ -183,12 +183,88 @@ void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d sta
     state3[2] = pi_to_pi_active(state3[2] + alpha3);
 }
 
+void predict_VP_unrolledx4_active_avx(Vector3d state0,
+                                      Vector3d state1,
+                                      Vector3d state2,
+                                      Vector3d state3,
+                                      double V_,
+                                      double G_,
+                                      double *S,
+                                      double WB,
+                                      double dt,
+                                      bool add_control_noise) {
+
+    double const a = 3.78;
+    double const b = 0.5;
+    __m256d const as = _mm256_set1_pd( a );
+    __m256d const bs = _mm256_set1_pd( b );
+    __m256d const dts = _mm256_set1_pd( dt ); 
+    __m256d const Ss = _mm256_load_pd( S );
+    __m256d const invWB = _mm256_set1_pd( 1.0 / WB );
+    __m256d Vs = _mm256_set1_pd( V_ );
+    __m256d Gs = _mm256_set1_pd( G_ );
+    __m256d state_0 = _mm256_set_pd( state3[0], state2[0], state1[0], state0[0] );
+    __m256d state_1 = _mm256_set_pd( state3[1], state2[1], state1[1], state0[1] );
+    __m256d state_2 = _mm256_set_pd( state3[2], state2[2], state1[2], state0[2] );
+
+    if (add_control_noise) { 
+        __m256d const VnGn = _mm256_set_pd(G_, V_, G_, V_);
+         
+        double X02[4] __attribute__ ((aligned(32)));
+        double X13[4] __attribute__ ((aligned(32)));
+        fill_rand(X02+0, 2, -1.0, 1.0);
+        fill_rand(X13+0, 2, -1.0, 1.0);
+        fill_rand(X02+2, 2, -1.0, 1.0);
+        fill_rand(X13+2, 2, -1.0, 1.0);
+        __m256d const x02 = _mm256_load_pd( X02 );
+        __m256d const x13 = _mm256_load_pd( X13 );
+        
+        __m256d const VnGn02 = _mmTadd_2x2_avx_v2(x02, Ss, VnGn);
+        __m256d const VnGn13 = _mmTadd_2x2_avx_v2(x13, Ss, VnGn);
+ 
+        Vs = _mm256_shuffle_pd(VnGn02, VnGn13, 0b0000);
+        Gs = _mm256_shuffle_pd(VnGn02, VnGn13, 0b1111);
+    }
+
+    __m256d const Vsdt  = _mm256_mul_pd(Vs, dts);
+    __m256d const sinGs = tscheb_sin_avx( Gs );
+    __m256d const cosGs = tscheb_cos_avx( Gs );
+    __m256d const tanGs = _mm256_div_pd( sinGs, cosGs );
+    __m256d const alpha = _mm256_mul_pd( _mm256_mul_pd( Vsdt, tanGs ), invWB );
+  
+    __m256d const sin_state_2 = tscheb_sin_avx( state_2 );
+    __m256d const cos_state_2 = tscheb_cos_avx( state_2 );
+
+    __m256d const alpha_a = _mm256_mul_pd(alpha, as);
+    __m256d const alpha_b = _mm256_mul_pd(alpha, bs);
+    __m256d const beta    = _mm256_sub_pd(Vsdt, alpha_b);
+    
+    state_0 = _mm256_fmadd_pd(beta,    cos_state_2, state_0);
+    state_0 = _mm256_sub_pd( state_0, _mm256_mul_pd(alpha_a, sin_state_2));
+ 
+    state_1 = _mm256_fmadd_pd(beta,    sin_state_2, state_1);
+    state_1 = _mm256_fmadd_pd(alpha_a, cos_state_2, state_1);
+    
+    state_2 = simple_pi_to_pi_avx(_mm256_add_pd(state_2, alpha));
+
+    __m256d state_3 = _mm256_setzero_pd(); // dummy 
+    
+    __m256d t0, t1, t2, t3;
+    register_transpose(state_0, state_1, state_2, state_3, &t0, &t1, &t2, &t3);
+
+    __m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
+    _mm256_maskstore_pd(state0, mask, t0);
+    _mm256_maskstore_pd(state1, mask, t1);
+    _mm256_maskstore_pd(state2, mask, t2);
+    _mm256_maskstore_pd(state3, mask, t3);
+}
+
 // __m256d tscheb_sin_avx(__m256d alphas)
 // __m256d tscheb_cos_avx(__m256d alphas)
 void predict_update_VP_active(double* controls, size_t N_controls, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     
-    double S[4] = {};
+    double S[4] __attribute__((aligned(32))) = {};
     llt_2x2(Q, S);
     
     predict_VP_active(xtrue, V, *G, S, WHEELBASE, dt, false); // Pass Cholesky factor S instead of Q
@@ -198,12 +274,12 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
  
     VnGn[0] = VnGn[0] / ( 1.0 - tan( VnGn[1] )*0.76/2.83 ); // predict_VP_unrolledx4 takes as input the transformed VnGn[0] ( reuse )
     for (size_t i = 0; i < N; i+=4) {
-        predict_VP_unrolledx4_active(particles[i+0].xv,
-                                     particles[i+1].xv,
-                                     particles[i+2].xv,
-                                     particles[i+3].xv,
-                                     VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
-                                     WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        predict_VP_unrolledx4_active_avx(particles[i+0].xv,
+                                         particles[i+1].xv,
+                                         particles[i+2].xv,
+                                         particles[i+3].xv,
+                                         VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
+                                         WHEELBASE, dt, SWITCH_PREDICT_NOISE);
     }
 }
 
