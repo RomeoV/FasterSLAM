@@ -109,31 +109,27 @@ void predict_VP_unrolledx4_active(Vector3d state0, Vector3d state1, Vector3d sta
     double G3_ = G_;
 
     if (add_control_noise) { 
-        double VnGn0[2] = {V_, G_};
-        double VnGn1[2] = {V_, G_};
-        double VnGn2[2] = {V_, G_};
-        double VnGn3[2] = {V_, G_};
+        double VnGn01[4] = {V_, G_, V_, G_};
+        double VnGn23[4] = {V_, G_, V_, G_};
          
-        double X0[2], X1[2], X2[2], X3[2];
-        fill_rand(X0, 2, -1.0, 1.0);
-        fill_rand(X1, 2, -1.0, 1.0);
-        fill_rand(X2, 2, -1.0, 1.0);
-        fill_rand(X3, 2, -1.0, 1.0);
+        double X01[4], X23[4];
+        fill_rand(X01, 4, -1.0, 1.0);
+        fill_rand(X23, 4, -1.0, 1.0);
         
-        mvadd_2x2(S, X0, VnGn0);
-        mvadd_2x2(S, X1, VnGn1);
-        mvadd_2x2(S, X2, VnGn2);
-        mvadd_2x2(S, X3, VnGn3);
+        double ST[4] = { };
+        transpose_2x2(S, ST);
+        mmadd_2x2(X01, ST, VnGn01); // S transpose 
+        mmadd_2x2(X23, ST, VnGn23); // S transpose
+ 
+        V0_ = VnGn01[0];
+        G0_ = VnGn01[1];
+        V1_ = VnGn01[2];
+        G1_ = VnGn01[3];
         
-        V0_ = VnGn0[0];
-        V1_ = VnGn1[0];
-        V2_ = VnGn2[0];
-        V3_ = VnGn3[0];
-        
-        G0_ = VnGn0[1];
-        G1_ = VnGn1[1];
-        G2_ = VnGn2[1];
-        G3_ = VnGn3[1];
+        V2_ = VnGn23[0];
+        G2_ = VnGn23[1];
+        V3_ = VnGn23[2];
+        G3_ = VnGn23[3];
     }
 
     const double a = 3.78;
