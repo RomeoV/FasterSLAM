@@ -218,6 +218,8 @@ void predict_VP_unrolledx4_active_avx(Vector3d state0,
         fill_rand(X13+2, 2, -1.0, 1.0);
         __m256d const x02 = _mm256_load_pd( X02 );
         __m256d const x13 = _mm256_load_pd( X13 );
+//        __m256d const x02 = fill_rand_avx(-1.0, 1.0);
+//        __m256d const x13 = fill_rand_avx(-1.0, 1.0);
         
         __m256d const VnGn02 = _mmTadd_2x2_avx_v2(x02, Ss, VnGn);
         __m256d const VnGn13 = _mmTadd_2x2_avx_v2(x13, Ss, VnGn);
@@ -272,14 +274,85 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
     double VnGn[2];
     add_control_noise_base(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);
  
+    double const a = 3.78;
+    double const b = 0.5;
+    __m256d const as = _mm256_set1_pd( a );
+    __m256d const bs = _mm256_set1_pd( b );
+    
+    __m256d const dts = _mm256_set1_pd( dt ); 
+    
+    __m256d const Ss = _mm256_load_pd( S );
+    
+    __m256d const invWB = _mm256_set1_pd( 1.0 / WHEELBASE);
+    
     VnGn[0] = VnGn[0] / ( 1.0 - tan( VnGn[1] )*0.76/2.83 ); // predict_VP_unrolledx4 takes as input the transformed VnGn[0] ( reuse )
+    __m256d Vs = _mm256_set1_pd( VnGn[0] );
+    __m256d Gs = _mm256_set1_pd( VnGn[1] );
+    __m256d const VnGnv = _mm256_set_pd(VnGn[1], VnGn[0], VnGn[1], VnGn[0]);
+    
     for (size_t i = 0; i < N; i+=4) {
-        predict_VP_unrolledx4_active_avx(particles[i+0].xv,
-                                         particles[i+1].xv,
-                                         particles[i+2].xv,
-                                         particles[i+3].xv,
-                                         VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
-                                         WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        //predict_VP_unrolledx4_active_avx(particles[i+0].xv,
+        //                                 particles[i+1].xv,
+        //                                 particles[i+2].xv,
+        //                                 particles[i+3].xv,
+        //                                 VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
+        //                                 WHEELBASE, dt, SWITCH_PREDICT_NOISE);
+        // Load transposed states
+        __m256d state_0 = _mm256_set_pd( particles[i+3].xv[0], particles[i+2].xv[0], particles[i+1].xv[0], particles[i+0].xv[0] );
+        __m256d state_1 = _mm256_set_pd( particles[i+3].xv[1], particles[i+2].xv[1], particles[i+1].xv[1], particles[i+0].xv[1] );
+        __m256d state_2 = _mm256_set_pd( particles[i+3].xv[2], particles[i+2].xv[2], particles[i+1].xv[2], particles[i+0].xv[2] );
+
+        if (add_control_noise) { 
+
+            //double X02[4] __attribute__ ((aligned(32)));
+            //double X13[4] __attribute__ ((aligned(32)));
+            //fill_rand(X02+0, 2, -1.0, 1.0);
+            //fill_rand(X13+0, 2, -1.0, 1.0);
+            //fill_rand(X02+2, 2, -1.0, 1.0);
+            //fill_rand(X13+2, 2, -1.0, 1.0);
+            //__m256d const x02 = _mm256_load_pd( X02 );
+            //__m256d const x13 = _mm256_load_pd( X13 );
+            __m256d const x02 = fill_rand_avx(-1.0, 1.0);
+            __m256d const x13 = fill_rand_avx(-1.0, 1.0);
+
+            __m256d const VnGn02 = _mmTadd_2x2_avx_v2(x02, Ss, VnGnv);
+            __m256d const VnGn13 = _mmTadd_2x2_avx_v2(x13, Ss, VnGnv);
+
+            Vs = _mm256_shuffle_pd(VnGn02, VnGn13, 0b0000);
+            Gs = _mm256_shuffle_pd(VnGn02, VnGn13, 0b1111);
+        }
+
+        __m256d const Vsdt  = _mm256_mul_pd(Vs, dts);
+        __m256d const sinGs = tscheb_sin_avx( Gs );
+        __m256d const cosGs = tscheb_cos_avx( Gs );
+        __m256d const tanGs = _mm256_div_pd( sinGs, cosGs );
+        __m256d const alpha = _mm256_mul_pd( _mm256_mul_pd( Vsdt, tanGs ), invWB );
+
+        __m256d const sin_state_2 = tscheb_sin_avx( state_2 );
+        __m256d const cos_state_2 = tscheb_cos_avx( state_2 );
+
+        __m256d const alpha_a = _mm256_mul_pd(alpha, as);
+        __m256d const alpha_b = _mm256_mul_pd(alpha, bs);
+        __m256d const beta    = _mm256_sub_pd(Vsdt, alpha_b);
+
+        state_0 = _mm256_fmadd_pd(beta,    cos_state_2, state_0);
+        state_0 = _mm256_sub_pd( state_0, _mm256_mul_pd(alpha_a, sin_state_2));
+
+        state_1 = _mm256_fmadd_pd(beta,    sin_state_2, state_1);
+        state_1 = _mm256_fmadd_pd(alpha_a, cos_state_2, state_1);
+
+        state_2 = simple_pi_to_pi_avx(_mm256_add_pd(state_2, alpha));
+
+        __m256d state_3 = _mm256_setzero_pd(); // dummy 
+
+        __m256d t0, t1, t2, t3;
+        register_transpose(state_0, state_1, state_2, state_3, &t0, &t1, &t2, &t3);
+
+        __m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
+        _mm256_maskstore_pd(particles[i+0].xv, mask, t0);
+        _mm256_maskstore_pd(particles[i+1].xv, mask, t1);
+        _mm256_maskstore_pd(particles[i+2].xv, mask, t2);
+        _mm256_maskstore_pd(particles[i+3].xv, mask, t3);
     }
 }
 
