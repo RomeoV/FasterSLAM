@@ -209,7 +209,7 @@ void predict_VP_unrolledx4_active_avx(Vector3d state0,
 
     if (add_control_noise) { 
         __m256d const VnGn = _mm256_set_pd(G_, V_, G_, V_);
-         
+
         double X02[4] __attribute__ ((aligned(32)));
         double X13[4] __attribute__ ((aligned(32)));
         fill_rand(X02+0, 2, -1.0, 1.0);
@@ -289,6 +289,9 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
     __m256d Vs = _mm256_set1_pd( VnGn[0] );
     __m256d Gs = _mm256_set1_pd( VnGn[1] );
     __m256d const VnGnv = _mm256_set_pd(VnGn[1], VnGn[0], VnGn[1], VnGn[0]);
+        
+    __m256d state_3 = _mm256_setzero_pd(); // dummy 
+    __m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
     
     for (size_t i = 0; i < N; i+=4) {
         //predict_VP_unrolledx4_active_avx(particles[i+0].xv,
@@ -298,6 +301,15 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
         //                                 VnGn[0], VnGn[1], S, // Pass Cholesky factor S instead of Q for reuse
         //                                 WHEELBASE, dt, SWITCH_PREDICT_NOISE);
         // Load transposed states
+ 
+        //__m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
+        //__m256d p0 = _mm256_maskload_pd(particles[i+0].xv, mask);
+        //__m256d p1 = _mm256_maskload_pd(particles[i+1].xv, mask);
+        //__m256d p2 = _mm256_maskload_pd(particles[i+2].xv, mask);
+        //__m256d p3 = _mm256_maskload_pd(particles[i+3].xv, mask);
+        //__m256d state_0, state_1, state_2, state_3;
+        //register_transpose(p0, p1, p2, p3, &state_0, &state_1, &state_2, &state_3);
+
         __m256d state_0 = _mm256_set_pd( particles[i+3].xv[0], particles[i+2].xv[0], particles[i+1].xv[0], particles[i+0].xv[0] );
         __m256d state_1 = _mm256_set_pd( particles[i+3].xv[1], particles[i+2].xv[1], particles[i+1].xv[1], particles[i+0].xv[1] );
         __m256d state_2 = _mm256_set_pd( particles[i+3].xv[2], particles[i+2].xv[2], particles[i+1].xv[2], particles[i+0].xv[2] );
@@ -343,12 +355,12 @@ void predict_update_VP_active(double* controls, size_t N_controls, double V, dou
 
         state_2 = simple_pi_to_pi_avx(_mm256_add_pd(state_2, alpha));
 
-        __m256d state_3 = _mm256_setzero_pd(); // dummy 
+        //__m256d state_3 = _mm256_setzero_pd(); // dummy 
 
         __m256d t0, t1, t2, t3;
         register_transpose(state_0, state_1, state_2, state_3, &t0, &t1, &t2, &t3);
 
-        __m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
+        //__m256i mask = _mm256_set_epi64x(+1, -1, -1, -1); // store only the first 3
         _mm256_maskstore_pd(particles[i+0].xv, mask, t0);
         _mm256_maskstore_pd(particles[i+1].xv, mask, t1);
         _mm256_maskstore_pd(particles[i+2].xv, mask, t2);
