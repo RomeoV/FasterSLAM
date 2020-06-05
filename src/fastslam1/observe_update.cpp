@@ -109,7 +109,7 @@ void observe_update(double * lm, int N_features, Vector3d xtrue, double* R, int*
             observe_update_fast(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
                         zn, particles, weights);
 #else
-            observe_update_fast_KF_Nik(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
+            observe_update_fast_fullavx(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf,
                         zn, particles, weights);
 #endif
 #else
@@ -125,15 +125,6 @@ void observe_update_VP_base(double * lm, int N_features, Vector3d xtrue, double*
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-
-    // for (size_t i = 0; i < N_features; i++) {
-    //     ftag_visible[i] = ftag[i];
-    // }
-
-    // //z is the range and bearing of the observed landmark
-    
-
-    // get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     // //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -168,185 +159,6 @@ void observe_update_VP_base(double * lm, int N_features, Vector3d xtrue, double*
     resample_particles_dag(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);             
 }
 
-double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
-            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
-            Vector2d* zn, Particle* particles, double* weights) {
-    double _xtrue[3];
-    int _da_table[N_features];
-    int _ftag_visible[N_features];
-    int _ftag[N_features];
-    int _idf[N_features];
-    Vector2d _z[N_features]  __attribute__ ((aligned(32)));
-    Vector2d _zf[N_features]  __attribute__ ((aligned(32)));
-    Vector2d _zn[N_features]  __attribute__ ((aligned(32)));
-    size_t _Nf_visible = *Nf_visible;
-    Particle _particles[NPARTICLES];
-    double _weights[NPARTICLES] __attribute__((aligned(32)));
-    double _xv[3*NPARTICLES]  __attribute__ ((aligned(32)));
-    double _Pv[9*NPARTICLES]  __attribute__ ((aligned(32)));
-    // copy(xv, 3*NPARTICLES, _xv);
-    // copy(Pv, 9*NPARTICLES, _Pv);
-    copy(weights, NPARTICLES, _weights);
-    icopy(da_table, N_features, _da_table);
-    icopy(ftag, N_features, _ftag);
-    icopy(ftag_visible, N_features, _ftag_visible);
-    double placeholder[3] = {0,0,0};
-    for (int i = 0; i<NPARTICLES; i++) {
-        _particles[i].xv = _xv + 3*i;
-        _particles[i].Pv = _Pv + 9*i;
-        initParticle(_particles+i, N_features, placeholder);
-        copyParticle(particles+i, _particles+i);
-    }
-    
-    copy(xtrue,3 , _xtrue);
-
-    //Start computing flops
-    double flop_count = 0.0;
-
-    for (size_t i = 0; i < N_features; i++) {
-        _ftag_visible[i] = _ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    flop_count += get_observations_base_flops(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z); // Nf_visible = number of visible features
-    get_observations_base(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z);
-    //print(*z,*Nf_visible,2,std::cout);
-    if ( _Nf_visible == 0 ) {
-        return flop_count;
-    }
-
-    
-    flop_count+=add_observation_noise_base_flops(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
-    add_observation_noise_base(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
-
-    //Compute (known) data associations
-    const int Nf_known = _particles[0].Nfa; // >= Nf_visible . idz_size
-    size_t count_zf = 0;
-    size_t count_zn = 0;
-    flop_count+=data_associate_known_base_flops(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn);
-    data_associate_known_base(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
-    // perform update
-    for (size_t i = 0; i < NPARTICLES; i++) {
-        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            // std::cout<<"HiBase"<<std::endl;
-            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
-            // this will half the processing need of compute_jacobians
-            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
-            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-            flop_count+=compute_weight_base_flops(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
-            double w = compute_weight_base(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
-            w *= _weights[i];
-            _weights[i] = w;
-            flop_count+=feature_update_base_flops(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
-            feature_update_base(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
-        }
-        if ( count_zn != 0 ) { // !zn.empty() 
-            flop_count += add_feature_base_flops(&_particles[i], _zn, count_zn, R);
-            add_feature_base(&_particles[i], _zn, count_zn, R);
-        }
-    }
-    flop_count+=resample_particles_dag_flops(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE);
-    //resample_particles(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE); 
-
-    for (int i = 0; i<NPARTICLES; i++) {
-        delParticleMembers(_particles+i);
-    }
-    return flop_count;
-}
-
-
-double observe_update_base_memory(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
-            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
-            Vector2d* zn, Particle* particles, double* weights) {
-    double _xtrue[3];
-    int _da_table[N_features];
-    int _ftag_visible[N_features];
-    int _ftag[N_features];
-    int _idf[N_features];
-    Vector2d _z[N_features]  __attribute__ ((aligned(32)));
-    Vector2d _zf[N_features]  __attribute__ ((aligned(32)));
-    Vector2d _zn[N_features]  __attribute__ ((aligned(32)));
-    size_t _Nf_visible = *Nf_visible;
-    Particle _particles[NPARTICLES];
-    double _weights[NPARTICLES]  __attribute__ ((aligned(32)));
-    double _xv[3*NPARTICLES]  __attribute__ ((aligned(32)));
-    double _Pv[9*NPARTICLES]  __attribute__ ((aligned(32)));
-    // copy(xv, 3*NPARTICLES, _xv);
-    // copy(Pv, 9*NPARTICLES, _Pv);
-    copy(weights, NPARTICLES, _weights);
-    icopy(da_table, N_features, _da_table);
-    icopy(ftag, N_features, _ftag);
-    icopy(ftag_visible, N_features, _ftag_visible);
-    double placeholder[3] = {0,0,0};
-    for (int i = 0; i<NPARTICLES; i++) {
-        _particles[i].xv = _xv + 3*i;
-        _particles[i].Pv = _Pv + 9*i;
-        _particles[i].w = _weights + i;
-        initParticle_prealloc(_particles+i, N_features, placeholder);
-        copyParticle(particles+i, _particles+i);
-    }
-    
-    copy(xtrue,3 , _xtrue);
-
-    //Start computing flops
-    double memory_moved = 0.0;
-
-    for (size_t i = 0; i < N_features; i++) {
-        _ftag_visible[i] = _ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    memory_moved += get_observations_base_memory(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z); // Nf_visible = number of visible features
-    get_observations_base(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z);
-    //print(*z,*Nf_visible,2,std::cout);
-    if ( _Nf_visible == 0 ) {
-        return memory_moved;
-    }
-
-    
-   memory_moved+=add_observation_noise_base_memory(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
-    add_observation_noise_base(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
-
-    //Compute (known) data associations
-    const int Nf_known = _particles[0].Nfa; // >= Nf_visible . idz_size
-    size_t count_zf = 0;
-    size_t count_zn = 0;
-    memory_moved+=data_associate_known_base_memory(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn);
-    data_associate_known_base(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
-    // perform update
-    for (size_t i = 0; i < NPARTICLES; i++) {
-        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            // std::cout<<"HiBase"<<std::endl;
-            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
-            // this will half the processing need of compute_jacobians
-            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
-            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-            memory_moved+=compute_weight_base_memory(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
-            double w = compute_weight_base(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
-            w *= _weights[i];
-            _weights[i] = w;
-            memory_moved+=feature_update_base_memory(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
-            feature_update_base(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
-        }
-        if ( count_zn != 0 ) { // !zn.empty() 
-            memory_moved += add_feature_base_memory(&_particles[i], _zn, count_zn, R);
-            add_feature_base(&_particles[i], _zn, count_zn, R);
-        }
-    }
-    memory_moved+=resample_particles_dag_memory(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE);
-    //resample_particles(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE); 
-
-    for (int i = 0; i<NPARTICLES; i++) {
-        delParticleMembers_prealloc(_particles+i);
-    }
-    return memory_moved;
-}
 
 void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
@@ -354,14 +166,6 @@ void observe_update_base(double * lm, int N_features, Vector3d xtrue, double* R,
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
-    //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
     }
@@ -401,13 +205,6 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -444,17 +241,12 @@ void observe_update_active(double * lm, int N_features, Vector3d xtrue, double* 
 }
 
 #ifdef __AVX2__
-void observe_update_fast_KF_Nik(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+void observe_update_fast_fullavx(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-    //z is the range and bearing of the observed landmark
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -494,7 +286,7 @@ void observe_update_fast_KF_Nik(double * lm, int N_features, Vector3d xtrue, dou
                 __m256d Pf2 = _mm256_load_pd(particles[i+2].Pf + 4 * idf[j]);
                 __m256d Pf3 = _mm256_load_pd(particles[i+3].Pf + 4 * idf[j]);
 
-                compute_jacobians4x_avx(px, py, ptheta, xfp0p2, xfp1p3, 
+                compute_jacobians4x_avx_inline(px, py, ptheta, xfp0p2, xfp1p3, 
                             Pf0, Pf1, Pf2, Pf3, R_vec,
                             &zp_dist, &zp_angle,
                             &Hf0v,  &Hf1v,  &Hf2v, &Hf3v,
@@ -596,11 +388,6 @@ void observe_update_fast(double * lm, int N_features, Vector3d xtrue, double* R,
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-    //z is the range and bearing of the observed landmark
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -791,11 +578,6 @@ void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vecto
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-    //z is the range and bearing of the observed landmark
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -953,19 +735,12 @@ void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vecto
 
 
 #ifdef __AVX2__
-void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+void observe_update_fast_partial_avx_slower_vTMv(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -1168,19 +943,12 @@ void observe_update_fast_romeo_vTMv(double * lm, int N_features, Vector3d xtrue,
 #endif
 
 #ifdef __AVX2__
-void observe_update_fast_v1(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+void observe_update_simpleavx(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -1433,13 +1201,6 @@ void observe_update_unrolled4x_plain(double * lm, int N_features, Vector3d xtrue
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -1600,13 +1361,6 @@ void observe_update_unrolled4x(double * lm, int N_features, Vector3d xtrue, doub
     // Compute true data, then add noise
     // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
     // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
     //print(*z,*Nf_visible,2,std::cout);
     if ( *Nf_visible == 0 ) {
         return;
@@ -1657,7 +1411,7 @@ void observe_update_unrolled4x(double * lm, int N_features, Vector3d xtrue, doub
                     w *= (double)num / (double)den;
 
                     
-                    KF_cholesky_update_base(particles[i+k].xf + 2 * idf[j], particles[i + k].Pf + 4 * idf[j], 
+                    KF_cholesky_update(particles[i+k].xf + 2 * idf[j], particles[i + k].Pf + 4 * idf[j], 
                                     feat_diff[j + k* count_zf], R, Hf[j + k* count_zf]);
                     set_xfi(particles+i+k, particles[i+k].xf + 2 * idf[j], idf[j]);
                     set_Pfi(particles+i+k, particles[i+k].Pf + 4 * idf[j], idf[j]);
@@ -1676,6 +1430,324 @@ void observe_update_unrolled4x(double * lm, int N_features, Vector3d xtrue, doub
 
     resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
 }
+
+void observe_update_simplified(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    // Compute true data, then add noise
+    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( *Nf_visible == 0 ) {
+        return;
+    }
+    
+    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+    Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+    Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+
+    Vector2d v[count_zf]  __attribute__ ((aligned(32)));
+    Vector2d feat_diff[count_zf];  // difference btw feature prediciton and
+                                        // measurement (used to update mean)
+    // perform update
+    //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
+    double den, num;
+    Matrix2d S, ST, S_inv;
+    Vector2d S_inv_v;
+    double vT_S_inv_v;
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            // std::cout<<"HiFast"<<std::endl;
+            //COMPUTE JACOBIANS
+            compute_jacobians_fast(particles + i, idf, count_zf, R, zp, Hv, Hf, Sf);
+            //END COMPUTE_JACOBIANS
+            double w = 1.0;
+            for (size_t j = 0; j < count_zf; j++) {
+                sub(zf[j], zp[j], 2, feat_diff[j]);
+                feat_diff[j][1] = pi_to_pi(feat_diff[j][1]); //=v[j]
+                
+                copy(Sf[j],4,S);
+                inv_2x2(Sf[j], S_inv);
+                
+                mv_2x2(S_inv, feat_diff[j], S_inv_v);
+                mul(feat_diff[j], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
+
+                den = 2 * M_PI * sqrt(determinant_2x2(Sf[j]));
+                num = exp(-0.5 * vT_S_inv_v);
+                w *= (double)num / (double)den;
+
+                
+                KF_cholesky_update(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
+                                feat_diff[j], R, 
+                                Hf[j]);
+                //set_xfi(particles+i, particles[i].xf + 2 * idf[j], idf[j]);
+                //set_Pfi(particles+i, particles[i].Pf + 4 * idf[j], idf[j]);
+                
+            }
+            weights[i]*=w;
+            
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            add_feature(particles+i, zn, count_zn, R);
+        }
+    }
+
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+}
+
+void observe_update_inplace(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    // Compute true data, then add noise
+    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
+    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( *Nf_visible == 0 ) {
+        return;
+    }
+    
+    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+
+    // perform update
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            compute_jacobians_fast(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
+            
+            Vector2d v[count_zf];
+            for (size_t j = 0; j < count_zf; j++) {
+                Vector2d v_j;
+                sub(zf[j], zp[j], 2, v_j);  // v_j = z[j] - zp[j]
+                v_j[1] = pi_to_pi_base(v_j[1]);
+                copy(v_j, 2, v[j]);  // v[j] = v_j
+            }
+
+            double w0 = 1.0;
+
+            double den, num;
+            // this can probably be done alot faster without this loop.....
+            
+            for (size_t j = 0; j <count_zf; j++) {
+                Matrix2d S, ST, S_inv;
+                Vector2d S_inv_v;
+                double vT_S_inv_v;
+                // Eq. 61 in Thrun03g
+                
+                copy(Sf[j], 4, S);
+                transpose(S, 2, 2, ST);
+                inv_2x2(S, S_inv);
+
+                
+                mv_2x2(S_inv, v[j], S_inv_v);
+                mul(v[j], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
+
+                assert(num);
+                den = 2 * M_PI * sqrt(determinant_2x2(S));
+                num = exp(-0.5 * vT_S_inv_v);
+                w0 *= (double)num / (double)den;
+            }
+            double w = w0;
+            
+            //double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
+            w*=weights[i];
+            weights[i] = w;
+            feature_update_active(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            add_feature(&particles[i], zn, count_zn, R);
+        }
+    }
+
+    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
+}
+
+
+
+/// FLOPS AND MEMORY COUNTERS///
+
+
+double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    double _xtrue[3];
+    int _da_table[N_features];
+    int _ftag_visible[N_features];
+    int _ftag[N_features];
+    int _idf[N_features];
+    Vector2d _z[N_features]  __attribute__ ((aligned(32)));
+    Vector2d _zf[N_features]  __attribute__ ((aligned(32)));
+    Vector2d _zn[N_features]  __attribute__ ((aligned(32)));
+    size_t _Nf_visible = *Nf_visible;
+    Particle _particles[NPARTICLES];
+    double _weights[NPARTICLES] __attribute__((aligned(32)));
+    double _xv[3*NPARTICLES]  __attribute__ ((aligned(32)));
+    double _Pv[9*NPARTICLES]  __attribute__ ((aligned(32)));
+    // copy(xv, 3*NPARTICLES, _xv);
+    // copy(Pv, 9*NPARTICLES, _Pv);
+    copy(weights, NPARTICLES, _weights);
+    icopy(da_table, N_features, _da_table);
+    icopy(ftag, N_features, _ftag);
+    icopy(ftag_visible, N_features, _ftag_visible);
+    double placeholder[3] = {0,0,0};
+    for (int i = 0; i<NPARTICLES; i++) {
+        _particles[i].xv = _xv + 3*i;
+        _particles[i].Pv = _Pv + 9*i;
+        initParticle(_particles+i, N_features, placeholder);
+        copyParticle(particles+i, _particles+i);
+    }
+    
+    copy(xtrue,3 , _xtrue);
+
+    //Start computing flops
+    double flop_count = 0.0;
+    
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( _Nf_visible == 0 ) {
+        return flop_count;
+    }
+
+    
+    flop_count+=add_observation_noise_base_flops(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
+    add_observation_noise_base(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = _particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    //flop_count+=data_associate_known_base_flops(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn);
+    data_associate_known_base(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    // perform update
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            // std::cout<<"HiBase"<<std::endl;
+            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
+            // this will half the processing need of compute_jacobians
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            flop_count+=compute_weight_base_flops(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
+            double w = compute_weight_base(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
+            w *= _weights[i];
+            _weights[i] = w;
+            flop_count+=feature_update_base_flops(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
+            feature_update_base(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            flop_count += add_feature_base_flops(&_particles[i], _zn, count_zn, R);
+            add_feature_base(&_particles[i], _zn, count_zn, R);
+        }
+    }
+    flop_count+=resample_particles_dag_flops(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE);
+    //resample_particles(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE); 
+
+    for (int i = 0; i<NPARTICLES; i++) {
+        delParticleMembers(_particles+i);
+    }
+    return flop_count;
+}
+
+
+double observe_update_base_memory(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
+            Vector2d* zn, Particle* particles, double* weights) {
+    double _xtrue[3];
+    int _da_table[N_features];
+    int _ftag_visible[N_features];
+    int _ftag[N_features];
+    int _idf[N_features];
+    Vector2d _z[N_features]  __attribute__ ((aligned(32)));
+    Vector2d _zf[N_features]  __attribute__ ((aligned(32)));
+    Vector2d _zn[N_features]  __attribute__ ((aligned(32)));
+    size_t _Nf_visible = *Nf_visible;
+    Particle _particles[NPARTICLES];
+    double _weights[NPARTICLES]  __attribute__ ((aligned(32)));
+    double _xv[3*NPARTICLES]  __attribute__ ((aligned(32)));
+    double _Pv[9*NPARTICLES]  __attribute__ ((aligned(32)));
+    // copy(xv, 3*NPARTICLES, _xv);
+    // copy(Pv, 9*NPARTICLES, _Pv);
+    copy(weights, NPARTICLES, _weights);
+    icopy(da_table, N_features, _da_table);
+    icopy(ftag, N_features, _ftag);
+    icopy(ftag_visible, N_features, _ftag_visible);
+    double placeholder[3] = {0,0,0};
+    for (int i = 0; i<NPARTICLES; i++) {
+        _particles[i].xv = _xv + 3*i;
+        _particles[i].Pv = _Pv + 9*i;
+        _particles[i].w = _weights + i;
+        initParticle_prealloc(_particles+i, N_features, placeholder);
+        copyParticle(particles+i, _particles+i);
+    }
+    
+    copy(xtrue,3 , _xtrue);
+
+    //Start computing flops
+    double memory_moved = 0.0;
+
+    //print(*z,*Nf_visible,2,std::cout);
+    if ( _Nf_visible == 0 ) {
+        return memory_moved;
+    }
+
+    
+    memory_moved+=add_observation_noise_base_memory(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
+    add_observation_noise_base(_z, _Nf_visible, R, SWITCH_SENSOR_NOISE);
+
+    //Compute (known) data associations
+    const int Nf_known = _particles[0].Nfa; // >= Nf_visible . idz_size
+    size_t count_zf = 0;
+    size_t count_zn = 0;
+    memory_moved+=data_associate_known_base_memory(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn);
+    data_associate_known_base(_z, _ftag_visible, _Nf_visible, _da_table, Nf_known, _zf, _idf, &count_zf, _zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
+    // perform update
+    for (size_t i = 0; i < NPARTICLES; i++) {
+        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
+            // std::cout<<"HiBase"<<std::endl;
+            // TODO: precompute the jacobian of compute_weight_base and feature_update_base
+            // this will half the processing need of compute_jacobians
+            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
+            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
+            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
+            memory_moved+=compute_weight_base_memory(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
+            double w = compute_weight_base(&_particles[i], _zf, count_zf, _idf, R, zp, Hv, Hf, Sf);
+            w *= _weights[i];
+            _weights[i] = w;
+            memory_moved+=feature_update_base_memory(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
+            feature_update_base(&_particles[i], _zf, _idf, count_zf, R, zp, Hv, Hf, Sf);
+        }
+        if ( count_zn != 0 ) { // !zn.empty() 
+            memory_moved += add_feature_base_memory(&_particles[i], _zn, count_zn, R);
+            add_feature_base(&_particles[i], _zn, count_zn, R);
+        }
+    }
+    memory_moved+=resample_particles_dag_memory(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE);
+    //resample_particles(_particles, NPARTICLES, _weights, NEFFECTIVE, SWITCH_RESAMPLE); 
+
+    for (int i = 0; i<NPARTICLES; i++) {
+        delParticleMembers_prealloc(_particles+i);
+    }
+    return memory_moved;
+}
+
+
 
 double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
@@ -1712,16 +1784,8 @@ double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double
 
     double memory_moved = 0.0;
 
-    memory_moved+=2*N_features; //lm
+    //memory_moved+=2*N_features; //lm
 
-    for (size_t i = 0; i < N_features; i++) {
-        _ftag_visible[i] = _ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    memory_moved += get_observations_base_memory(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z); // Nf_visible = number of visible features
-    get_observations_base(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z);
     //print(*z,*Nf_visible,2,std::cout);
     if ( _Nf_visible == 0 ) {
         return memory_moved;
@@ -1833,14 +1897,6 @@ double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double*
     //Start computing flops
     double flop_count = 0.0;
     
-    for (size_t i = 0; i < N_features; i++) {
-        _ftag_visible[i] = _ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    flop_count += get_observations_base_flops(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z); // Nf_visible = number of visible features
-    get_observations_base(_xtrue, MAX_RANGE, lm, N_features, _ftag_visible, &_Nf_visible, _z);
     //print(*z,*Nf_visible,2,std::cout);
     if ( _Nf_visible == 0 ) {
         return flop_count;
@@ -1883,7 +1939,7 @@ double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double*
                 flop_count+=2*tp.add;
                 sub(zf[j], zp[j], 2, feat_diff[j]);
                 flop_count+=pi_to_pi_active_flops(feat_diff[j][1]);
-                feat_diff[j][1] = pi_to_pi_base(feat_diff[j][1]); //=v[j]
+                feat_diff[j][1] = pi_to_pi(feat_diff[j][1]); //=v[j]
                 
                 copy(Sf[j],4,S);
 
@@ -1929,167 +1985,5 @@ double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double*
     }
     return flop_count;
 }
-
-void observe_update_simplified(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
-            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
-            Vector2d* zn, Particle* particles, double* weights) {
-    // Compute true data, then add noise
-    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
-    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
-    //print(*z,*Nf_visible,2,std::cout);
-    if ( *Nf_visible == 0 ) {
-        return;
-    }
-    
-    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
-
-    //Compute (known) data associations
-    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
-    size_t count_zf = 0;
-    size_t count_zn = 0;
-    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
-    Vector2d zp[count_zf] __attribute__ ((aligned(32)));
-    Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
-    Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
-    Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-
-    Vector2d v[count_zf]  __attribute__ ((aligned(32)));
-    Vector2d feat_diff[count_zf];  // difference btw feature prediciton and
-                                        // measurement (used to update mean)
-    // perform update
-    //double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
-    double den, num;
-    Matrix2d S, ST, S_inv;
-    Vector2d S_inv_v;
-    double vT_S_inv_v;
-    for (size_t i = 0; i < NPARTICLES; i++) {
-        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            // std::cout<<"HiFast"<<std::endl;
-            //COMPUTE JACOBIANS
-            compute_jacobians_fast(particles + i, idf, count_zf, R, zp, Hv, Hf, Sf);
-            //END COMPUTE_JACOBIANS
-            double w = 1.0;
-            for (size_t j = 0; j < count_zf; j++) {
-                sub(zf[j], zp[j], 2, feat_diff[j]);
-                feat_diff[j][1] = pi_to_pi(feat_diff[j][1]); //=v[j]
-                
-                copy(Sf[j],4,S);
-                inv_2x2(Sf[j], S_inv);
-                
-                mv_2x2(S_inv, feat_diff[j], S_inv_v);
-                mul(feat_diff[j], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
-
-                den = 2 * M_PI * sqrt(determinant_2x2(Sf[j]));
-                num = exp(-0.5 * vT_S_inv_v);
-                w *= (double)num / (double)den;
-
-                
-                KF_cholesky_update_base(particles[i].xf + 2 * idf[j], particles[i].Pf + 4 * idf[j], 
-                                feat_diff[j], R, 
-                                Hf[j]);
-                //set_xfi(particles+i, particles[i].xf + 2 * idf[j], idf[j]);
-                //set_Pfi(particles+i, particles[i].Pf + 4 * idf[j], idf[j]);
-                
-            }
-            weights[i]*=w;
-            
-        }
-        if ( count_zn != 0 ) { // !zn.empty() 
-            add_feature(particles+i, zn, count_zn, R);
-        }
-    }
-
-    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
-}
-
-void observe_update_inplace(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
-            int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
-            Vector2d* zn, Particle* particles, double* weights) {
-    // Compute true data, then add noise
-    // ftag_visible = vector<int>(ftag); //modify the copy, not the ftag	
-    // memcpy(ftag_visible, ftag, N_features*sizeof(int));
-    for (size_t i = 0; i < N_features; i++) {
-        ftag_visible[i] = ftag[i];
-    }
-
-    //z is the range and bearing of the observed landmark
-    
-    get_observations(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
-    //print(*z,*Nf_visible,2,std::cout);
-    if ( *Nf_visible == 0 ) {
-        return;
-    }
-    
-    add_observation_noise(z, *Nf_visible, R, SWITCH_SENSOR_NOISE);
-
-    //Compute (known) data associations
-    const int Nf_known = particles[0].Nfa; // >= Nf_visible . idz_size
-    size_t count_zf = 0;
-    size_t count_zn = 0;
-    data_associate_known(z, ftag_visible, *Nf_visible, da_table, Nf_known, zf, idf, &count_zf, zn, &count_zn); // TODO Rewrite/fix bugs + create test for this functions
-
-    // perform update
-    for (size_t i = 0; i < NPARTICLES; i++) {
-        if ( count_zf != 0 ) { //observe map features ( !zf.empty() )
-            Vector2d zp[count_zf] __attribute__ ((aligned(32)));
-            Matrix23d Hv[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Hf[count_zf] __attribute__ ((aligned(32)));
-            Matrix2d Sf[count_zf] __attribute__ ((aligned(32)));
-            compute_jacobians_fast(&particles[i], idf, count_zf, R, zp, Hv, Hf, Sf);
-            
-            Vector2d v[count_zf];
-            for (size_t j = 0; j < count_zf; j++) {
-                Vector2d v_j;
-                sub(zf[j], zp[j], 2, v_j);  // v_j = z[j] - zp[j]
-                v_j[1] = pi_to_pi_base(v_j[1]);
-                copy(v_j, 2, v[j]);  // v[j] = v_j
-            }
-
-            double w0 = 1.0;
-
-            double den, num;
-            // this can probably be done alot faster without this loop.....
-            
-            for (size_t j = 0; j <count_zf; j++) {
-                Matrix2d S, ST, S_inv;
-                Vector2d S_inv_v;
-                double vT_S_inv_v;
-                // Eq. 61 in Thrun03g
-                
-                copy(Sf[j], 4, S);
-                transpose(S, 2, 2, ST);
-                inv_2x2(S, S_inv);
-
-                
-                mv_2x2(S_inv, v[j], S_inv_v);
-                mul(v[j], S_inv_v, 1, 2, 1, &vT_S_inv_v); // TODO in linalg
-
-                assert(num);
-                den = 2 * M_PI * sqrt(determinant_2x2(S));
-                num = exp(-0.5 * vT_S_inv_v);
-                w0 *= (double)num / (double)den;
-            }
-            double w = w0;
-            
-            //double w = compute_weight_active(&particles[i], zf, count_zf, idf, R, zp, Hv, Hf, Sf);
-            w*=weights[i];
-            weights[i] = w;
-            feature_update_active(&particles[i], zf, idf, count_zf, R, zp, Hv, Hf, Sf);
-        }
-        if ( count_zn != 0 ) { // !zn.empty() 
-            add_feature(&particles[i], zn, count_zn, R);
-        }
-    }
-
-    resample_particles(particles, NPARTICLES, weights, NEFFECTIVE, SWITCH_RESAMPLE);            
-}
-
 
 

@@ -16,6 +16,8 @@ extern __inline void _mm256_store2_m128d (double *__PH, double *__PL, __m256d __
 
 //! Prints an array
 void print(const double *x, size_t rows, size_t cols, std::ostream& = std::cout);
+void iprint(const int *x, size_t rows, size_t cols, std::ostream& = std::cout);
+void stprint(const size_t *x, size_t rows, size_t cols, std::ostream& = std::cout);
 
 //! Prints a SIMD vector
 void print256d(__m256d var);

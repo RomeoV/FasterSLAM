@@ -1,4 +1,5 @@
 #include "add_control_noise.h"
+
 #include <iostream>
 
 
@@ -8,6 +9,8 @@ void add_control_noise(double V, double G, double* Q, int addnoise, double* VnGn
 
 void add_control_noise_base(double V, double G, double* Q, int addnoise, double* VnGn) 
 {
+  VnGn[0] = V;
+  VnGn[1] = G;
 	if (addnoise == 1) {
 		Vector2d A; //seems we don't use malloc //malloc(2 * sizeof(double))
 		A[0] = V;
@@ -17,12 +20,12 @@ void add_control_noise_base(double V, double G, double* Q, int addnoise, double*
 		VnGn[0] = result[0];
 		VnGn[1] = result[1];
 	}
-  VnGn[0] = V;
-  VnGn[1] = G;
 }
 
 // Work / Memory instrumenting
 void add_control_noise_active(double V, double G, double* Q, int addnoise, double* VnGn){
+  VnGn[0] = V;
+  VnGn[1] = G;
 	if (addnoise == 1) {
 		Vector2d A; //seems we don't use malloc //malloc(2 * sizeof(double))
 		A[0] = V;

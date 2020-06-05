@@ -44,7 +44,7 @@ int main(int argc, char *argv[]) {
     bench.add_function(&fastslam1_sim_active, "fastslam1_sim_active", 0.0);
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 3; i++) {
         int scale = pow(2,i);
         if (argc < 2){
 		    read_input_file_and_scale("../input_data/example_webmap.mat",scale, &lm, &wp, lm_rows, wp_rows);

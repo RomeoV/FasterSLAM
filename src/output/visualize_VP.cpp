@@ -35,7 +35,7 @@ int main (int argc, char *argv[])
 
 	if (argc < 2)
 		return -1;
-
+    NPARTICLES = 1000;
 	//read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
 
 	
@@ -95,7 +95,6 @@ int main (int argc, char *argv[])
 
     // Main loop
     while ( index < lm_rows -1 ) {
-		std::cerr<<"A"<<std::endl;
         // Optional
         // if (index > 20000) {
         //     break;
@@ -120,9 +119,7 @@ int main (int argc, char *argv[])
 
 		V = lm[4*(index) +2];
 		G = lm[4*(index) +3];
-		std::cerr<<"Start_P"<<std::endl;
-        predict_update_VP_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
-		std::cerr<<"Finished_P"<<std::endl;
+        predict_update_VP_active(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
         /////////////////////////////////////////////////////////////////
 
 
@@ -134,7 +131,6 @@ int main (int argc, char *argv[])
         if ( lm[4*(index+1) + 1] > -1) {
             dtsum = 0;
             observe=true;
-			std::cerr<<"Start_O"<<std::endl;
 
 
 			///Setup z, ftag_visible, Nf_visible
@@ -155,7 +151,7 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
-            observe_update_VP_base(lm, N_features, xtrue, *R, ftag, 
+            observe_update(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
 
@@ -166,7 +162,6 @@ int main (int argc, char *argv[])
 			predict_update_VP_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
             //////////////////////////////////////////////////////////////
-			std::cerr<<"Finish_O"<<std::endl;
         }
 		index++;
     }

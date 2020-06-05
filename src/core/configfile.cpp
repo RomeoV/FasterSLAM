@@ -16,11 +16,11 @@ double* Pv;
 double V_ = 3.0; // m/s
 double MAXG = 30*pi / 180; // radians, maximum steering angle (-MAXG < g < MAXG)
 double RATEG = 20*pi / 180; // rad/s, maximum rate of change in steer angle
-double WHEELBASE = 2.83; //4. metres, vehicle wheel-base
-double DT_CONTROLS = 0.015; // seconds, time interval between control signals
+double WHEELBASE = 4; //4. metres, vehicle wheel-base
+double DT_CONTROLS = 0.025; // seconds, time interval between control signals
 
 // control noises
-double sigmaV = 2; // m/s
+double sigmaV = 0.3; // m/s //2 for VP, 0.3 for default
 double sigmaG = (3.0 * pi / 180); // radians
 
 double Q[2][2] __attribute__((aligned(32))) = {
@@ -47,7 +47,7 @@ int NUMBER_LOOPS = 2; // number of loops through the waypoint list
 
 // resampling
 unsigned int NPARTICLES = 100; 
-double NEFFECTIVE = 1.05* NPARTICLES; // minimum number of effective particles before resampling
+double NEFFECTIVE = 0.75 * NPARTICLES; // minimum number of effective particles before resampling
 
 // switches
 int SWITCH_CONTROL_NOISE = 0;
