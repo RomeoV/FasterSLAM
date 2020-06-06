@@ -1,5 +1,6 @@
 #pragma once
 #include <cstdlib>
+#include "flop_count.h"
 
 typedef double Vector2d[2];
 typedef double Vector3d[3];
@@ -25,3 +26,4 @@ typedef struct throughputs_s {
     double doublecomp = 1.0;
 } throughputs_t;
 
+static throughputs_t tp;
