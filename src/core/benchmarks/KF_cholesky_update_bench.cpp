@@ -30,7 +30,7 @@ auto data_loader(Vector2d x, Matrix2d P, cVector2d v, cMatrix2d R, cMatrix2d H) 
 //
 // DataLoader for Benchmark 2
 //
-auto data_loader_unrolled4_avx(__m256d *x0x2,
+void data_loader_unrolled4_avx(__m256d *x0x2,
                                __m256d *x1x3,
                                __m256d *P0,
                                __m256d *P1,
@@ -54,105 +54,76 @@ auto data_loader_unrolled4_avx(__m256d *x0x2,
     *P3   = _mm256_load_pd( P );
 }
 
-void KF_cholesky_update_base_X4(__m256d *x0x2,
-                                __m256d *x1x3,
-                                __m256d *P0,
-                                __m256d *P1,
-                                __m256d *P2,
-                                __m256d *P3,
-                                __m256d const v0v2,
-                                __m256d const v1v3,
-                                __m256d const R,
-                                __m256d const H0,
-                                __m256d const H1,
-                                __m256d const H2,
-                                __m256d const H3) {
+template<typename func>
+std::function<void (__m256d*,
+                    __m256d*,
+                    __m256d*,
+                    __m256d*,
+                    __m256d*,
+                    __m256d*,
+                    __m256d const,
+                    __m256d const,
+                    __m256d const,
+                    __m256d const,
+                    __m256d const,
+                    __m256d const,
+                    __m256d const)>
+KF_cholesky_update_x4(func KF_cholesky_update_x1) {
 
-    double x0x2_[4], x1x3_[4], v0v2_[4], v1v3_[4];
-    double P0_[4], P1_[4], P2_[4], P3_[4];
-    double R_[4], H0_[4], H1_[4], H2_[4], H3_[4];
+    return [=] (__m256d *x0x2,
+                __m256d *x1x3,
+                __m256d *P0,
+                __m256d *P1,
+                __m256d *P2,
+                __m256d *P3,
+                __m256d const v0v2,
+                __m256d const v1v3,
+                __m256d const R,
+                __m256d const H0,
+                __m256d const H1,
+                __m256d const H2,
+                __m256d const H3) -> void {
+        double x0x2_[4] __attribute__((aligned(32)));
+        double x1x3_[4] __attribute__((aligned(32)));
+        double v0v2_[4] __attribute__((aligned(32)));
+        double v1v3_[4] __attribute__((aligned(32)));
+        double   P0_[4] __attribute__((aligned(32)));
+        double   P1_[4] __attribute__((aligned(32)));
+        double   P2_[4] __attribute__((aligned(32)));
+        double   P3_[4] __attribute__((aligned(32)));
+        double    R_[4] __attribute__((aligned(32)));
+        double   H0_[4] __attribute__((aligned(32)));
+        double   H1_[4] __attribute__((aligned(32)));
+        double   H2_[4] __attribute__((aligned(32)));
+        double   H3_[4] __attribute__((aligned(32)));
 
-    _mm256_store_pd(x0x2_, *x0x2);
-    _mm256_store_pd(x1x3_, *x1x3);
-    _mm256_store_pd(P0_, *P0);
-    _mm256_store_pd(P1_, *P1);
-    _mm256_store_pd(P2_, *P2);
-    _mm256_store_pd(P3_, *P3);
-    _mm256_store_pd(v0v2_, v0v2);
-    _mm256_store_pd(v1v3_, v1v3);
-    _mm256_store_pd(R_, R); 
-    _mm256_store_pd(H0_, H0);
-    _mm256_store_pd(H1_, H1);
-    _mm256_store_pd(H2_, H2);
-    _mm256_store_pd(H3_, H3);
+        _mm256_store_pd(x0x2_, *x0x2);
+        _mm256_store_pd(x1x3_, *x1x3);
+        _mm256_store_pd(P0_, *P0);
+        _mm256_store_pd(P1_, *P1);
+        _mm256_store_pd(P2_, *P2);
+        _mm256_store_pd(P3_, *P3);
+        _mm256_store_pd(v0v2_, v0v2);
+        _mm256_store_pd(v1v3_, v1v3);
+        _mm256_store_pd(R_, R); 
+        _mm256_store_pd(H0_, H0);
+        _mm256_store_pd(H1_, H1);
+        _mm256_store_pd(H2_, H2);
+        _mm256_store_pd(H3_, H3);
 
-    KF_cholesky_update_base(x0x2_+0, P0_, v0v2_+0, R_, H0_);
-    KF_cholesky_update_base(x1x3_+0, P1_, v1v3_+0, R_, H1_);
-    KF_cholesky_update_base(x0x2_+2, P2_, v0v2_+2, R_, H2_);
-    KF_cholesky_update_base(x1x3_+2, P3_, v1v3_+2, R_, H3_);
+        KF_cholesky_update_x1(x0x2_+0, P0_, v0v2_+0, R_, H0_);
+        KF_cholesky_update_x1(x1x3_+0, P1_, v1v3_+0, R_, H1_);
+        KF_cholesky_update_x1(x0x2_+2, P2_, v0v2_+2, R_, H2_);
+        KF_cholesky_update_x1(x1x3_+2, P3_, v1v3_+2, R_, H3_);
 
-    *x0x2 = _mm256_load_pd(x0x2_);
-    *x1x3 = _mm256_load_pd(x1x3_);
-    *P0   = _mm256_load_pd( P0_ );
-    *P1   = _mm256_load_pd( P1_ );
-    *P2   = _mm256_load_pd( P2_ );
-    *P3   = _mm256_load_pd( P3_ );
-} 
-
-void KF_cholesky_update_reduced_flops_avx_X4(__m256d *x0x2,
-                                             __m256d *x1x3,
-                                             __m256d *P0,
-                                             __m256d *P1,
-                                             __m256d *P2,
-                                             __m256d *P3,
-                                             __m256d const v0v2,
-                                             __m256d const v1v3,
-                                             __m256d const R,
-                                             __m256d const H0,
-                                             __m256d const H1,
-                                             __m256d const H2,
-                                             __m256d const H3) {
-
-    double x0x2_[4] __attribute__((aligned(32)));
-    double x1x3_[4] __attribute__((aligned(32)));
-    double v0v2_[4] __attribute__((aligned(32)));
-    double v1v3_[4] __attribute__((aligned(32)));
-    double   P0_[4] __attribute__((aligned(32)));
-    double   P1_[4] __attribute__((aligned(32)));
-    double   P2_[4] __attribute__((aligned(32)));
-    double   P3_[4] __attribute__((aligned(32)));
-    double    R_[4] __attribute__((aligned(32)));
-    double   H0_[4] __attribute__((aligned(32)));
-    double   H1_[4] __attribute__((aligned(32)));
-    double   H2_[4] __attribute__((aligned(32)));
-    double   H3_[4] __attribute__((aligned(32)));
-
-    _mm256_store_pd(x0x2_, *x0x2);
-    _mm256_store_pd(x1x3_, *x1x3);
-    _mm256_store_pd(P0_, *P0);
-    _mm256_store_pd(P1_, *P1);
-    _mm256_store_pd(P2_, *P2);
-    _mm256_store_pd(P3_, *P3);
-    _mm256_store_pd(v0v2_, v0v2);
-    _mm256_store_pd(v1v3_, v1v3);
-    _mm256_store_pd(R_, R); 
-    _mm256_store_pd(H0_, H0);
-    _mm256_store_pd(H1_, H1);
-    _mm256_store_pd(H2_, H2);
-    _mm256_store_pd(H3_, H3);
-
-    KF_cholesky_update_reduced_flops_avx(x0x2_+0, P0_, v0v2_+0, R_, H0_);
-    KF_cholesky_update_reduced_flops_avx(x1x3_+0, P1_, v1v3_+0, R_, H1_);
-    KF_cholesky_update_reduced_flops_avx(x0x2_+2, P2_, v0v2_+2, R_, H2_);
-    KF_cholesky_update_reduced_flops_avx(x1x3_+2, P3_, v1v3_+2, R_, H3_);
-
-    *x0x2 = _mm256_load_pd(x0x2_);
-    *x1x3 = _mm256_load_pd(x1x3_);
-    *P0   = _mm256_load_pd( P0_ );
-    *P1   = _mm256_load_pd( P1_ );
-    *P2   = _mm256_load_pd( P2_ );
-    *P3   = _mm256_load_pd( P3_ );
-} 
+        *x0x2 = _mm256_load_pd(x0x2_);
+        *x1x3 = _mm256_load_pd(x1x3_);
+        *P0   = _mm256_load_pd( P0_ );
+        *P1   = _mm256_load_pd( P1_ );
+        *P2   = _mm256_load_pd( P2_ );
+        *P3   = _mm256_load_pd( P3_ );
+    };
+}
 
 int main() {
 
@@ -217,7 +188,7 @@ int main() {
     // -------------- BENCHMARK 1 -------------- //
     // ----------------------------------------- //
 
-    Benchmark<decltype(&KF_cholesky_update)> bench("KF_cholesky_update benchmark"); 
+    Benchmark<decltype(&KF_cholesky_update)> bench("KF_cholesky_update benchmark (SINGLE CALL)"); 
     bench.data_loader = data_loader; 
     
 #ifdef KF_YGLEE
@@ -294,8 +265,6 @@ int main() {
     __m256d H2   = _mm256_load_pd( H_u4avx );
     __m256d H3   = _mm256_load_pd( H_u4avx );
 
-    //KF_cholesky_update_base_X4(&x0x2, &x1x3, &P0, &P1, &P2, &P3, v0v2, v1v3, RR, H0, H1, H2, H3);
-    //KF_cholesky_update_reduced_flops_avx_X4(&x0x2, &x1x3, &P0, &P1, &P2, &P3, v0v2, v1v3, RR, H0, H1, H2, H3);
     KF_cholesky_update_unrolled4_avx(&x0x2, &x1x3, &P0, &P1, &P2, &P3, v0v2, v1v3, RR, H0, H1, H2, H3);
 
     double x0x2_[4], x1x3_[4], P0_[4], P1_[4], P2_[4], P3_[4]; 
@@ -322,22 +291,38 @@ int main() {
     // ----------------------------------------- //
     // -------------- BENCHMARK 2 -------------- //
     // ----------------------------------------- //
+    auto KF_cholesky_update_base_x4              = KF_cholesky_update_x4(KF_cholesky_update_base);
+    auto KF_cholesky_update_fused_ops_x4         = KF_cholesky_update_x4(KF_cholesky_update_fused_ops);
+    auto KF_cholesky_update_fused_ops_avx_x4     = KF_cholesky_update_x4(KF_cholesky_update_fused_ops_avx);
+    auto KF_cholesky_update_reduced_flops_x4     = KF_cholesky_update_x4(KF_cholesky_update_reduced_flops);
+    auto KF_cholesky_update_reduced_flops_avx_x4 = KF_cholesky_update_x4(KF_cholesky_update_reduced_flops_avx);
 
-    Benchmark<decltype(&KF_cholesky_update_unrolled4_avx)> bench_u4avx("KF_cholesky_update_unrolled4_avx benchmark");
-
+    Benchmark<decltype(KF_cholesky_update_base_x4)> bench_u4avx("KF_cholesky_update_unrolled4_avx benchmark (UNROLLEDx4)");
     bench_u4avx.data_loader = data_loader_unrolled4_avx;
 
-    bench_u4avx.add_function(&KF_cholesky_update_base_X4, "base_X4", 0.0);
+    bench_u4avx.add_function(KF_cholesky_update_base_x4, "base_x4", 0.0);
     bench_u4avx.funcFlops[0] = 4*KF_cholesky_update_base_flops(x, P, v, R, H); // From Bench-1
     bench_u4avx.funcBytes[0] = 4*8*KF_cholesky_update_base_memory(x, P, v, R, H);  // From Bench-1
     
-    bench_u4avx.add_function(&KF_cholesky_update_reduced_flops_avx_X4, "reduced_flops_avx_X4", 0.0);
-    bench_u4avx.funcFlops[1] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
-    bench_u4avx.funcBytes[1] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
-    
-    bench_u4avx.add_function(&KF_cholesky_update_unrolled4_avx, "unrolled4_avx", 0.0);
-    bench_u4avx.funcFlops[2] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
-    bench_u4avx.funcBytes[2] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
+    bench_u4avx.add_function(KF_cholesky_update_fused_ops_x4, "fused-ops-noAVX_x4", 0.0);
+    bench_u4avx.funcFlops[1] = 4*KF_cholesky_update_base_flops(x, P, v, R, H); // From Bench-1
+    bench_u4avx.funcBytes[1] = 4*8*KF_cholesky_update_base_memory(x, P, v, R, H);  // From Bench-1
+
+    bench_u4avx.add_function(KF_cholesky_update_fused_ops_avx_x4, "fused-ops-AVX_x4", 0.0);
+    bench_u4avx.funcFlops[2] = 4*KF_cholesky_update_base_flops(x, P, v, R, H); // From Bench-1
+    bench_u4avx.funcBytes[2] = 4*8*KF_cholesky_update_base_memory(x, P, v, R, H);  // From Bench-1
+
+    bench_u4avx.add_function(KF_cholesky_update_reduced_flops_x4, "reduced-flops-noAVX_x4", 0.0);
+    bench_u4avx.funcFlops[3] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
+    bench_u4avx.funcBytes[3] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
+
+    bench_u4avx.add_function(KF_cholesky_update_reduced_flops_avx_x4, "reduced-flops-AVX_x4", 0.0);
+    bench_u4avx.funcFlops[4] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
+    bench_u4avx.funcBytes[4] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
+
+    bench_u4avx.add_function(&KF_cholesky_update_unrolled4_avx, "unrolled4-AVX", 0.0);
+    bench_u4avx.funcFlops[5] = 4*KF_cholesky_update_active_flops(x, P, v, R, H); // From Bench-1
+    bench_u4avx.funcBytes[5] = 4*8*KF_cholesky_update_active_memory(x, P, v, R, H);  // From Bench-1
 
     bench_u4avx.run_benchmark(&x0x2, &x1x3, &P0, &P1, &P2, &P3, v0v2, v1v3, RR, H0, H1, H2, H3);
     
