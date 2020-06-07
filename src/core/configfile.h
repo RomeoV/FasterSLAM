@@ -28,6 +28,7 @@ extern double R[2][2];
 
 extern double AT_WAYPOINT;
 extern int NUMBER_LOOPS;
+extern int _NUMBER_LOOPS;
 
 extern unsigned int NPARTICLES;
 extern double NEFFECTIVE;

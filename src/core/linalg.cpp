@@ -35,6 +35,27 @@ void print(const double *x, size_t rows, size_t cols, std::ostream& stream) {
     stream << std::endl;
 }
 
+void iprint(const int *x, size_t rows, size_t cols, std::ostream& stream) {
+    assert( x != NULL );
+    for (size_t i = 0; i < rows; i++) {
+        stream << std::endl;
+        for (size_t j = 0; j < cols; j++) {
+            stream << "\t" << x[i*cols+j];
+        }
+    }
+    stream << std::endl;
+}
+
+void stprint(const size_t *x, size_t rows, size_t cols, std::ostream& stream) {
+    assert( x != NULL );
+    for (size_t i = 0; i < rows; i++) {
+        stream << std::endl;
+        for (size_t j = 0; j < cols; j++) {
+            stream << "\t" << x[i*cols+j];
+        }
+    }
+    stream << std::endl;
+}
 void print256d(__m256d var)
 {
     double val[4];

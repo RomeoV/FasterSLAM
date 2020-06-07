@@ -406,7 +406,7 @@ double predict_update_base_flops(double *wp, size_t N_waypoints, double V, doubl
     int iwp_reset = *iwp;
     double G_reset = *G;
     double flop_count = compute_steering_base_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
-
+    
     flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
 
     double VnGn[2] = {0,0};

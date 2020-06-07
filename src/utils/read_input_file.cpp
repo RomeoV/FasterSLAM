@@ -98,8 +98,8 @@ void read_input_file_and_scale(const string s, const int scale, double **lm, dou
             wp_rows = strtof(tokens[1].c_str(),NULL);    
             wp_cols = strtof(tokens[2].c_str(),NULL);
 
-            N_wp = wp_rows*scale;
-            (*wp) = (double*)malloc(wp_rows*wp_cols*scale*sizeof(double));
+            N_wp = wp_rows;
+            (*wp) = (double*)malloc(wp_rows*wp_cols*sizeof(double));
             for (int r =0; r<wp_rows; r++) {
                 lineno++;
                 if (!in) {
@@ -118,11 +118,9 @@ void read_input_file_and_scale(const string s, const int scale, double **lm, dou
                     std::cerr<<"line: "<<str<<std::endl;
                     exit(EXIT_FAILURE);
                 }
-                
+
                 for (int c=0; c < wp_cols; c++) {
-                    for (int i=0; i<scale; i++){
-                        (*wp)[r*wp_cols*scale + c + i*wp_cols] = strtof(tokens[c].c_str(),NULL);  //Wrong, waypoints shouldnt scale!       
-                    }      
+                    (*wp)[r*wp_cols + c] = strtof(tokens[c].c_str(),NULL);  //Wrong, waypoints shouldnt scale!          
                 }                
             }
         }

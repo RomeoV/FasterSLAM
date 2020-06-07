@@ -17,6 +17,8 @@
 #include "observe_update.h"
 #include "predict_update.h"
 
+#include "get_observations.h"
+
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
@@ -52,8 +54,25 @@ void data_loader(double * lm, int N_features, Vector3d xtrue, double* R, int* ft
         particles[i].xv[1] = xv_initial[1];
         particles[i].xv[2] = xv_initial[2];
     }
+
+    for (size_t i = 0; i < N_features; i++) {
+        ftag_visible[i] = ftag[i];
+    }
+
+            //z is the range and bearing of the observed landmark
+    
+    get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
+    
     predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xv_initial, &iwp, &G,particles);
     observe_update_base(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+
+    for (size_t i = 0; i < N_features; i++) {
+        ftag_visible[i] = ftag[i];
+    }
+
+            //z is the range and bearing of the observed landmark
+    
+    get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, Nf_visible, z); // Nf_visible = number of visible features
 }
 
 void init_particles_contigous(Particle* particle, double* _xv, double* _Pv, double* weight, const size_t N, const size_t Nf) {
@@ -79,11 +98,15 @@ void set_work(Benchmark<decltype(&observe_update)>& bench,
     data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     bench.funcBytes[0] = 8 * observe_update_base_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
     data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+
+    double active_flops = observe_update_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+    double active_memory = 8* observe_update_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+
     for (int i = 1; i < bench.numFuncs; i++) {
-        bench.funcFlops[i] = observe_update_flops(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-        bench.funcBytes[i] = 8* observe_update_memory(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
-        data_loader(lm, N_features, xtrue, R, ftag, da_table, ftag_visible, z, Nf_visible, zf, idf, zn, particles, weights);
+        bench.funcFlops[i] = active_flops;
+        bench.funcBytes[i] = active_memory;
     }
 }
 
@@ -135,13 +158,15 @@ int main() {
 
     setup(particles, weights, Nf, xtrue, &ftag, &da_table, &z, &zf, &zn, &idf, &ftag_visible, xvs, Pvs);
 
-    // data_loader(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
+    for (size_t i = 0; i < Nf; i++) {
+        ftag_visible[i] = ftag[i];
+    }
+    get_observations_base(xtrue, MAX_RANGE, lm, Nf, ftag_visible, &Nf_visible, z);
+    
     observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
-    observe_update_fast(lm,Nf, xtrue, *R, ftag, 
-            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
-            zn, particles, weights);
+
     observe_update_fast(lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
@@ -162,12 +187,14 @@ int main() {
     setup(particles_exact, weights_exact, Nf, xtrue, &ftag_exact, &da_table_exact, 
         &z_exact, &zf_exact, &zn_exact, &idf_exact, &ftag_visible_exact, xv_exact, Pv_exact);
 
+    for (size_t i = 0; i < Nf; i++) {
+        ftag_visible_exact[i] = ftag_exact[i];
+    }
+    get_observations_base(xtrue, MAX_RANGE, lm, Nf, ftag_visible_exact, &Nf_visible_exact, z_exact);
     observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
             zn_exact, particles_exact, weights_exact);
-    observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
-            da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
-            zn_exact, particles_exact, weights_exact);
+
     observe_update_base(lm,Nf, xtrue, *R, ftag_exact, 
             da_table_exact, ftag_visible_exact, z_exact, &Nf_visible_exact, zf_exact, idf_exact, 
             zn_exact, particles_exact, weights_exact);
@@ -228,12 +255,24 @@ int main() {
     bench.controls.NUM_RUNS = 3;
 
     bench.add_function(&observe_update_base, "observe_update_base", 0.0);
-    bench.add_function(&observe_update_active, "observe_update_actve", 0.0);
-    bench.add_function(&observe_update_fast, "observe_update_fast", 0.0);
-    bench.add_function(&observe_update_fast_romeo_vTMv, "observe_update_fast_romeo_vTMv", 0.0);
+    bench.add_function(&observe_update_active, "observe_update_active", 0.0);
+
+    //Top-Level-functions inlined
+    bench.add_function(&observe_update_inplace, "observe_update_inplace", 0.0);
+
+    // Reduced ops
+    bench.add_function(&observe_update_simplified, "observe_update_simplified", 0.0);
+    bench.add_function(&observe_update_unrolled4x, "observe_update_unrolled4x", 0.0);
+    bench.add_function(&observe_update_active, "observe_update_unrolled4x_plain", 0.0);
+
+    bench.add_function(&observe_update_simpleavx, "observe_update_simpleavx", 0.0);
+    bench.add_function(&observe_update_fast_KF_comp_not_unrolled, "observe_update_fast_KF_comp_not_unrolled", 0.0);
+    bench.add_function(&observe_update_fast_partial_avx_slower_vTMv, "observe_update_fast_improved_vTMv", 0.0);
+    bench.add_function(&observe_update_fast, "observe_update_fast_jacobians", 0.0);
 #ifndef KF_YGLEE
-    bench.add_function(&observe_update_fast_KF_Nik, "observe_update_all_unrolled", 0.0);
+    bench.add_function(&observe_update_fast_fullavx, "observe_update_all_unrolled", 0.0);
 #endif
+    bench.add_function(&observe_update, "observe_update", 0.0);
 
     set_work(bench, lm,Nf, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
@@ -247,8 +286,16 @@ int main() {
     bench_scale.data_loader=data_loader;
     bench_scale.controls.NUM_RUNS = 3;
     bench_scale.add_function(&observe_update_base, "observe_update_base", 0.0);
+    bench_scale.add_function(&observe_update_simplified, "observe_update_simplified", 0.0);
+    bench_scale.add_function(&observe_update_unrolled4x, "observe_update_unrolled4x", 0.0);
+    bench_scale.add_function(&observe_update_active, "observe_update_unrolled4x_plain", 0.0);
+
+    bench_scale.add_function(&observe_update_simpleavx, "observe_update_simpleavx", 0.0);
+    bench_scale.add_function(&observe_update_fast_KF_comp_not_unrolled, "observe_update_fast_KF_comp_not_unrolled", 0.0);
+    bench_scale.add_function(&observe_update_fast_partial_avx_slower_vTMv, "observe_update_fast_improved_vTMv", 0.0);
+    bench_scale.add_function(&observe_update_fast, "observe_update_fast_jacobians", 0.0);
 #ifndef KF_YGLEE
-    bench_scale.add_function(&observe_update_fast_KF_Nik, "observe_update_fast", 0.0);
+    bench_scale.add_function(&observe_update_fast_fullavx, "observe_update_fast", 0.0);
 #endif    
 
     bench_scale.data_loader = data_loader;
@@ -256,8 +303,9 @@ int main() {
     bench_scale.csv_output = false;
 
     int Np = 100;
-    for (int i = 0; i< 8; i++) {
+    for (int i = 0; i< 9; i++) {
         NPARTICLES = std::pow(2,i) * Np;
+        std::cout<< "Benchmarking N="<<NPARTICLES<<" Particles..."<<std::endl;
          double* ws = (double*) aligned_alloc(32, NPARTICLES * sizeof(double));
         Particle* ps = (Particle*) aligned_alloc(32, NPARTICLES* sizeof(Particle));
         double xvi[3*NPARTICLES] __attribute__ ((aligned(32)));

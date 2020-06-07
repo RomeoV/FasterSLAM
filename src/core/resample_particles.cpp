@@ -72,6 +72,10 @@ void resample_particles_dag(Particle* particles, size_t N, double* weights,int N
     size_t keep_indices[N];  // can be seen as dependencies   
     stratified_resample_base(weights, N, &Neff, keep_indices);
     for (int i = 0; i<N; i++) {
+        if (keep_indices[i] >= N) {
+            stprint(keep_indices, N, 1);
+            print(weights, N, 1);
+        }
         assert(keep_indices[i] <N);
     }
     if ((Neff < Nmin) && (doresample == 1)) {
@@ -244,8 +248,9 @@ void normalize_weights(double* weights, size_t N) {
     for (size_t i = 0; i < N; i++) {
         sum += weights[i];
     }
+    // std::cout<<"Sum: "<<sum<<std::endl;
     for (size_t i = 0; i < N; i++) {
-        if (sum >0.0) {
+        if (sum > 0.0 && sum <1.0e20) { // Stabilizer, if in doubt we resample from uniform weights!
             weights[i] /= sum;
         } else  {
             // std::cout << "Sum of weights was 0. Resetting to uniform..."<<std::endl;

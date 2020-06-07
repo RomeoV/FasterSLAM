@@ -2,14 +2,13 @@
 #include <cmath>
 #include <sstream>
 #include <algorithm>
-
+#include "configfile.h"
 #include "typedefs.h"
 #include "ut.hpp"
 using namespace boost::ut;
 using namespace boost::ut::bdd;
 
 int main() {
-
 "add_noise"_test = [] {
     // since this is random, it is a bit hard to test
     // for now test that it changed
@@ -49,8 +48,8 @@ int main() {
             double VnGn[2] = {0., 0.};
             add_control_noise(V, G, Q, addnoise, VnGn);
             then("I get the same speed and velocity I had before") = [&] {
-                expect(that % VnGn[0] == 0.);
-                expect(that % VnGn[1] == 0.);
+                expect(that % VnGn[0] == V);
+                expect(that % VnGn[1] == G);
             };
             then("neither speed nor velocity is nan") = [&] {
                 bool notnan = (!std::isnan(VnGn[0]) && !std::isnan(VnGn[1]));

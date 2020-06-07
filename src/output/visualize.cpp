@@ -14,6 +14,7 @@
 #include "predict_update.h"
 #include "observe_update.h"
 #include "configfile.h"
+#include "get_observations.h"
 #include "fastslam1_utils.h"
 
 #include "read_input_file.h"
@@ -127,21 +128,17 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
-#ifdef __AVX2__
-#ifdef KF_YGLEE
-            observe_update_fast(lm, N_features, xtrue, *R, ftag, 
-            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
-            zn, particles, weights);
-#else
-            observe_update_fast_KF_Nik(lm, N_features, xtrue, *R, ftag, 
-            da_table, ftag_visible, z, &Nf_visible, zf, idf, 
-            zn, particles, weights);
-#endif
-#else
+            for (size_t i = 0; i < N_features; i++) {
+                ftag_visible[i] = ftag[i];
+            }
+
+            //z is the range and bearing of the observed landmark
+    
+            get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, &Nf_visible, z); // Nf_visible = number of visible features
+
             observe_update(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
-#endif
 
             //////////////////////////////////////////////////////////////
         }
