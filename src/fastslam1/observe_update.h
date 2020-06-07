@@ -55,7 +55,7 @@ void observe_update_fast_KF_comp_not_unrolled(double * lm, int N_features, Vecto
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights);
 
-double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+FlopCount observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights);
 
@@ -63,7 +63,7 @@ double observe_update_base_memory(double * lm, int N_features, Vector3d xtrue, d
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights);
 
-double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+FlopCount observe_update_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights);
 

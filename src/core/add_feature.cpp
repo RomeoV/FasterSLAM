@@ -122,10 +122,10 @@ void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R
 }
 
 // Work / Memory instrumenting
-double add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+FlopCount add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
   
   Matrix2d MatResult_1, MatResult_2, Gz, Gz_T;
-  double flop_count = N_z * (
+  FlopCount flop_count = N_z * (
       tp.sin + tp.cos + 
       4*tp.add +  
       4*tp.mul +
@@ -158,13 +158,13 @@ double add_feature_base_memory(Particle* particle, Vector2d z[], size_t N_z, Mat
   return memory_called + memory_read_count + memory_written_count;
 }
 
-double add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
+FlopCount add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R){
 
   Matrix2d MatResult_1, Gz;
   Vector3d xv;
   Matrix2d Pf[N_z];
 
-  double flop_count = N_z * (
+  FlopCount flop_count = N_z * (
       tp.sin + tp.cos + 
       4*tp.add +  
       4*tp.mul +

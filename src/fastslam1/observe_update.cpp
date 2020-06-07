@@ -1583,7 +1583,7 @@ void observe_update_inplace(double * lm, int N_features, Vector3d xtrue, double*
 /// FLOPS AND MEMORY COUNTERS///
 
 
-double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+FlopCount observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
     double _xtrue[3];
@@ -1616,7 +1616,7 @@ double observe_update_base_flops(double * lm, int N_features, Vector3d xtrue, do
     copy(xtrue,3 , _xtrue);
 
     //Start computing flops
-    double flop_count = 0.0;
+    FlopCount flop_count;
     
     //print(*z,*Nf_visible,2,std::cout);
     if ( _Nf_visible == 0 ) {
@@ -1861,7 +1861,7 @@ double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double
     return memory_moved;
 }
 
-double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
+FlopCount observe_update_flops(double * lm, int N_features, Vector3d xtrue, double* R, int* ftag, 
             int* da_table, int* ftag_visible, Vector2d* z, size_t* Nf_visible, Vector2d* zf, int* idf, 
             Vector2d* zn, Particle* particles, double* weights) {
     double _xtrue[3];
@@ -1895,7 +1895,7 @@ double observe_update_flops(double * lm, int N_features, Vector3d xtrue, double*
     copy(xtrue,3 , _xtrue);
 
     //Start computing flops
-    double flop_count = 0.0;
+    FlopCount flop_count;
     
     //print(*z,*Nf_visible,2,std::cout);
     if ( _Nf_visible == 0 ) {

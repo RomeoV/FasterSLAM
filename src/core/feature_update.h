@@ -46,7 +46,7 @@ void feature_update_active(Particle* particle,
                     Matrix2d Sf[]);
 
 // Work / Memory instrumenting
-double feature_update_base_flops(Particle* particle,
+FlopCount feature_update_base_flops(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
@@ -66,7 +66,7 @@ double feature_update_base_memory(Particle* particle,
                     Matrix2d Hf[],
                     Matrix2d Sf[]);
 
-double feature_update_active_flops(Particle* particle,
+FlopCount feature_update_active_flops(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,

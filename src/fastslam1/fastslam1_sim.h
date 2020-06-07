@@ -27,7 +27,7 @@ void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols,
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_);
 
-double fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
+FlopCount fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_);
 
@@ -35,7 +35,7 @@ double fastslam1_sim_base_memory( double* lm, const size_t lm_rows, const size_t
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_);
 
-double fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
+FlopCount fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_);
 

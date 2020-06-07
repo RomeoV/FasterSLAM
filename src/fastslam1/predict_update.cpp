@@ -401,11 +401,11 @@ void predict_update_base(double* wp, size_t N_waypoints, double V, double* Q, do
     }
 }
 
-double predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+FlopCount predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     int iwp_reset = *iwp;
     double G_reset = *G;
-    double flop_count = compute_steering_base_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+    FlopCount flop_count = compute_steering_base_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
     
     flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
 
@@ -552,12 +552,12 @@ void predict_update_fast_plain(double* wp, size_t N_waypoints, double V, double*
 }
 #endif
 
-double predict_update_active_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+FlopCount predict_update_active_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
     int iwp_reset = *iwp;
     double G_reset = *G;
     double _xtrue[3] = {xtrue[0], xtrue[1], xtrue[2]};
-    double flop_count = compute_steering_active_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
+    FlopCount flop_count = compute_steering_active_flops(xtrue, wp, N_waypoints, AT_WAYPOINT, RATEG, MAXG, dt, iwp, G);
     flop_count += predict_true_base_flops(V, *G, WHEELBASE, dt, xtrue);
     double VnGn[2];
     flop_count +=add_control_noise_base_flops(V, *G, Q, SWITCH_CONTROL_NOISE, VnGn);

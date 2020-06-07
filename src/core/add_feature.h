@@ -18,10 +18,10 @@ void add_feature_base(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 void add_feature_active(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 
 // Work / Memory instrumenting
-double add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
+FlopCount add_feature_base_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 
 double add_feature_base_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 
-double add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
+FlopCount add_feature_active_flops(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);
 
 double add_feature_active_memory(Particle* particle, Vector2d z[], size_t N_z, Matrix2d R);

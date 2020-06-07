@@ -26,7 +26,7 @@ void compute_jacobians(Particle* particle, int idf[], size_t N_z, Matrix2d R,
 #endif
 }
 
-double compute_jacobians_base_flops(Particle* particle,
+FlopCount compute_jacobians_base_flops(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -34,7 +34,7 @@ double compute_jacobians_base_flops(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    double flop_count = N_z * (4*tp.add + 2*tp.pow + tp.sqrt + tp.atan2 + pi_to_pi_base_flops(3.0) + 2*mul_flops(R,R,2,2,2,R) + add_flops(R,R,2*2,R));
+    FlopCount flop_count = N_z * (4*tp.add + 2*tp.pow + tp.sqrt + tp.atan2 + pi_to_pi_base_flops(3.0) + 2*mul_flops(R,R,2,2,2,R) + add_flops(R,R,2*2,R));
     return flop_count;
 }
 
@@ -52,7 +52,7 @@ double compute_jacobians_base_memory(Particle* particle,
 
 
 // For fastest version, i.e. compute_jacobians_fast
-double compute_jacobians_active_flops(Particle* particle,
+FlopCount compute_jacobians_active_flops(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -60,7 +60,7 @@ double compute_jacobians_active_flops(Particle* particle,
                        Matrix23d Hv[],
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
-    double flops = N_z*(4*tp.add + 7*tp.mul + 1*tp.div + 1*tp.sqrt + tp.atan2 + 3*tp.negation);
+    FlopCount flops = N_z*(4*tp.add + 7*tp.mul + 1*tp.div + 1*tp.sqrt + tp.atan2 + 3*tp.negation);
     flops += N_z*(3*4*tp.add + 4*4*tp.mul); // AVX
     flops += N_z*pi_to_pi_active_flops(3.0); // Approximate
     return flops;

@@ -12,11 +12,11 @@
     @param[out]  keep       Array of indices to keep (sorted, may contain same index multiple times)
  */
 void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep);
-double stratified_resample_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep);
+FlopCount stratified_resample_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep);
 double stratified_resample_memory(const double* w_, const size_t N_w, double* Neff, size_t* keep);
 
 void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, size_t* keep);
-double stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep);
+FlopCount stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep);
 double stratified_resample_base_memory(const double* w_, const size_t N_w, double* Neff, size_t* keep);
 
 /*!
@@ -26,11 +26,11 @@ double stratified_resample_base_memory(const double* w_, const size_t N_w, doubl
     @param[in]  N_w   Length of array.
  */
 void cumsum(double* w, const size_t N_w);
-double cumsum_flops(double* w, const size_t N_w);
+FlopCount cumsum_flops(double* w, const size_t N_w);
 double cumsum_memory(double* w, const size_t N_w);
 
 void cumsum_base(double* w, const size_t N_w);
-double cumsum_base_flops(double* w, const size_t N_w);
+FlopCount cumsum_base_flops(double* w, const size_t N_w);
 double cumsum_base_memory(double* w, const size_t N_w);
 
 

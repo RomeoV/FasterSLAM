@@ -137,7 +137,7 @@ void feature_update_active(Particle* particle,
 // Careful: this function needs correct input to work, since
 // pi_to_pi number of flops depends on the output of compute_jacobians
 // which needs to be passed to this function via zp!
-double feature_update_base_flops(Particle* particle,
+FlopCount feature_update_base_flops(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
@@ -151,7 +151,7 @@ double feature_update_base_flops(Particle* particle,
   Vector2d xf[N_idf];
   Matrix2d Pf[N_idf];
 
-  double flop_count = compute_jacobians_base_flops(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
+  FlopCount flop_count = compute_jacobians_base_flops(particle, idf, N_idf, R, zp, Hv, Hf, Sf) +
     N_idf * (   
       sub_flops(z[0], zp[0], 2, feat_diff[0]) +
       KF_cholesky_update_base_flops(xf[0], Pf[0], 
@@ -199,7 +199,7 @@ double feature_update_base_memory(Particle* particle,
   return memory_called + memory_read_count + memory_written_count;               
 }
 
-double feature_update_active_flops(Particle* particle,
+FlopCount feature_update_active_flops(Particle* particle,
                     Vector2d z[],
                     int idf[],
                     size_t N_idf,
@@ -213,7 +213,7 @@ double feature_update_active_flops(Particle* particle,
   Vector2d xf[N_idf];
   Matrix2d Pf[N_idf];
 
-  double flop_count = N_idf * (   
+  FlopCount flop_count = N_idf * (   
       sub_flops(z[0], zp[0], 2, feat_diff[0]) +
       KF_cholesky_update_active_flops(xf[0], Pf[0], 
                        feat_diff[0], R, 

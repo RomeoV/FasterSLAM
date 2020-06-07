@@ -127,7 +127,7 @@ double compute_weight_active(Particle* particle,
 }
 
 // Work / Memory instrumenting
-double compute_weight_base_flops(Particle* particle,
+FlopCount compute_weight_base_flops(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
                       int idf[],
@@ -144,7 +144,7 @@ double compute_weight_base_flops(Particle* particle,
   transpose(S, 2, 2, ST);
   double vT_S_inv_v;
 
-  double flop_count = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf) + 
+  FlopCount flop_count = compute_jacobians_base_flops(particle, idf, N_z, R, zp, Hv, Hf, Sf) + 
     N_z * (
       4 * tp.mul +
       1 * tp.div +
@@ -205,7 +205,7 @@ double compute_weight_base_memory(Particle* particle,
 // Careful: this function needs correct input to work, since
 // pi_to_pi number of flops depends on the output of compute_jacobians
 // which needs to be passed to this function via zp!
-double compute_weight_active_flops(Particle* particle,
+FlopCount compute_weight_active_flops(Particle* particle,
                       Vector2d z[],
                       size_t N_z,
                       int idf[],
@@ -222,7 +222,7 @@ double compute_weight_active_flops(Particle* particle,
   transpose(S, 2, 2, ST);
   double vT_S_inv_v;
 
-  double flop_count = N_z * (
+  FlopCount flop_count = N_z * (
       4 * tp.mul +
       1 * tp.div +
       1 * tp.sqrt + 

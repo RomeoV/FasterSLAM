@@ -16,6 +16,7 @@
 #include <string.h>
 #include "string_format.h"
 #include "tsc_x86.h"
+#include "flop_count.h"
 #include <assert.h> 
 
 //Macros 
@@ -68,7 +69,7 @@ struct Benchmark {
     std::vector<std::string> funcNames;
 
     int numFuncs = 0;
-    std::vector<double> funcFlops; //Work W
+    std::vector<FlopCount> funcFlops; //Work W
     std::vector<double> funcBytes; // Memory Moved Q [Bytes!]
     std::vector<double> flops_sum; //Sum of Work W for each function over all runs
     std::vector<double> bytes_sum; //Sum of Memory Moved Q for each function over all runs
@@ -81,7 +82,7 @@ struct Benchmark {
     std::vector<std::string> run_names;
 
     std::vector<std::vector<double>> cycles_capture;
-    std::vector<std::vector<double>> flops_capture;
+    std::vector<std::vector<FlopCount>> flops_capture;
     std::vector<std::vector<double>> bytes_capture;
     
     int num_runs = 0;
@@ -98,12 +99,16 @@ struct Benchmark {
         name = title;
     }
 
-    void add_function(comp_func f, std::string name, int flop){
+    void add_function(comp_func f, std::string name, FlopCount flop){
         double _nan = nan("1");
         add_function(f, name, flop, _nan);
     }
 
-    void add_function(comp_func f, std::string name, int flop, double bytes){
+    void add_function(comp_func f, std::string name, double flop){
+        add_function(f, name, FlopCount::without_instr_mix(flop));
+    }
+
+    void add_function(comp_func f, std::string name, FlopCount flop, double bytes){
         userFuncs.push_back(f);
         funcNames.emplace_back(name);
         funcFlops.push_back(flop);
@@ -140,7 +145,7 @@ struct Benchmark {
             cycles[i] = T;
 
             flops_capture[i].push_back(funcFlops[i]);
-            flops_sum[i] += funcFlops[i];
+            flops_sum[i] += funcFlops[i].flop_sum;
 
             bytes_capture[i].push_back(funcBytes[i]);
             bytes_sum[i] += funcBytes[i];
@@ -187,7 +192,7 @@ struct Benchmark {
             cycles[i] = T;
 
             flops_capture[i].push_back(funcFlops[i]);
-            flops_sum[i] += funcFlops[i];
+            flops_sum[i] += funcFlops[i].flop_sum;
 
             bytes_capture[i].push_back(funcBytes[i]);
             bytes_sum[i] += funcBytes[i];
@@ -299,7 +304,7 @@ struct Benchmark {
         for (int i = 0; i<numFuncs;i++){
             for (int j = 0; j<num_runs; j++) {
                 double cyc = cycles_capture[i][j];
-                double flops = flops_capture[i][j];
+                double flops = flops_capture[i][j].flop_sum;
                 double bytes = bytes_capture[i][j];
                 fout<<no_underline<<separator<<((j==0) ? prd(i, 0,2) : "  ")
                         <<separator<<left((j==0) ? funcNames[i] : "  ",40)
@@ -343,7 +348,7 @@ struct Benchmark {
         for (int i = 0; i<numFuncs;i++){
             for (int j = 0; j<num_runs; j++) {
                 double cyc = cycles_capture[i][j];
-                double flops = flops_capture[i][j];
+                double flops = flops_capture[i][j].flop_sum;
                 double bytes = bytes_capture[i][j];
                 fstream<<name<<separator<<left(funcNames[i], cell_width)
                         <<separator<<right(run_names[j],cell_width)

@@ -13,7 +13,7 @@ const __m256d pi_vec = _mm256_set1_pd((double)M_PI);
 const __m256d minus_pi_vec = _mm256_set1_pd((double)-M_PI);
 const __m256d two_pi_vec = _mm256_set1_pd((double)two_pi);
 
-double tscheb_dsines_flops(double* alphas, size_t N, double* results) {
+FlopCount tscheb_dsines_flops(double* alphas, size_t N, double* results) {
     return N*( 9*tp.add + 9*tp.mul );
 }
 
@@ -49,7 +49,7 @@ void tscheb_dsines(double* alphas, size_t N, double* results) {
     }
 }
 
-double tscheb_dsines_unrolled_flops(double* alphas, size_t N, double* results) {
+FlopCount tscheb_dsines_unrolled_flops(double* alphas, size_t N, double* results) {
     return N*( 9*tp.add + 9*tp.mul );
 }
 
@@ -122,7 +122,7 @@ void tscheb_dsines_unrolled(double* alphas, size_t N, double* results) {
     tscheb_dsines(alphas+i, N-i, results+i); // do the rest
 }
 
-double tscheb_cos_flops(double alpha) {
+FlopCount tscheb_cos_flops(double alpha) {
     return tscheb_sin_flops(alpha) + tp.add;
 }
 
@@ -130,7 +130,7 @@ double tscheb_cos_memory(double alpha) {
     return 1;
 }
 
-double tscheb_sin_flops(double alpha) {
+FlopCount tscheb_sin_flops(double alpha) {
     return ( 2*tp.doublecomp + (9 + (alpha > M_PI) + (alpha < -M_PI))*tp.add + 9*tp.mul );
 }
 
@@ -171,7 +171,7 @@ double tscheb_sin(double alpha) {
     (alpha + pi_major + pi_minor) * p1 * alpha;
 }
 
-double tscheb_cos_avx_flops(__m256d alphas) {
+FlopCount tscheb_cos_avx_flops(__m256d alphas) {
     return tscheb_sin_avx_flops(alphas) + 4*tp.add;
 }
 
@@ -184,7 +184,7 @@ __m256d tscheb_cos_avx(__m256d alphas) {
     return tscheb_sin_avx(alphas);
 }
 
-double simple_pi_to_pi_avx_flops(__m256d alphas) {
+FlopCount simple_pi_to_pi_avx_flops(__m256d alphas) {
     return 2*4*tp.doublecomp + 2*4*tp.add;
 }
 
@@ -204,8 +204,8 @@ __m256d  simple_pi_to_pi_avx(__m256d alphas) {
     return alphas;    
 }
 
-double tscheb_sin_avx_flops(__m256d alphas) {
-    double flops = 0.0;
+FlopCount tscheb_sin_avx_flops(__m256d alphas) {
+    FlopCount flops;
     flops += simple_pi_to_pi_avx_flops(alphas);
     flops += 4*(9*tp.mul + 7*tp.add) + 2*tp.add + 1*tp.negation;
     return flops;
@@ -276,7 +276,7 @@ __m256d tscheb_sin_avx(__m256d alphas) {
     return _mm256_mul_pd(_mm256_mul_pd(lhs, rhs), tmp);
 }
 
-double tscheb_dsine_flops(double alpha, bool angle_is_normalized) {
+FlopCount tscheb_dsine_flops(double alpha, bool angle_is_normalized) {
     return (9*tp.add + 9*tp.mul) + (!angle_is_normalized)*pi_to_pi_active_flops(alpha);
 }
 
@@ -332,7 +332,7 @@ float tscheb_fsine(float alpha, bool angle_is_normalized) {
     (alpha + pi_major + pi_minor) * p1 * alpha;
 }
 
-double tscheb_dsines_avx_flops(double* alphas, size_t N, double* results) {
+FlopCount tscheb_dsines_avx_flops(double* alphas, size_t N, double* results) {
     return N*( 9*tp.add + 9*tp.mul );
 }
 

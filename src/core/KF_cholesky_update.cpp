@@ -305,12 +305,12 @@ void KF_cholesky_update_unrolled4_avx(__m256d *x0x2,
 // Utils
 
 // Naive base flops
-double KF_cholesky_update_base_flops(Vector2d x, Matrix2d P,
+FlopCount KF_cholesky_update_base_flops(Vector2d x, Matrix2d P,
         cVector2d v, cMatrix2d R, cMatrix2d H) {
     double Ht[4], PHt[4], HPHt[4];
     double S[4], St[4], SChol[4], SCholInv[4], SCholInvt[4];
     double W1[4], W[4], Wv[2], W1t[4], W1W1t[4];
-    double flops = 0.0;
+    FlopCount flops;
 
     flops += transpose_flops(H, 2, 2, Ht);               //! Ht = H.transpose();
     flops += mul_flops(P, Ht, 2, 2, 2, PHt);             //! PHt = P*Ht;
@@ -389,7 +389,7 @@ double KF_cholesky_update_base_memory(Vector2d x, Matrix2d P,
 }
 
 // Active flops
-double KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
+FlopCount KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
         cVector2d v, cMatrix2d R, cMatrix2d H) {
 
 #ifdef KF_YGLEE
@@ -397,7 +397,7 @@ double KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
     // Just fusing some ops
     double PHt[4], S[4], St[4], SChol[4], SCholInv[4];
     double W1[4], W[4], W1W1t[4];
-    double flops = 0.0;
+    FlopCount flops = 0.0;
 
     flops += mmT_2x2_flops(P, H, PHt);                 //! PHt = P*Ht
     flops += copy_flops(R, 4, S);                      //! S = R;
@@ -427,7 +427,7 @@ double KF_cholesky_update_active_flops(Vector2d x, Matrix2d P,
     // After some math reformulation and fusing some linalg ops
     // This is based on KF_cholesky_update_reduced_flops
     double PHt[4], S[4], St[4], Sinv[4], W[4], W1W1t[4];
-    double flops = 0.0;
+    FlopCount flops;
 
     flops += mmT_2x2_flops(P, H, PHt);
     flops += copy_flops(R, 4, S);        //! S = R;

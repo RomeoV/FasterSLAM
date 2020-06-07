@@ -25,19 +25,19 @@ void normalize_weights(double* weights, size_t N);
 int find_particle_without_dependency(int* count, size_t N);
 void fill_int(int *x, size_t size, int val);
 void count_occurences(const size_t* indices, size_t N, int* count);
-double find_particle_without_dependency_flops(int* count, size_t N);
+FlopCount find_particle_without_dependency_flops(int* count, size_t N);
 double find_particle_without_dependency_memory(int* count, size_t N);
-double normalize_weights_flops(double* weights, size_t N);
+FlopCount normalize_weights_flops(double* weights, size_t N);
 double normalize_weights_memory(double* weights, size_t N);
-double fill_int_flops(int*x, size_t size, int val);
+FlopCount fill_int_flops(int*x, size_t size, int val);
 double fill_int_memory(int*x, size_t size, int val);
-double count_occurences_flops(const size_t* indices, size_t N, int* count);
+FlopCount count_occurences_flops(const size_t* indices, size_t N, int* count);
 double count_occurences_memory(const size_t* indices, size_t N, int* count);
 
 void resample_particles(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
     resample_particles_dag(particles, N, weights, Nmin, doresample);
 }
-double resample_particles_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
+FlopCount resample_particles_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
     return resample_particles_dag_flops(particles, N, weights, Nmin, doresample);
 }
 double resample_particles_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample) {
@@ -95,8 +95,9 @@ void resample_particles_dag(Particle* particles, size_t N, double* weights,int N
     }
 }
 void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, double* weights,int Nmin, int doresample,
-                                              double* FLOPS_RET, double* MEMORY_RET) { 
-    double FLOPS = 0, READS = 0, WRITES = 0, MEMORY = 0;
+                                              FlopCount* FLOPS_RET, double* MEMORY_RET) { 
+    FlopCount FLOPS;
+    double READS = 0, WRITES = 0, MEMORY = 0;
     double* weights_internal = (double*)malloc(N * sizeof(double));
     //std::copy(weights, weights+N, weights_internal);
     copy(weights, N, weights_internal);
@@ -123,7 +124,7 @@ void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, doub
         while (i != -1) {  // O(N^2)
             count[i] = -1;
             //copyParticle(particles+(keep_indices[i]), particles+i);
-            FLOPS += 0; //copyParticle_flops (particles+(keep_indices[i]), particles+i);
+            // FLOPS += copyParticle_flops (particles+(keep_indices[i]), particles+i);
             MEMORY+= (11 + 6 * Nfa); //copyParticle_memory(particles+(keep_indices[i]), particles+i);
             count[keep_indices[i]]--;
 
@@ -137,12 +138,12 @@ void resample_particles_dag_flops_and_memory(Particle* particles, size_t N, doub
     *FLOPS_RET = FLOPS;
     *MEMORY_RET = 1 * READS + 2 * WRITES + MEMORY;
 }
-double resample_particles_dag_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
+FlopCount resample_particles_dag_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
     double* weights_internal = (double*)malloc(N * sizeof(double));
     //std::copy(weights, weights+N, weights_internal);
     copy(weights, N, weights_internal);
     normalize_weights(weights_internal, N);
-    double flop_count = normalize_weights_flops (weights_internal, N);
+    FlopCount flop_count = normalize_weights_flops (weights_internal, N);
 
     double Neff = get_Neff(weights_internal,N);
     size_t keep_indices[N];  // can be seen as dependencies   
@@ -207,7 +208,7 @@ void resample_particles_base(Particle* particles, size_t N, double* weights,int 
         }
     }
 }
-double resample_particles_base_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
+FlopCount resample_particles_base_flops(Particle* particles, size_t N, double* weights,int Nmin, int doresample) { 
     double _Neff;
     size_t* _keep;
     return normalize_weights_flops(weights, N)
@@ -231,7 +232,7 @@ int find_particle_without_dependency(int* count, size_t N) {
     }
     return -1;
 }
-double find_particle_without_dependency_flops(int* count, size_t N) {
+FlopCount find_particle_without_dependency_flops(int* count, size_t N) {
     int i = find_particle_without_dependency(count, N);
     if (i == -1) return N * tp.doublecomp;
     else return i * tp.doublecomp;
@@ -258,7 +259,7 @@ void normalize_weights(double* weights, size_t N) {
         }
     }
 }
-double normalize_weights_flops(double* weights, size_t N) {
+FlopCount normalize_weights_flops(double* weights, size_t N) {
     return N * (tp.add + tp.div);
 }
 double normalize_weights_memory(double* weights, size_t N) {
@@ -271,8 +272,8 @@ void fill_int(int*x, size_t size, int val) {
         x[i] = val; 
     }
 }
-double fill_int_flops(int*x, size_t size, int val) {
-    return 0;
+FlopCount fill_int_flops(int*x, size_t size, int val) {
+    return FlopCount();
 }
 double fill_int_memory(int*x, size_t size, int val) {
     return 2 * size; // writes
@@ -285,7 +286,7 @@ void count_occurences(const size_t* indices, size_t N, int* count) {
         count[indices[i]]++;
     }
 }
-double count_occurences_flops(const size_t* indices, size_t N, int* count) {
+FlopCount count_occurences_flops(const size_t* indices, size_t N, int* count) {
     return fill_int_flops(count, N, 0);
 }
 double count_occurences_memory(const size_t* indices, size_t N, int* count) {

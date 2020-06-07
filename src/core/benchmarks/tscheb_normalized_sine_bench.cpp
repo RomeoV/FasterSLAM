@@ -170,8 +170,8 @@ int main() {
       bench.funcFlops[3] = tscheb_dsines_flops(alphas_d, NR, alphas_d);
       bench.funcFlops[4] = tscheb_dsines_unrolled_flops(alphas_d, NR, alphas_d);
       bench.funcFlops[5] = tscheb_dsines_avx_flops(alphas_d, NR, alphas_d);
-      bench.funcFlops[6] = 1;
-      bench.funcFlops[7] = 1;
+      bench.funcFlops[6] = FlopCount::without_instr_mix(1);
+      bench.funcFlops[7] = FlopCount::without_instr_mix(1);
 
       bench.funcBytes[0] = NR;
       bench.funcBytes[1] = NR;

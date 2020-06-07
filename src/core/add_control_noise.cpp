@@ -1,4 +1,5 @@
 #include "add_control_noise.h"
+#include "flop_count.h"
 
 #include <iostream>
 
@@ -37,14 +38,14 @@ void add_control_noise_active(double V, double G, double* Q, int addnoise, doubl
 	}
 }
 
-double add_control_noise_base_flops(double V, double G, double* Q, int addnoise, double* VnGn){
+FlopCount add_control_noise_base_flops(double V, double G, double* Q, int addnoise, double* VnGn){
   if(addnoise == 0){
-	return 0;
+	return FlopCount();
   }
 
   Vector2d A;
   Vector2d result;
-  double flop_count = multivariate_gauss_base_flops(A, Q, result);
+  FlopCount flop_count = multivariate_gauss_base_flops(A, Q, result);
   return flop_count;
 }
 
@@ -62,14 +63,14 @@ double add_control_noise_base_memory(double V, double G, double* Q, int addnoise
   return memory_called + memory_read_count + memory_written_count;               
 }
 
-double add_control_noise_active_flops(double V, double G, double* Q, int addnoise, double* VnGn){
+FlopCount add_control_noise_active_flops(double V, double G, double* Q, int addnoise, double* VnGn){
   if(addnoise == 0){
-	return 0;
+	return FlopCount();
   }
 
   Vector2d A;
   Vector2d result;
-  double flop_count = multivariate_gauss_active_flops(A, Q, result);
+  FlopCount flop_count = multivariate_gauss_active_flops(A, Q, result);
   return flop_count;
 }
 

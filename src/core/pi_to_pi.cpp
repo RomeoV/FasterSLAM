@@ -51,8 +51,8 @@ double pi_to_pi_base(double ang)
     return ang;
 }
 
-double pi_to_pi_base_flops(double ang) {
-    double flop_count = 2*tp.mul + 2*tp.negation * 4*tp.doublecomp;
+FlopCount pi_to_pi_base_flops(double ang) {
+    FlopCount flop_count = 2*tp.mul + 2*tp.negation + 4*tp.doublecomp;
     if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
         int n=floor(ang/(2*M_PI));
         ang = ang-n*(2*M_PI);    
@@ -73,7 +73,7 @@ double pi_to_pi_base_memory(double ang) {
     return 0.0;
 }
 
-double pi_to_pi_active_flops(double ang) {
+FlopCount pi_to_pi_active_flops(double ang) {
     return pi_to_pi_base_flops(ang);
 }
 

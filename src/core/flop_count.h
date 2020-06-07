@@ -11,12 +11,13 @@ public:
 
 class FlopCount {
 public:
-    FlopCount () : flop_count{0} { ; }
-    double flop_count;
+    FlopCount () : flop_sum{0} { ; }
+    static FlopCount without_instr_mix(double flops) { FlopCount fc; fc.flop_sum = flops; return fc; }
+    double flop_sum;
     std::map<std::string, size_t> instr_mix;
 
     FlopCount& operator+=(const FlopCount& rhs) { 
-        this->flop_count += rhs.flop_count;
+        this->flop_sum += rhs.flop_sum;
         for (auto key_val : rhs.instr_mix) {
             this->instr_mix[key_val.first] += key_val.second;
         }
@@ -29,7 +30,7 @@ public:
     }
 
     FlopCount& operator+=(const Instruction& instr) { 
-        this->flop_count += instr.flop_cost;
+        this->flop_sum += instr.flop_cost;
         this->instr_mix[instr.instr_name]++;
         return *this;
     };
@@ -40,22 +41,30 @@ public:
     }
 };
 
-FlopCount operator*(const double& lhs, const Instruction& rhs) {
+inline FlopCount operator*(const size_t& lhs, const FlopCount& rhs) {
+    FlopCount ret;
+    for (size_t i = 0; i < lhs; i++) {
+        ret += rhs;
+    }
+    return ret;
+}
+
+inline FlopCount operator*(const double& lhs, const Instruction& rhs) {
     FlopCount ret;
     ret += rhs;
-    ret.flop_count *= lhs;
+    ret.flop_sum *= lhs;
     ret.instr_mix.begin()->second *= lhs;
     return ret;
 }
 
-FlopCount operator+(const Instruction& lhs, const Instruction& rhs) {
+inline FlopCount operator+(const Instruction& lhs, const Instruction& rhs) {
     FlopCount ret;
     ret += lhs;
     ret += rhs;
     return ret;
 }
 
-FlopCount operator+(const Instruction& lhs, FlopCount rhs) {
+inline FlopCount operator+(const Instruction& lhs, FlopCount rhs) {
     FlopCount ret = rhs;
     ret += lhs;
     return ret;

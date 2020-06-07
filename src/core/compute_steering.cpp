@@ -15,7 +15,7 @@ void compute_steering(cVector3d x, double* wp, const size_t N_wp, const double m
     compute_steering_base(x, wp, N_wp, minD, rateG, maxG, dt, iwp, G);
 }
 
-double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
+FlopCount compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
                                    const double minD, const double rateG,
                                    const double maxG, const double dt,
                                    int* iwp, double* G) {
@@ -23,7 +23,7 @@ double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
     double G_bak = *G;
     int iwp_bak = *iwp;
     // start counting flops
-    double flops = 0.0;
+    FlopCount flops;
     //determine if current waypoint reached
     double cwp[2];
     cwp[0] = wp[2*(*iwp)+0];
@@ -77,7 +77,7 @@ double compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
     return flops;
 }
 
-double compute_steering_active_flops(cVector3d x, double* wp, const size_t N_wp,
+FlopCount compute_steering_active_flops(cVector3d x, double* wp, const size_t N_wp,
                                    const double minD, const double rateG,
                                    const double maxG, const double dt,
                                    int* iwp, double* G) {

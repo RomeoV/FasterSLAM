@@ -95,7 +95,7 @@ int main() {
     Benchmark<decltype(lambda_pi_to_pi)> bench_lambda("pi_to_pi on array Benchmark");
 
     // Add lambda functions to aggregate over range of inputs.
-    double work = 0.0;
+    FlopCount work;
     double memory = 0.0;
     bench_lambda.add_function(lambda_pi_to_pi_base, "pi_to_pi_base", 0.0);
     for(int i=0; i<N; i++){

@@ -85,8 +85,8 @@ void copy(const double* ref, size_t N, double* target) {
     }
 }
 
-double copy_flops(const double* ref, size_t N, double* target) {
-    return 0.0;
+FlopCount copy_flops(const double* ref, size_t N, double* target) {
+    return FlopCount();
 }
 
 double copy_memory(const double* ref, size_t N, double* target) {
@@ -102,7 +102,7 @@ void fill_rand(double *x, size_t size, double lo, double hi) {
     }
 }
 
-double fill_rand_flops(double *x, size_t size, double lo, double hi) {
+FlopCount fill_rand_flops(double *x, size_t size, double lo, double hi) {
     return tp.add + size*(tp.add + tp.mul + tp.div + tp.rand);
 }
 
@@ -178,8 +178,8 @@ void transpose(const double *A, size_t mA, size_t nA, double *T) {
     }
 }
 
-double transpose_flops(const double *A, size_t mA, size_t nA, double *T) {
-    return 0.0;
+FlopCount transpose_flops(const double *A, size_t mA, size_t nA, double *T) {
+    return FlopCount();
 }
 
 double transpose_memory(const double *A, size_t mA, size_t nA, double *T) {
@@ -193,8 +193,8 @@ void transpose_2x2(const double *A, double *T) {
     T[3] = A[3];
 }
 
-double transpose_2x2_flops(const double *A, double *T) {
-    return 0.0;
+FlopCount transpose_2x2_flops(const double *A, double *T) {
+    return FlopCount();
 }
 
 double transpose_2x2_memory(const double *A, double *T) {
@@ -221,7 +221,7 @@ void add(const double *x, const double *y, size_t size, double* z) {
     }
 }
 
-double add_flops(const double *x, const double *y, size_t size, double* z) {
+FlopCount add_flops(const double *x, const double *y, size_t size, double* z) {
     return size*tp.add;
 }
 
@@ -237,7 +237,7 @@ void sub(const double *x, const double *y, size_t size, double* z) {
     }
 }
 
-double sub_flops(const double *x, const double *y, size_t size, double* z) {
+FlopCount sub_flops(const double *x, const double *y, size_t size, double* z) {
     return size*tp.add;
 }
 
@@ -252,7 +252,7 @@ void scal(const double *x, size_t size, double a, double *y) {
     }
 }
 
-double scal_flops(const double *x, size_t size, double a, double *y) {
+FlopCount scal_flops(const double *x, size_t size, double a, double *y) {
     return size*tp.mul;
 }
 
@@ -274,7 +274,7 @@ void mul(const double *A, const double *B, size_t mA, size_t nA, size_t nB, doub
     }
 }
 
-double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
+FlopCount mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
     return mA*nA*nB*tp.mul + mA*nA*nB*tp.add;
 }
 
@@ -292,7 +292,7 @@ void mm_2x2(const double *A, const double *B, double *C) {
     C[3] = A[2]*B[1] + A[3]*B[3];
 }
 
-double mm_2x2_flops(const double *A, const double *B, double *C) {
+FlopCount mm_2x2_flops(const double *A, const double *B, double *C) {
     return 4*tp.add + 8*tp.mul;
 }
 
@@ -389,7 +389,7 @@ void mmT_2x2(const double *A, const double *B, double *C) {
     C[3] = A[2]*B[2] + A[3]*B[3];
 }
 
-double mmT_2x2_flops(const double *A, const double *B, double *C) {
+FlopCount mmT_2x2_flops(const double *A, const double *B, double *C) {
     return 4*tp.add + 8*tp.mul;
 }
 
@@ -488,7 +488,7 @@ void mmadd_2x2(const double *A, const double *B, double *C) {
     C[3] += A[2]*B[1] + A[3]*B[3];
 }
 
-double mmadd_2x2_flops(const double *A, const double *B, double *C) {
+FlopCount mmadd_2x2_flops(const double *A, const double *B, double *C) {
     return 8*tp.add + 8*tp.mul;
 }
 
@@ -592,7 +592,7 @@ void mv_2x2(const double *A, const double *b, double *c) {
     c[1] = A[2]*b[0] + A[3]*b[1];
 }
 
-double mv_2x2_flops(const double *A, const double *b, double *c) {
+FlopCount mv_2x2_flops(const double *A, const double *b, double *c) {
     return 2*tp.add + 4*tp.mul;
 }
 
@@ -606,7 +606,7 @@ void mvadd_2x2(const double *A, const double *b, double *c) {
     c[1] += A[2]*b[0] + A[3]*b[1];
 }
 
-double mvadd_2x2_flops(const double *A, const double *b, double *c) {
+FlopCount mvadd_2x2_flops(const double *A, const double *b, double *c) {
     return 4*tp.add + 4*tp.mul;
 }
 
@@ -646,7 +646,7 @@ void llt_2x2(const double *A, double *L) {
     L[3] = sqrt( A[3] - L[2]*L[2] ); // 1*2+1 -> (1,1)
 }
 
-double llt_2x2_flops(const double *A, double *L) {
+FlopCount llt_2x2_flops(const double *A, double *L) {
     return 2*tp.sqrt + tp.div + tp.mul + tp.add;
 }
 
@@ -663,7 +663,7 @@ void inv_2x2(const double *A, double *Ainv) {
     Ainv[3] =  s * A[0];
 }
 
-double inv_2x2_flops(const double *A, double *Ainv) {
+FlopCount inv_2x2_flops(const double *A, double *Ainv) {
     return 6*tp.mul + tp.div + tp.add + 2*tp.negation; 
 }
 
@@ -675,7 +675,7 @@ double determinant_2x2(const double* A) {
     return A[0] * A[3] - A[1] * A[2];
 }
 
-double determinant_2x2_flops(const double* A) {
+FlopCount determinant_2x2_flops(const double* A) {
     return 2*tp.mul + tp.add;
 }
 

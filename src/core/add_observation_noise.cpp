@@ -17,7 +17,7 @@
 void add_observation_noise(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
     add_observation_noise_base(z, zlen, R, addnoise);
 }
-double add_observation_noise_flops(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
+FlopCount add_observation_noise_flops(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
     return add_observation_noise_base_flops(z, zlen, R, addnoise);
 }
 double add_observation_noise_memory(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
@@ -52,12 +52,12 @@ void add_observation_noise_base(Vector2d z[], const size_t zlen, cMatrix2d R, co
         free(randM2);
     }	
 }
-double add_observation_noise_base_flops(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
+FlopCount add_observation_noise_base_flops(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {
     if( addnoise == 1 && zlen > 0 ) {
         double* _m1;
         return 2*fill_rand_flops(_m1, zlen, -1, 1) + 2 * tp.sqrt + zlen * 2 * ( tp.mul + tp.add );
     }
-    else return 0;
+    else return FlopCount();
 
 }
 double add_observation_noise_base_memory(Vector2d z[], const size_t zlen, cMatrix2d R, const int addnoise) {

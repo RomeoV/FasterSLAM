@@ -91,7 +91,7 @@ void compute_jacobians_advanced_optimizations(Particle* particle,
         Matrix2d* Sf) //measurement covariance
 ;
 
-double compute_jacobians_base_flops(Particle* particle,
+FlopCount compute_jacobians_base_flops(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,
@@ -131,7 +131,7 @@ void compute_jacobians_nik(Particle* particle,
 
 
 // For fastest version, i.e. compute_jacobians_fast
-double compute_jacobians_active_flops(Particle* particle,
+FlopCount compute_jacobians_active_flops(Particle* particle,
                        int idf[],
                        size_t N_z,
                        Matrix2d R,

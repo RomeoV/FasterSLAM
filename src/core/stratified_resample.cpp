@@ -24,11 +24,11 @@
 void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     stratified_resample_base(w_, N_w, Neff, keep);
 }
-double stratified_resample_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+FlopCount stratified_resample_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     return stratified_resample_base_flops(w_, N_w, Neff, keep);
 }
 double stratified_resample_memory(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
-    return stratified_resample_base_flops(w_, N_w, Neff, keep);
+    return stratified_resample_base_memory(w_, N_w, Neff, keep);
 }
 
 void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
@@ -76,7 +76,7 @@ double get_Neff(const double* w_, const size_t N_w) {
     }
     return 1.0/wsqrd_sum;
 }
-double stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+FlopCount stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     double * _;
     return N_w * ( 2*tp.add + tp.div + tp.mul + tp.doublecomp ) + tp.div + stratified_random_flops(N_w, _) + cumsum_base_flops(_, N_w);
 }
@@ -107,7 +107,7 @@ double stratified_resample_base_memory(const double* w_, const size_t N_w, doubl
 void cumsum(double* w, const size_t N_w) {
     cumsum_base(w, N_w);
 }
-double cumsum_flops(double* w, const size_t N_w) {
+FlopCount cumsum_flops(double* w, const size_t N_w) {
     return cumsum_base_flops(w, N_w);
 }
 double cumsum_memory(double* w, const size_t N_w) {
@@ -119,7 +119,7 @@ void cumsum_base(double* w, const size_t N_w) {
         w[i]+=w[i-1];
     }
 }
-double cumsum_base_flops(double* w, const size_t N_w) {
+FlopCount cumsum_base_flops(double* w, const size_t N_w) {
     return (N_w - 1)*tp.add;
 }
 double cumsum_base_memory(double* w, const size_t N_w) {

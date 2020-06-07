@@ -24,7 +24,7 @@ void fastslam1_sim( double* lm, const size_t lm_rows, const size_t lm_cols,
     fastslam1_sim_active(lm, lm_rows, lm_cols, wp, wp_rows, wp_cols, particles_, weights_);
 }
 
-double fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
+FlopCount fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_) {
     const size_t N_features = lm_rows;
@@ -48,7 +48,7 @@ double fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t 
     int *idf, *ftag_visible;
     setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
 
-    double flop_count = 0;
+    FlopCount flop_count;
 
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
@@ -210,7 +210,7 @@ double fastslam1_sim_base_memory( double* lm, const size_t lm_rows, const size_t
 }
 
 
-double fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
+FlopCount fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_t lm_cols, 
                     double* wp, const size_t wp_rows, const size_t wp_cols, 
                     Particle **particles_, double** weights_){
     const size_t N_features = lm_rows;
@@ -232,7 +232,7 @@ double fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_
     int *idf, *ftag_visible;
     setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
 
-    double flop_count = 0.0;
+    FlopCount flop_count;
 
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	

@@ -30,11 +30,11 @@ void data_associate_known_base(cVector2d z[], const int* idz, const size_t idz_s
         int* table, const int Nf_known, Vector2d zf[], int *idf, size_t *count_zf, Vector2d zn[], size_t *count_zn);
 
 // Utils
-double data_associate_known_base_flops(cVector2d z[], const int* idz, const size_t idz_size, 
+FlopCount data_associate_known_base_flops(cVector2d z[], const int* idz, const size_t idz_size, 
                                int* table, const int Nf_known, Vector2d zf[], int *idf, 
                                size_t *count_zf, Vector2d zn[], size_t *count_zn); 
 
-double data_associate_known_active_flops(cVector2d z[], const int* idz, const size_t idz_size, 
+FlopCount data_associate_known_active_flops(cVector2d z[], const int* idz, const size_t idz_size, 
                                int* table, const int Nf_known, Vector2d zf[], int *idf, 
                                size_t *count_zf, Vector2d zn[], size_t *count_zn); 
 
