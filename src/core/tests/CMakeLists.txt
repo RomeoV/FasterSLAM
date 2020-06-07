@@ -8,6 +8,9 @@ foreach(file ${testfiles})
   add_executable(core_${name}_exe
     ${file}
   )
+  if (USE_YGLEE_KF_CHOLESKY)
+      target_compile_options(core_${name}_exe PUBLIC -DKF_YGLEE)
+  endif()
   target_link_libraries(core_${name}_exe
     boost_ut
     FasterSlamCore

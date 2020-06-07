@@ -46,34 +46,23 @@ int main() {
     }
     
     Benchmark<decltype(&mmadd_2x2)> bench("mmadd_2x2 benchmark");
-    double work = 16; 
+    data_loader(A, B, C);
     bench.data_loader = data_loader; // To guarantee same inputs
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&mmadd_2x2, "base", work);
+    bench.add_function(&mmadd_2x2, "base", 0.0);
+    bench.funcFlops[0] = mmadd_2x2_flops(A, B, C);
+    bench.funcBytes[0] = 8*mmadd_2x2_memory(A, B, C);
 #ifdef __FMA__
-    bench.add_function(&mmadd_2x2_avx_v1, "avx_v1", work);
-    bench.add_function(&mmadd_2x2_avx_v2, "avx_v2", work);
+    bench.add_function(&mmadd_2x2_avx_v1, "avx_v1", 0.0);
+    bench.funcFlops[1] = mmadd_2x2_flops(A, B, C);
+    bench.funcBytes[1] = 8*mmadd_2x2_memory(A, B, C);
+    bench.add_function(&mmadd_2x2_avx_v2, "avx_v2", 0.0);
+    bench.funcFlops[2] = mmadd_2x2_flops(A, B, C);
+    bench.funcBytes[2] = 8*mmadd_2x2_memory(A, B, C);
 #endif
 
     bench.run_benchmark(A, B, C);
-
-    /*
-    // Alternative (much slower here, but nicer to look at. Generally useful if you want to average over a few inputs). Yields averages over all runs.
-    
-    Benchmark<decltype(&pi_to_pi)> bench("pi_to_pi Benchmark");
-
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    bench.add_function(&pi_to_pi, "pi_to_pi", 6);
-    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 6);
-
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i<N; i++) {
-        // You could set the data_loader function here to generate new input. bench.data_loader =&my_load_func_i...
-        bench.run_benchmark(angles[i]);
-    }
-    */
 
     return 0;
 }

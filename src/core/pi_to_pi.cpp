@@ -1,7 +1,7 @@
 #include "pi_to_pi.h"
 
 #include <math.h>
-
+const double TWOPI = 2*M_PI;
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -14,6 +14,16 @@ double pi_to_pi(double ang) {
     return pi_to_pi_while(ang);
 }
 
+double pi_to_pi_active(double ang) {
+    if (ang > M_PI) {
+        while (ang > M_PI) ang -= TWOPI; // precompute_two_pi
+    }
+    else if (ang <= -M_PI) {
+        while (ang <= -M_PI) ang += TWOPI;
+    }
+    return ang;
+}
+
 /*****************************************************************************
  * PERFORMANCE STATUS BASE
  * Work, best: 1 negate + 2 mult + 4 fl-comp = 7 flops
@@ -24,6 +34,7 @@ double pi_to_pi(double ang) {
  * Optimal: TBD
  * Status: Baseline
  ****************************************************************************/
+
 
 double pi_to_pi_base(double ang) 
 {
@@ -38,6 +49,36 @@ double pi_to_pi_base(double ang)
         ang = ang + (2*M_PI);
     }
     return ang;
+}
+
+FlopCount pi_to_pi_base_flops(double ang) {
+    FlopCount flop_count = 2*tp.mul + 2*tp.negation + 4*tp.doublecomp;
+    if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
+        int n=floor(ang/(2*M_PI));
+        ang = ang-n*(2*M_PI);    
+        flop_count+= tp.floor + tp.div + tp.mul;
+    }
+    if (ang > M_PI) {
+        ang = ang - (2*M_PI);
+        flop_count+= tp.add + tp .mul;
+    }
+    if (ang <= -M_PI) {
+        ang = ang + (2*M_PI);
+        flop_count+= tp.add + tp .mul;
+    }
+    return flop_count;
+}
+
+double pi_to_pi_base_memory(double ang) {
+    return 0.0;
+}
+
+FlopCount pi_to_pi_active_flops(double ang) {
+    return pi_to_pi_base_flops(ang);
+}
+
+double pi_to_pi_active_memory(double ang) {
+    return 0.0;
 }
 
 void pi_to_pi_arr(double* angles,const size_t n) 

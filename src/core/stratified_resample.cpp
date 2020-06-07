@@ -24,6 +24,12 @@
 void stratified_resample(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     stratified_resample_base(w_, N_w, Neff, keep);
 }
+FlopCount stratified_resample_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    return stratified_resample_base_flops(w_, N_w, Neff, keep);
+}
+double stratified_resample_memory(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    return stratified_resample_base_memory(w_, N_w, Neff, keep);
+}
 
 void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
     // create local copy
@@ -63,6 +69,24 @@ void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, 
     free(w);    
 }
 
+double get_Neff(const double* w_, const size_t N_w) {
+    double wsqrd_sum = 0.0;
+    for (int i=0; i<N_w; i++) {
+        wsqrd_sum += w_[i] * w_[i];
+    }
+    return 1.0/wsqrd_sum;
+}
+FlopCount stratified_resample_base_flops(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    double * _;
+    return N_w * ( 2*tp.add + tp.div + tp.mul + tp.doublecomp ) + tp.div + stratified_random_flops(N_w, _) + cumsum_base_flops(_, N_w);
+}
+double stratified_resample_base_memory(const double* w_, const size_t N_w, double* Neff, size_t* keep) {
+    double *_;
+    double READS = N_w * ( 5 );
+    double WRITES = N_w * ( 3 /* one is integer writes */ );
+    return READS + 2*WRITES + stratified_random_memory(N_w, _) + cumsum_base_memory(_, N_w);
+}
+
 /*****************************************************************************
  * OPTIMIZATION STATUS
  * Last Worked on: 30.03.2020
@@ -83,10 +107,22 @@ void stratified_resample_base(const double* w_, const size_t N_w, double* Neff, 
 void cumsum(double* w, const size_t N_w) {
     cumsum_base(w, N_w);
 }
+FlopCount cumsum_flops(double* w, const size_t N_w) {
+    return cumsum_base_flops(w, N_w);
+}
+double cumsum_memory(double* w, const size_t N_w) {
+    return cumsum_base_memory(w, N_w);
+}
 
 void cumsum_base(double* w, const size_t N_w) {
     for (int i = 1; i<N_w; i++) {
         w[i]+=w[i-1];
     }
+}
+FlopCount cumsum_base_flops(double* w, const size_t N_w) {
+    return (N_w - 1)*tp.add;
+}
+double cumsum_base_memory(double* w, const size_t N_w) {
+    return N_w-1;
 }
 

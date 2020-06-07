@@ -1,0 +1,298 @@
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_observe_update_bench_exe 
+observe_update Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | observe_update_base                      |            240993 |           2460360 |       992271.0118 |            0.2429 |            1.0000 | 
+ |  1 | observe_update_actve                     |            145693 |            773480 |       263955.4332 |            0.5520 |            3.7592 | 
+ |  2 | observe_update_fast                      |            145693 |            773480 |       119351.1530 |            1.2207 |            8.3139 | 
+ |  3 | observe_update_fast_romeo_vTMv           |            145693 |            773480 |       135329.0018 |            1.0766 |            7.3323 | 
+ |  4 | observe_update_fast_KF_Nik               |            145693 |            773480 |       106962.9406 |            1.3621 |            9.2768 | 
+All tests passed (1501 asserts in 0 tests)
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_predict_update_bench_exe 
+predict_update Benchmark (3 runs, avg):
+ |  i | Name                                     | Run |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |    Gap [cyc/flop] |       Speedup [-] | 
+ |  0 | base                                     |   0 |             13584 |             22616 |        37218.4304 |            0.3650 |            2.7399 |            1.0000 | 
+ |    |                                          |   1 |             13584 |             22616 |        36964.0187 |            0.3675 |            2.7211 |            1.0000 | 
+ |    |                                          |   2 |             13584 |             22616 |        37202.6860 |            0.3651 |            2.7387 |            1.0000 | 
+ |  1 | fast                                     |   0 |             11184 |              5016 |         3322.2649 |            3.3664 |            0.2971 |           11.2027 | 
+ |    |                                          |   1 |             11184 |              5016 |         3287.1624 |            3.4023 |            0.2939 |           11.2450 | 
+ |    |                                          |   2 |             11184 |              5016 |         3337.0597 |            3.3515 |            0.2984 |           11.1483 | 
+predict_update Benchmark (3 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |             13584 |             22616 |        37128.3784 |            0.3659 |            1.0000 | 
+ |  1 | fast                                     |             11184 |              5016 |         3315.4957 |            3.3733 |           11.1984 | 
+All tests passed (305 asserts in 0 tests)
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_fastslam1_sim_bench_exe 
+Benchmarking N=100 Particles...
+Benchmarking N=200 Particles...
+Benchmarking N=400 Particles...
+Benchmarking N=800 Particles...
+Benchmarking N=1600 Particles...
+fastslam1_sim Benchmark (5 runs, avg):
+ |  i | Name                                     |  Run |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |    Gap [cyc/flop] |       Speedup [-] | 
+ |  0 | fastslam1_sim_base                       |  100 |         543244358 |         287032608 |    816907103.0000 |            0.6650 |            1.5038 |            1.0000 | 
+ |    |                                          |  200 |        1075348102 |         559063208 |   1614601278.0000 |            0.6660 |            1.5015 |            1.0000 | 
+ |    |                                          |  400 |        2139691362 |        1105127608 |   3487114924.0000 |            0.6136 |            1.6297 |            1.0000 | 
+ |    |                                          |  800 |        4268249468 |        2209176408 |   7256661011.0000 |            0.5882 |            1.7001 |            1.0000 | 
+ |    |                                          | 1600 |        8525606170 |        4400278808 |  14452419034.0000 |            0.5899 |            1.6952 |            1.0000 | 
+ |  1 | fastslam1_sim_active                     |  100 |         417803754 |         131927798 |     92137483.0000 |            4.5346 |            0.2205 |            8.8662 | 
+ |    |                                          |  200 |         823925257 |         214312398 |    173324670.0000 |            4.7537 |            0.2104 |            9.3155 | 
+ |    |                                          |  400 |        1636358582 |         381819198 |    354028608.0000 |            4.6221 |            0.2164 |            9.8498 | 
+ |    |                                          |  800 |        3261191745 |         729456798 |    686707199.0000 |            4.7490 |            0.2106 |           10.5673 | 
+ |    |                                          | 1600 |        6510961298 |        1429256798 |   1377686484.0000 |            4.7260 |            0.2116 |           10.4904 | 
+fastslam1_sim Benchmark (5 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | fastslam1_sim_base                       |        3310427892 |        1712135728 |   5525540670.0000 |            0.5991 |            1.0000 | 
+ |  1 | fastslam1_sim_active                     |        2530048127 |         577354598 |    536776888.8000 |            4.7134 |           10.2939 | 
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_fastslam1_s
+core_fastslam1_scale_Nf_bench_exe  core_fastslam1_sim_bench_exe       
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_fastslam1_s
+core_fastslam1_scale_Nf_bench_exe  core_fastslam1_sim_bench_exe       
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ ./fastslam1/benchmarks/core_fastslam1_scale_Nf_bench_exe 
+Benchmarking Nf=35 features...
+Benchmarking Nf=70 features...
+Benchmarking Nf=140 features...
+Benchmarking Nf=280 features...
+fastslam1_sim Benchmark (4 runs, avg):
+ |  i | Name                                     | Run |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |    Gap [cyc/flop] |       Speedup [-] | 
+ |  0 | fastslam1_sim_base                       |  35 |         543244358 |         287032608 |    811708052.0000 |            0.6693 |            1.4942 |            1.0000 | 
+ |    |                                          |  70 |         696851748 |         503686905 |   1114674753.0000 |            0.6252 |            1.5996 |            1.0000 | 
+ |    |                                          | 140 |        1002300495 |         941771068 |   1798759871.0000 |            0.5572 |            1.7946 |            1.0000 | 
+ |    |                                          | 280 |        1614817481 |        1835952162 |   3047803109.0000 |            0.5298 |            1.8874 |            1.0000 | 
+ |  1 | fastslam1_sim_active                     |  35 |         417803754 |         131927798 |     93487408.0000 |            4.4691 |            0.2238 |            8.6825 | 
+ |    |                                          |  70 |         511510919 |         262049065 |    129743670.0000 |            3.9425 |            0.2536 |            8.5914 | 
+ |    |                                          | 140 |         697474766 |         531139928 |    204305434.0000 |            3.4139 |            0.2929 |            8.8043 | 
+ |    |                                          | 280 |        1070203013 |        1052393102 |    360273464.0000 |            2.9705 |            0.3366 |            8.4597 | 
+fastslam1_sim Benchmark (4 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | fastslam1_sim_base                       |         964303520 |         892110686 |   1693236446.2500 |            0.5695 |            1.0000 | 
+ |  1 | fastslam1_sim_active                     |         674248113 |         494377473 |    196952494.0000 |            3.4234 |            8.5972 | 
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ make benchmarks
+[  4%] Built target FasterSlamUtils
+[ 34%] Built target FasterSlamCore
+[ 38%] Built target core_mmadd_2x2_bench_exe
+[ 40%] Built target core_tscheb_normalized_sine_bench_exe
+[ 44%] Built target core_stratified_resample_bench_exe
+[ 46%] Built target core_stratified_random_bench_exe
+[ 48%] Built target core_resample_particles_bench_exe
+[ 51%] Built target core_random_bench_exe
+[ 53%] Built target core_vTMv_2x2_bench_exe
+[ 57%] Built target core_predict_true_bench_exe
+[ 59%] Built target core_pi_to_pi_bench_exe
+[ 61%] Built target core_trigonometry_bench_exe
+[ 63%] Built target core_compute_jacobians_bench_exe
+[ 65%] Built target core_compute_steering_bench_exe
+[ 67%] Built target core_add_observation_noise_bench_exe
+[ 69%] Built target core_multivariate_gauss_bench_exe
+[ 71%] Built target core_KF_cholesky_update_bench_exe
+[ 73%] Built target core_compute_weight_and_feature_update_bench_exe
+[ 75%] Built target core_predict_bench_exe
+[ 77%] Built target core_particle_bench_exe
+[ 79%] Built target core_data_associate_known_bench_exe
+[ 81%] Built target core_example_bench_exe
+[ 83%] Built target core_add_feature_bench_exe
+[ 85%] Built target core_mm_2x2_bench_exe
+[ 89%] Built target core_tscheb_not_normalized_sine_bench_exe
+[ 91%] Built target core_feature_update_bench_exe
+[ 93%] Built target core_add_control_noise_bench_exe
+[ 95%] Built target core_get_observations_bench_exe
+[ 97%] Built target core_compute_weight_bench_exe
+[100%] Built target core_mmT_2x2_bench_exe
+[100%] Generating _run_benchmarks
+Starting benchmarks
+KF_cholesky_update_unrolled4_avx benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | unrolled4_avx                            |               312 |               136 |          189.1766 |            1.6493 |            1.0000 | 
+KF_cholesky_update benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |               141 |               226 |          677.1258 |            0.2082 |            1.0000 | 
+ |  1 | fused-ops-noAVX                          |               141 |               226 |          235.3418 |            0.5991 |            2.8772 | 
+ |  2 | fused-ops-AVX                            |               141 |               226 |          222.2841 |            0.6343 |            3.0462 | 
+ |  3 | reduced-flops-noAVX                      |                78 |               136 |          117.3954 |            0.6644 |            5.7679 | 
+ |  4 | reduced-flops-AVX                        |                78 |               136 |          116.4756 |            0.6697 |            5.8135 | 
+ |  5 | active                                   |                78 |               136 |          115.6423 |            0.6745 |            5.8553 | 
+All tests passed (54 asserts in 0 tests)
+add_control_noise Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | add_control_noise_base                   |               108 |                32 |          108.3552 |            0.9967 |            1.0000 | 
+ |  1 | add_control_noise                        |               108 |                32 |          104.2609 |            1.0359 |            1.0393 | 
+All tests passed (2 asserts in 0 tests)
+add_feature Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | add_feature_base                         |               140 |               140 |         2311.2395 |            0.0606 |            1.0000 | 
+ |  1 | add_feature                              |               124 |               100 |         2157.2718 |            0.0575 |            1.0714 | 
+All tests passed (2 asserts in 0 tests)
+add_observation_noise benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |               176 |                22 |          218.9326 |            0.8039 |            1.0000 | 
+ |  1 | active                                   |               176 |                22 |          217.1674 |            0.8104 |            1.0081 | 
+All tests passed (4 asserts in 0 tests)
+compute_jacobians Benchmark (5 runs, avg):
+ |  i | Name                                     | Run |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |    Gap [cyc/flop] |       Speedup [-] | 
+ |  0 | compute_jacobians_base                   |   0 |                85 |               736 |          444.4392 |            0.1913 |            5.2287 |            1.0000 | 
+ |    |                                          |   1 |              1020 |              8832 |         4292.3387 |            0.2376 |            4.2082 |            1.0000 | 
+ |    |                                          |   2 |              1020 |              8832 |         4376.3921 |            0.2331 |            4.2906 |            1.0000 | 
+ |    |                                          |   3 |              1700 |             14720 |         7186.5129 |            0.2366 |            4.2274 |            1.0000 | 
+ |    |                                          |   4 |              1700 |             14720 |          349.0428 |            4.8705 |            0.2053 |            1.0000 | 
+ |  1 | compute_jacobians_fast                   |   0 |                87 |               376 |          138.2651 |            0.6292 |            1.5893 |            3.2144 | 
+ |    |                                          |   1 |              1044 |              3896 |         1049.1648 |            0.9951 |            1.0049 |            4.0912 | 
+ |    |                                          |   2 |              1044 |              3896 |         1190.0294 |            0.8773 |            1.1399 |            3.6775 | 
+ |    |                                          |   3 |              1740 |              6456 |         1950.0502 |            0.8923 |            1.1207 |            3.6853 | 
+ |    |                                          |   4 |              1740 |              6456 |          109.7871 |           15.8489 |            0.0631 |            3.1793 | 
+ |  2 | compute_jacobians_jonathan               |   0 |                87 |               376 |          140.7064 |            0.6183 |            1.6173 |            3.1586 | 
+ |    |                                          |   1 |              1044 |              3896 |         1168.9293 |            0.8931 |            1.1197 |            3.6720 | 
+ |    |                                          |   2 |              1044 |              3896 |         1293.5923 |            0.8071 |            1.2391 |            3.3831 | 
+ |    |                                          |   3 |              1740 |              6456 |         2144.8491 |            0.8112 |            1.2327 |            3.3506 | 
+ |    |                                          |   4 |              1740 |              6456 |          111.0136 |           15.6738 |            0.0638 |            3.1441 | 
+ |  3 | compute_jacobians_simd                   |   0 |                87 |               376 |          184.6074 |            0.4713 |            2.1219 |            2.4075 | 
+ |    |                                          |   1 |              1044 |              3896 |         1684.9202 |            0.6196 |            1.6139 |            2.5475 | 
+ |    |                                          |   2 |              1044 |              3896 |         1822.5282 |            0.5728 |            1.7457 |            2.4013 | 
+ |    |                                          |   3 |              1740 |              6456 |         2993.0210 |            0.5814 |            1.7201 |            2.4011 | 
+ |    |                                          |   4 |              1740 |              6456 |          181.5814 |            9.5825 |            0.1044 |            1.9222 | 
+ |  4 | compute_jacobians_nik                    |   0 |                87 |               376 |          230.9075 |            0.3768 |            2.6541 |            1.9248 | 
+ |    |                                          |   1 |              1044 |              3896 |         2497.7501 |            0.4180 |            2.3925 |            1.7185 | 
+ |    |                                          |   2 |              1044 |              3896 |         2623.5318 |            0.3979 |            2.5130 |            1.6681 | 
+ |    |                                          |   3 |              1740 |              6456 |         4269.6755 |            0.4075 |            2.4538 |            1.6832 | 
+ |    |                                          |   4 |              1740 |              6456 |          233.7305 |            7.4445 |            0.1343 |            1.4934 | 
+ |  5 | compute_jacobians_scalar_replacement     |   0 |                87 |               376 |          363.6584 |            0.2392 |            4.1800 |            1.2221 | 
+ |    |                                          |   1 |              1044 |              3896 |         3964.9976 |            0.2633 |            3.7979 |            1.0826 | 
+ |    |                                          |   2 |              1044 |              3896 |         4095.5457 |            0.2549 |            3.9229 |            1.0686 | 
+ |    |                                          |   3 |              1740 |              6456 |         6739.6889 |            0.2582 |            3.8734 |            1.0663 | 
+ |    |                                          |   4 |              1740 |              6456 |          339.7976 |            5.1207 |            0.1953 |            1.0272 | 
+ |  6 | compute_jacobians_linalg_inplace         |   0 |                87 |               376 |          178.4246 |            0.4876 |            2.0509 |            2.4909 | 
+ |    |                                          |   1 |              1044 |              3896 |         1889.6501 |            0.5525 |            1.8100 |            2.2715 | 
+ |    |                                          |   2 |              1044 |              3896 |         2017.3771 |            0.5175 |            1.9324 |            2.1693 | 
+ |    |                                          |   3 |              1740 |              6456 |         3326.4405 |            0.5231 |            1.9117 |            2.1604 | 
+ |    |                                          |   4 |              1740 |              6456 |          176.8822 |            9.8371 |            0.1017 |            1.9733 | 
+compute_jacobians Benchmark (5 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | compute_jacobians_base                   |              1105 |              9568 |         3329.7452 |            0.3319 |            1.0000 | 
+ |  1 | compute_jacobians_fast                   |              1131 |              4216 |          887.4593 |            1.2744 |            3.7520 | 
+ |  2 | compute_jacobians_jonathan               |              1131 |              4216 |          971.8182 |            1.1638 |            3.4263 | 
+ |  3 | compute_jacobians_simd                   |              1131 |              4216 |         1373.3316 |            0.8235 |            2.4246 | 
+ |  4 | compute_jacobians_nik                    |              1131 |              4216 |         1971.1191 |            0.5738 |            1.6893 | 
+ |  5 | compute_jacobians_scalar_replacement     |              1131 |              4216 |         3100.7376 |            0.3648 |            1.0739 | 
+ |  6 | compute_jacobians_linalg_inplace         |              1131 |              4216 |         1517.7549 |            0.7452 |            2.1939 | 
+All tests passed (192 asserts in 1 tests)
+compute_steering Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                52 |                21 |           63.2545 |            0.8221 |            1.0000 | 
+ |  1 | active                                   |                52 |                21 |           59.9312 |            0.8677 |            1.0555 | 
+All tests passed (2 asserts in 0 tests)
+compute_weight Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | compute_weight_base                      |               456 |               459 |         1695.9677 |            0.2689 |            1.0000 | 
+ |  1 | compute_weight                           |               195 |               189 |         1927.1479 |            0.1012 |            0.8800 | 
+All tests passed (1 asserts in 0 tests)
+data_associate_known benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                 0 |                12 |           62.1729 |            0.0000 |            1.0000 | 
+ |  1 | active                                   |                 0 |                12 |           60.9320 |            0.0000 |            1.0204 | 
+All tests passed (35 asserts in 0 tests)
+Example Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | Kernel base                              |              3104 |               nan |         3474.8671 |            0.8933 |            1.0000 | 
+ |  1 | Kernel fast                              |              3104 |               nan |         1686.5874 |            1.8404 |            2.0603 | 
+feature_update Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | feature_update_base                      |               714 |              1068 |         2969.4791 |            0.2404 |            1.0000 | 
+ |  1 | feature_update                           |               270 |               522 |         3123.2438 |            0.0864 |            0.9508 | 
+All tests passed (2 asserts in 0 tests)
+mmT_2x2 benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                12 |                24 |           10.0528 |            1.1937 |            1.0000 | 
+ |  1 | avx_v1                                   |                12 |                24 |            6.9803 |            1.7191 |            1.4402 | 
+ |  2 | avx_v2                                   |                12 |                24 |            6.4753 |            1.8532 |            1.5525 | 
+ |  3 | avx_v3                                   |                12 |                24 |            7.3719 |            1.6278 |            1.3637 | 
+All tests passed (16 asserts in 0 tests)
+mm_2x2 benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                12 |                24 |           10.1846 |            1.1783 |            1.0000 | 
+ |  1 | avx_v1                                   |                12 |                24 |            6.4700 |            1.8547 |            1.5741 | 
+ |  2 | avx_v2                                   |                12 |                24 |            5.8953 |            2.0355 |            1.7276 | 
+ |  3 | avx_v2                                   |                12 |                24 |            6.1519 |            1.9506 |            1.6555 | 
+All tests passed (16 asserts in 0 tests)
+mmadd_2x2 benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                16 |                24 |           15.2655 |            1.0481 |            1.0000 | 
+ |  1 | avx_v1                                   |                16 |                24 |           14.4834 |            1.1047 |            1.0540 | 
+ |  2 | avx_v2                                   |                16 |                24 |           14.9997 |            1.0667 |            1.0177 | 
+All tests passed (12 asserts in 0 tests)
+multivariate_gauss benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |               108 |                22 |          158.0917 |            0.6831 |            1.0000 | 
+ |  1 | active                                   |               108 |                22 |           90.9947 |            1.1869 |            1.7374 | 
+All tests passed (2 asserts in 0 tests)
+pi_to_pi on array Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | pi_to_pi_base                            |                 0 |               nan |        14231.2563 |            0.0000 |            1.0000 | 
+ |  1 | pi_to_pi                                 |                 0 |               nan |        13312.9451 |            0.0000 |            1.0690 | 
+ |  2 | pi_to_pi_fmod                            |                 0 |               nan |        33495.2121 |            0.0000 |            0.4249 | 
+pi_to_pi Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | pi_to_pi_base                            |                19 |                 0 |           13.8223 |            1.3746 |            1.0000 | 
+ |  1 | pi_to_pi                                 |                19 |                 0 |            8.2361 |            2.3069 |            1.6783 | 
+ |  2 | pi_to_pi_fmod                            |                19 |                 0 |           27.7824 |            0.6839 |            0.4975 | 
+ |  3 | pi_to_pi_nongeneral                      |                19 |                 0 |            7.7874 |            2.4398 |            1.7750 | 
+ |  4 | pi_to_pi_while                           |                19 |                 0 |            9.0565 |            2.0979 |            1.5262 | 
+All tests passed (2000 asserts in 2 tests)
+predict Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                26 |                 6 |          185.9790 |            0.1398 |            1.0000 | 
+ |  1 | active                                   |                26 |                 6 |          234.9834 |            0.1106 |            0.7915 | 
+All tests passed (3 asserts in 0 tests)
+predict_true Benchmark (3 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] |      min. t [cyc] |      max. t [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |                35 |                 6 |          364.8725 |          136.7780 |          753.7057 |            0.0959 |            1.0000 | 
+ |  1 | active                                   |                35 |                 6 |          362.4894 |          130.8507 |          753.6363 |            0.0966 |            1.0066 | 
+All tests passed (3 asserts in 0 tests)
+fastrand Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | random_base                              |             10000 |               nan |       265111.2619 |            0.0377 |            1.0000 | 
+ |  1 | fastrand                                 |             10000 |               nan |        71407.3389 |            0.1400 |            3.7127 | 
+ |  2 | lehmer64                                 |             10000 |               nan |        71527.9461 |            0.1398 |            3.7064 | 
+ |  3 | wyrng                                    |             10000 |               nan |        64548.9860 |            0.1549 |            4.1071 | 
+ |  4 | wyhash64                                 |             10000 |               nan |        62854.1605 |            0.1591 |            4.2179 | 
+ |  5 | pcg32                                    |             10000 |               nan |        76195.4686 |            0.1312 |            3.4794 | 
+ |  6 | xorshift128plus                          |             10000 |               nan |        73654.9683 |            0.1358 |            3.5994 | 
+ |  7 | xorshf96                                 |             10000 |               nan |        71472.2298 |            0.1399 |            3.7093 | 
+ |  8 | read_rand                                |             10000 |               nan |        87219.3380 |            0.1147 |            3.0396 | 
+ |  9 | avx_xorshift128plus                      |             10000 |               nan |        28154.2711 |            0.3552 |            9.4164 | 
+ | 10 | avx_fast_rand                            |             10000 |               nan |        54809.2988 |            0.1825 |            4.8370 | 
+ | 11 | avx2_pcg32                               |             10000 |               nan |        28887.9283 |            0.3462 |            9.1772 | 
+resample_particles Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | resample_particles_base                  |              6009 |             12299 |       153654.0139 |            0.0391 |            1.0000 | 
+ |  1 | resample_particles_dag                   |              5909 |              5699 |         5483.7822 |            1.0775 |           28.0197 | 
+strafified_random Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |              3805 |              3805 |         3167.8960 |            1.2011 |            1.0000 | 
+ |  1 | active                                   |              3805 |              3805 |         3395.4301 |            1.1206 |            0.9330 | 
+All tests passed (100 asserts in 0 tests)
+stratified_resample Benchmark (3 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] |      min. t [cyc] |      max. t [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |              4809 |              1399 |         6077.1907 |         5839.7053 |         6206.3094 |            0.7913 |            1.0000 | 
+ |  1 | active                                   |              4809 |              1399 |         6173.4957 |         4813.1086 |         8646.7747 |            0.7790 |            0.9844 | 
+All tests passed (101 asserts in 0 tests)
+Trigonometry Benchmark (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | base                                     |             10000 |               nan |       295229.2494 |            0.0339 |            1.0000 | 
+ |  1 | read_sin                                 |             10000 |               nan |       105311.5567 |            0.0950 |            2.8034 | 
+ |  2 | tscheb_sine                              |             10000 |               nan |       132122.3131 |            0.0757 |            2.2345 | 
+ |  3 | read_sin_vec                             |             10000 |               nan |        33544.8104 |            0.2981 |            8.8010 | 
+ |  4 | read_sin2_vec                            |             10000 |               nan |        34007.6069 |            0.2941 |            8.6813 | 
+All tests passed (20000 asserts in 1 tests)
+normalized_sine (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | Cmath sines                              |              3584 |               nan |        12577.5086 |            0.2850 |            1.0000 | 
+ |  1 | Tscheb. sines on norm. floats            |              4608 |               nan |         3438.0060 |            1.3403 |            3.6584 | 
+ |  2 | Tscheb. sines on norm. doubles           |              4608 |               nan |         3133.3346 |            1.4706 |            4.0141 | 
+ |  3 | Vect. tscheb. sines on norm. doubles     |              4608 |               nan |          449.8130 |           10.2443 |           27.9616 | 
+ |  4 | Unrld. tscheb. sines on norm. doubles    |              4608 |               nan |          457.1649 |           10.0795 |           27.5120 | 
+ |  5 | AVX. tscheb. sines on norm. doubles      |              4608 |               nan |          427.7063 |           10.7737 |           29.4069 | 
+ |  6 | read_sine                                |              1536 |               nan |         2565.5043 |            0.5987 |            4.9025 | 
+ |  7 | read_sine_vec                            |              1536 |               nan |          736.6800 |            2.0850 |           17.0732 | 
+All tests passed (396 asserts in 0 tests)
+v.T @ M T v (1 runs, avg):
+ |  i | Name                                     |      Work [flops] |    Memory [bytes] |        Time [cyc] | Perf. [flops/cyc] |       Speedup [-] | 
+ |  0 | vTMv base                                |              2700 |               nan |        30761.6151 |            0.0878 |            1.0000 | 
+ |  1 | vTMv avx2                                |              2700 |               nan |         1087.3633 |            2.4831 |           28.2901 | 

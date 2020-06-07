@@ -23,4 +23,23 @@ void compute_steering_base(cVector3d x, double* wp, const size_t N_wp, const dou
                       int* iwp, double* G);
 
                       
+// Utils
+FlopCount compute_steering_base_flops(cVector3d x, double* wp, const size_t N_wp,
+                                   const double minD, const double rateG,
+                                   const double maxG, const double dt,
+                                   int* iwp, double* G); 
 
+FlopCount compute_steering_active_flops(cVector3d x, double* wp, const size_t N_wp,
+                                   const double minD, const double rateG,
+                                   const double maxG, const double dt,
+                                   int* iwp, double* G); 
+
+double compute_steering_base_memory(cVector3d x, double* wp, const size_t N_wp,
+                                    const double minD, const double rateG,
+                                    const double maxG, const double dt,
+                                    int* iwp, double* G); 
+
+double compute_steering_active_memory(cVector3d x, double* wp, const size_t N_wp,
+                                    const double minD, const double rateG,
+                                    const double maxG, const double dt,
+                                    int* iwp, double* G); 

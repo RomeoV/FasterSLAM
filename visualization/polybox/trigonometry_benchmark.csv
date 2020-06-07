@@ -1,0 +1,15 @@
+Trigonometry Benchmark;base;;100000;nan;3825051.2842;0.0261;1.0000
+Trigonometry Benchmark;read_sin;;100000;nan;2543590.8232;0.0393;1.5038
+Trigonometry Benchmark;tscheb_sine;;100000;nan;833543.2076;0.1200;4.5889
+Trigonometry Benchmark;tscheb_sin_partially_normalized;;100000;nan;1035916.3174;0.0965;3.6924
+Trigonometry Benchmark;tscheb_sine_not_normalized;;100000;nan;1451454.8208;0.0689;2.6353
+Trigonometry Benchmark;read_sin_avx;;100000;nan;956368.0034;0.1046;3.9996
+Trigonometry Benchmark;read_sin_symmetry_avx;;100000;nan;1284001.0328;0.0779;2.9790
+Trigonometry Benchmark;tscheb_sin_avx_partially_normalized;;100000;nan;302725.6910;0.3303;12.6354
+Trigonometry Benchmark;base;;1500000;100000;4333169.1778;0.3462;1.0000
+Trigonometry Benchmark;read_sin;;1;1;3100462.7972;0.0000;1.3976
+Trigonometry Benchmark;tscheb_sine_normalized;;2800000;100000;1147499.8562;2.4401;3.7762
+Trigonometry Benchmark;tscheb_sine_not_normalized;;3000000;100000;1534137.8360;1.9555;2.8245
+Trigonometry Benchmark;read_sin_avx;;1;100000;1130892.9934;0.0000;3.8316
+Trigonometry Benchmark;read_sin_symmetry_avx;;1;100000;1445547.3958;0.0000;2.9976
+Trigonometry Benchmark;tscheb_sin_avx_partially_normalized;;2075000;100000;342344.4669;6.0611;12.6573

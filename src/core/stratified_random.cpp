@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include "fastrand.h"
+#include "typedefs.h"
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -15,6 +16,12 @@
 void stratified_random(const size_t N, double* di) {
     stratified_random_base(N, di);
 }
+FlopCount stratified_random_flops(const size_t N, double* di) {
+    return stratified_random_base_flops(N, di);
+}
+double stratified_random_memory(const size_t N, double* di) {
+    return stratified_random_base_memory(N, di);
+}
 
 /*****************************************************************************
  * PERFORMANCE STATUS
@@ -25,6 +32,7 @@ void stratified_random(const size_t N, double* di) {
  * Optimal: TBD
  * Status: TBD
  ****************************************************************************/
+
 void stratified_random_base(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
@@ -34,12 +42,26 @@ void stratified_random_base(const size_t N, double* di)
         di[i] = k*i + k*unifRand();
     }
 }
+FlopCount stratified_random_base_flops(const size_t N, double* di) { 
+    return tp.div + N * ( 2*tp.mul + tp.add + unifRand_flops() );
+}
+double stratified_random_base_memory(const size_t N, double* di) { 
+    double WRITES = N;
+    return 2 * WRITES;
+}
 
 double unifRand() {
     
     return double(rand()) / double(RAND_MAX);
 }
+FlopCount unifRand_flops() {
+    return tp.rand + tp.div;
+}
+double unifRand_memory() {
+    return 0;
+}
 
+// THIS CURRENTLY JUST CALLS REGULAR RAND!
 void stratified_random_fastrand(const size_t N, double* di)
 { 
     double k = 1.0/(double)N;
@@ -48,4 +70,11 @@ void stratified_random_fastrand(const size_t N, double* di)
     for (int i = 0; i<N; i++) {
         di[i] = k*i + k*unifRand();
     }
+}
+FlopCount stratified_random_fastrand_flops(const size_t N, double* di) {
+    return tp.div + N * ( 2*tp.mul + tp.add + tp.fastrand );
+}
+double stratified_random_fastrand_memory(const size_t N, double* di) {
+    double WRITES = N;
+    return 2 * WRITES;
 }

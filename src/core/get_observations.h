@@ -59,3 +59,42 @@ void find2(const double *dx, const double *dy, const size_t size,
 void find2_base(const double *dx, const double *dy, const size_t size, 
         const double phi, const double rmax, size_t *index, size_t *index_size);
 
+
+//! -----------
+//! find2 utils
+//! -----------
+
+FlopCount find2_base_flops(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size);
+
+FlopCount find2_active_flops(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size);
+
+double find2_base_memory(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size);
+
+double find2_active_memory(const double *dx, const double *dy, const size_t size, 
+        const double phi, const double rmax, size_t *index, size_t *index_size);
+
+
+FlopCount get_visible_landmarks_base_flops(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
+
+FlopCount get_visible_landmarks_active_flops(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
+
+double get_visible_landmarks_base_memory(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
+
+double get_visible_landmarks_active_memory(cVector3d x, const double rmax, const double *lm, 
+        const size_t lm_rows, double **lm_new, int *idf, size_t *nidf);
+
+FlopCount compute_range_bearing_base_flops(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]);
+FlopCount compute_range_bearing_active_flops(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]); 
+double compute_range_bearing_base_memory(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]); 
+double compute_range_bearing_active_memory(cVector3d x, const double *lm, const size_t lm_rows, Vector2d z[]); 
+
+FlopCount get_observations_base_flops(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);
+FlopCount get_observations_active_flops(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);
+double get_observations_base_memory(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);
+double get_observations_active_memory(cVector3d x, const double rmax, const double *lm, const size_t lm_rows, int *idf, size_t *nidf, Vector2d z[]);

@@ -1,4 +1,5 @@
 add_library(FasterSlamCore
+  alignment_utils.cpp
   KF_cholesky_update.cpp
   add_feature.cpp
   add_observation_noise.cpp
@@ -25,6 +26,9 @@ add_library(FasterSlamCore
   trigonometry.cpp
   compute_weight_and_feature_update.cpp
 )
+if (USE_YGLEE_KF_CHOLESKY)
+    target_compile_options(FasterSlamCore PUBLIC -DKF_YGLEE)
+endif()
 target_include_directories(FasterSlamCore PUBLIC
   ${CMAKE_CURRENT_SOURCE_DIR}
 )
@@ -33,14 +37,15 @@ if(${USE_MARCH_NATIVE})
 target_compile_options(FasterSlamCore
   PUBLIC
   -march=native
+  -O3
 )
 endif()
 
-target_compile_options(FasterSlamCore
-  PUBLIC
-  -Wall
-  -Wno-sign-compare
-)
+# target_compile_options(FasterSlamCore
+#   PUBLIC
+#   -Wall
+#   -Wno-sign-compare
+# )
 
 add_subdirectory(tests)
 if(${BUILD_BENCHMARKS})

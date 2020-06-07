@@ -12,5 +12,8 @@
     @param[in]  addrandom        0/1, if sampling from predict noise, for fs1 usually true/1
  */
 void predict(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt);
-
 void predict_base(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt);
+
+
+FlopCount predict_base_flops(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt);
+double predict_base_memory(Particle *particle, double V, double G, Matrix2d Q, double WB, double dt);
