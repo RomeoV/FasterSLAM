@@ -1816,7 +1816,7 @@ double observe_update_memory(double * lm, int N_features, Vector3d xtrue, double
     Vector2d S_inv_v;
     double vT_S_inv_v;
     
-    memory_moved += NPARTICLES * 6 + NPARTICLES*3 + 2* NPARTICLES * count_zf* (2+4); //+ count_zn, but measured alread in add_feature
+    memory_moved += NPARTICLES*9 + 2* NPARTICLES * count_zf* (2+4); //+ count_zn, but measured alread in add_feature
     // perform update
     for (size_t i = 0; i < NPARTICLES; i++) {
         if ( count_zf != 0 ) { //observe map features ( !zf.empty() )

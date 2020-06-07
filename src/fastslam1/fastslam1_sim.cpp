@@ -29,7 +29,7 @@ double fastslam1_sim_base_flops( double* lm, const size_t lm_rows, const size_t 
                     Particle **particles_, double** weights_) {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
 
@@ -124,7 +124,7 @@ double fastslam1_sim_base_memory( double* lm, const size_t lm_rows, const size_t
                     Particle **particles_, double** weights_){
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
@@ -215,7 +215,7 @@ double fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_
                     Particle **particles_, double** weights_){
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
@@ -232,7 +232,7 @@ double fastslam1_sim_active_flops( double* lm, const size_t lm_rows, const size_
     int *idf, *ftag_visible;
     setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
 
-    double flop_count = 0;
+    double flop_count = 0.0;
 
 //    if ( SWITCH_PREDICT_NOISE ) {
 //        printf("Sampling from predict noise usually OFF for FastSLAM 2.0\n");	
@@ -306,7 +306,7 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
                     Particle **particles_, double** weights_) {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
@@ -349,7 +349,7 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
         // Prediction
         //////////////////////////////////////////////////////////////////
         memory_moved+= predict_update_active_memory(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
-        predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 
@@ -397,7 +397,7 @@ void fastslam1_sim_base( double* lm, const size_t lm_rows, const size_t lm_cols,
 {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
@@ -482,7 +482,7 @@ void fastslam1_sim_active( double* lm, const size_t lm_rows, const size_t lm_col
 {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-
+    NUMBER_LOOPS=_NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     // double *xv; We get them from the configfile

@@ -44,13 +44,14 @@ double R[2][2] __attribute__((aligned(32))) = {
 // waypoint proximity
 double AT_WAYPOINT = 1.0; // metres, distance from current waypoint at which to switch to next waypoint
 int NUMBER_LOOPS = 2; // number of loops through the waypoint list
+int _NUMBER_LOOPS = NUMBER_LOOPS; // BACKUP
 
 // resampling
 unsigned int NPARTICLES = 100; 
 double NEFFECTIVE = 0.75 * NPARTICLES; // minimum number of effective particles before resampling
 
 // switches
-int SWITCH_CONTROL_NOISE = 0;
+int SWITCH_CONTROL_NOISE = 1;
 int SWITCH_SENSOR_NOISE = 1;
 int SWITCH_INFLATE_NOISE = 0;
 int SWITCH_PREDICT_NOISE = 1;   // sample noise from predict (usually 1 for fastslam1.0 and 0 for fastslam2.0)

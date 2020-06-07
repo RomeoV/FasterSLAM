@@ -19,6 +19,11 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
+
+void data_loader(double* lm, const size_t lm_rows, const size_t lm_cols, 
+                    double* wp, const size_t wp_rows, const size_t wp_cols, 
+                    Particle **particles_, double** weights_) {
+}
 int main(int argc, char *argv[]) {
     double *lm; // landmark positions
 	double *wp; // way points
@@ -35,13 +40,14 @@ int main(int argc, char *argv[]) {
 
     Benchmark<decltype(&fastslam1_sim)> bench("fastslam1_sim Benchmark");
 
-    bench.controls.NUM_RUNS = 1;
+    bench.controls.NUM_RUNS = 3;
     bench.controls.REP = 1;
     bench.controls.CYCLES_REQUIRED = 0.0;
 
     bench.csv_path = "fastslam1_particle.csv";
     bench.csv_output = false;
 
+    bench.data_loader = &data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&fastslam1_sim_base, "fastslam1_sim_base", 0.0);
@@ -49,18 +55,13 @@ int main(int argc, char *argv[]) {
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     int N= 100;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
         NPARTICLES = pow(2,i) * N;
         std::cout<< "Benchmarking N="<<NPARTICLES<<" Particles..."<<std::endl;
-        NUMBER_LOOPS=2;
         bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        NUMBER_LOOPS=2;
         bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        NUMBER_LOOPS=2;
         bench.funcBytes[0] = 8*fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        NUMBER_LOOPS=2;
         bench.funcBytes[1] = 8*fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        NUMBER_LOOPS=2;
         bench.run_name = std::to_string(NPARTICLES); // Set name of run to identify it easier
         bench.run_benchmark(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
     }
