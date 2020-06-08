@@ -385,6 +385,7 @@ double KF_cholesky_update_base_memory(Vector2d x, Matrix2d P,
     memory += mul_memory(W1, W1t, 2, 2, 2, W1W1t);
     memory += sub_memory(P, W1W1t, 4, P);
 
+    return 3*2+3*4; // only inputs/outputs ( one read + write each )
     return memory;
 }
 

@@ -127,32 +127,32 @@ int main() {
     // there is no instrumentation available
     bench.add_function(std_sin_lambda, "base", N);
     bench.funcFlops[0] = N * tp.sin;
-    bench.funcBytes[0] = N;
+    bench.funcBytes[0] = 8*N;
     bench.add_function(read_sin_lambda, "read_sin", N);
     bench.funcFlops[1] = 1;
-    bench.funcBytes[1] = 1;
+    bench.funcBytes[1] = 8*1;
 
     bench.add_function(tscheb_sin_lambda, "tscheb_sine_normalized",N);
     bench.funcFlops[2] = N * tscheb_dsine_flops(3, true);
-    bench.funcBytes[2] = N;
+    bench.funcBytes[2] = 8*N;
 
-     bench.add_function(tscheb_sin_simple_lambda , "tscheb_sine_partially_normalized",N);
+    bench.add_function(tscheb_sin_simple_lambda , "tscheb_sine_partially_normalized",N);
     bench.funcFlops[3] = N * tscheb_dsine_flops(3, true)+ 2* N * tp.add;
-    bench.funcBytes[3] = N;
+    bench.funcBytes[3] = 8*N;
 
     bench.add_function(tscheb_sin_not_normalized_lambda, "tscheb_sine_not_normalized", N);
     bench.funcFlops[4] = N * tscheb_dsine_flops(4, false);
-    bench.funcBytes[4] = N;
+    bench.funcBytes[4] = 8*N;
 
     bench.add_function(read_sin_vec_lambda, "read_sin_avx", N);
     bench.funcFlops[5] = 1;
-    bench.funcBytes[5] = N;
+    bench.funcBytes[5] = 8*N;
     bench.add_function(read_sin2_vec_lambda, "read_sin_symmetry_avx", N);
     bench.funcFlops[6] = 1;
-    bench.funcBytes[6] = N;
+    bench.funcBytes[6] = 8*N;
     bench.add_function(tscheb_sin_vec_lambda, "tscheb_sin_avx_partially_normalized",N);
     bench.funcFlops[7] = N/4 * tscheb_sin_avx_flops(_mm256_load_pd(angles));
-    bench.funcBytes[7] = N;
+    bench.funcBytes[7] = 8*N;
 
     auto loader = data_loader_lambda(fill_angles, lower_bound, upper_bound);
 

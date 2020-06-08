@@ -173,14 +173,14 @@ int main() {
       bench.funcFlops[6] = 1;
       bench.funcFlops[7] = 1;
 
-      bench.funcBytes[0] = NR;
-      bench.funcBytes[1] = NR;
-      bench.funcBytes[2] = NR;
-      bench.funcBytes[3] = NR;
-      bench.funcBytes[4] = NR;
-      bench.funcBytes[5] = NR;
-      bench.funcBytes[6] = NR;
-      bench.funcBytes[7] = NR;
+      bench.funcBytes[0] = 8*NR;
+      bench.funcBytes[1] = 8*NR;
+      bench.funcBytes[2] = 8*NR;
+      bench.funcBytes[3] = 8*NR;
+      bench.funcBytes[4] = 8*NR;
+      bench.funcBytes[5] = 8*NR;
+      bench.funcBytes[6] = 8*NR;
+      bench.funcBytes[7] = 8*NR;
 
       bench.run_name = std::to_string(NR); // Set name of run to identify it easier
       bench.run_benchmark(alphas_d);
