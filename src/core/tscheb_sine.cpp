@@ -239,31 +239,31 @@ __m256d tscheb_sin_avx(__m256d alphas) {
     // double p2_11 = coeffs[5];
     // double p3_11 = coeffs[5];
 
-    __m256d p9 = _mm256_add_pd(_mm256_mul_pd(p11, x2), _mm256_set1_pd(coeffs[4]));
+    __m256d p9 = _mm256_fmadd_pd(p11, x2, _mm256_set1_pd(coeffs[4]));
     // double p0_9  = p0_11*x0_2 + coeffs[4];
     // double p1_9  = p1_11*x1_2 + coeffs[4];
     // double p2_9  = p2_11*x2_2 + coeffs[4];
     // double p3_9  = p3_11*x3_2 + coeffs[4];
 
-    __m256d p7 = _mm256_add_pd(_mm256_mul_pd(p9, x2), _mm256_set1_pd(coeffs[3]));
+    __m256d p7 = _mm256_fmadd_pd(p9, x2, _mm256_set1_pd(coeffs[3]));
     // double p0_7  = p0_9*x0_2  + coeffs[3];
     // double p1_7  = p1_9*x1_2  + coeffs[3];
     // double p2_7  = p2_9*x2_2  + coeffs[3];
     // double p3_7  = p3_9*x3_2  + coeffs[3];
 
-    __m256d p5 = _mm256_add_pd(_mm256_mul_pd(p7, x2), _mm256_set1_pd(coeffs[2]));
+    __m256d p5 = _mm256_fmadd_pd(p7, x2, _mm256_set1_pd(coeffs[2]));
     // double p0_5  = p0_7*x0_2  + coeffs[2];
     // double p1_5  = p1_7*x1_2  + coeffs[2];
     // double p2_5  = p2_7*x2_2  + coeffs[2];
     // double p3_5  = p3_7*x3_2  + coeffs[2];
 
-    __m256d p3 = _mm256_add_pd(_mm256_mul_pd(p5, x2), _mm256_set1_pd(coeffs[1]));
+    __m256d p3 = _mm256_fmadd_pd(p5, x2, _mm256_set1_pd(coeffs[1]));
     // double p0_3  = p0_5*x0_2  + coeffs[1];
     // double p1_3  = p1_5*x1_2  + coeffs[1];
     // double p2_3  = p2_5*x2_2  + coeffs[1];
     // double p3_3  = p3_5*x3_2  + coeffs[1];
 
-    __m256d p1 = _mm256_add_pd(_mm256_mul_pd(p3, x2), _mm256_set1_pd(coeffs[0]));
+    __m256d p1 = _mm256_fmadd_pd(p3, x2, _mm256_set1_pd(coeffs[0]));
     // double p0_1  = p0_3*x0_2  + coeffs[0];
     // double p1_1  = p1_3*x1_2  + coeffs[0];
     // double p2_1  = p2_3*x2_2  + coeffs[0];
@@ -277,7 +277,7 @@ __m256d tscheb_sin_avx(__m256d alphas) {
 }
 
 double tscheb_dsine_flops(double alpha, bool angle_is_normalized) {
-    return (9*tp.add + 9*tp.mul) + pi_to_pi_active_flops(alpha);
+    return (9*tp.add + 9*tp.mul) + (!angle_is_normalized)*pi_to_pi_active_flops(alpha);
 }
 
 double tscheb_dsine_memory(double alpha, bool angle_is_normalized) {
@@ -370,31 +370,31 @@ void tscheb_dsines_avx(double* alphas, size_t N, double* results) {
         // double p2_11 = coeffs[5];
         // double p3_11 = coeffs[5];
 
-        __m256d p9 = _mm256_add_pd(_mm256_mul_pd(p11, x2), _mm256_set1_pd(coeffs[4]));
+        __m256d p9 = _mm256_fmadd_pd(p11, x2, _mm256_set1_pd(coeffs[4]));
         // double p0_9  = p0_11*x0_2 + coeffs[4];
         // double p1_9  = p1_11*x1_2 + coeffs[4];
         // double p2_9  = p2_11*x2_2 + coeffs[4];
         // double p3_9  = p3_11*x3_2 + coeffs[4];
 
-        __m256d p7 = _mm256_add_pd(_mm256_mul_pd(p9, x2), _mm256_set1_pd(coeffs[3]));
+        __m256d p7 = _mm256_fmadd_pd(p9, x2, _mm256_set1_pd(coeffs[3]));
         // double p0_7  = p0_9*x0_2  + coeffs[3];
         // double p1_7  = p1_9*x1_2  + coeffs[3];
         // double p2_7  = p2_9*x2_2  + coeffs[3];
         // double p3_7  = p3_9*x3_2  + coeffs[3];
 
-        __m256d p5 = _mm256_add_pd(_mm256_mul_pd(p7, x2), _mm256_set1_pd(coeffs[2]));
+        __m256d p5 = _mm256_fmadd_pd(p7, x2, _mm256_set1_pd(coeffs[2]));
         // double p0_5  = p0_7*x0_2  + coeffs[2];
         // double p1_5  = p1_7*x1_2  + coeffs[2];
         // double p2_5  = p2_7*x2_2  + coeffs[2];
         // double p3_5  = p3_7*x3_2  + coeffs[2];
 
-        __m256d p3 = _mm256_add_pd(_mm256_mul_pd(p5, x2), _mm256_set1_pd(coeffs[1]));
+        __m256d p3 = _mm256_fmadd_pd(p5, x2, _mm256_set1_pd(coeffs[1]));
         // double p0_3  = p0_5*x0_2  + coeffs[1];
         // double p1_3  = p1_5*x1_2  + coeffs[1];
         // double p2_3  = p2_5*x2_2  + coeffs[1];
         // double p3_3  = p3_5*x3_2  + coeffs[1];
 
-        __m256d p1 = _mm256_add_pd(_mm256_mul_pd(p3, x2), _mm256_set1_pd(coeffs[0]));
+        __m256d p1 = _mm256_fmadd_pd(p3, x2, _mm256_set1_pd(coeffs[0]));
         // double p0_1  = p0_3*x0_2  + coeffs[0];
         // double p1_1  = p1_3*x1_2  + coeffs[0];
         // double p2_1  = p2_3*x2_2  + coeffs[0];

@@ -107,6 +107,7 @@ double fill_rand_flops(double *x, size_t size, double lo, double hi) {
 }
 
 double fill_rand_memory(double *x, size_t size, double lo, double hi) {
+    return 0;
     return 2*size;
 }
 
@@ -183,6 +184,7 @@ double transpose_flops(const double *A, size_t mA, size_t nA, double *T) {
 }
 
 double transpose_memory(const double *A, size_t mA, size_t nA, double *T) {
+    return 0;
     return 3*nA*mA;
 }
 
@@ -198,6 +200,7 @@ double transpose_2x2_flops(const double *A, double *T) {
 }
 
 double transpose_2x2_memory(const double *A, double *T) {
+    return 0;
     return 3*4;
 }
 
@@ -226,6 +229,7 @@ double add_flops(const double *x, const double *y, size_t size, double* z) {
 }
 
 double add_memory(const double *x, const double *y, size_t size, double* z) {
+    return 0;
     return size*4;
 }
 
@@ -242,6 +246,7 @@ double sub_flops(const double *x, const double *y, size_t size, double* z) {
 }
 
 double sub_memory(const double *x, const double *y, size_t size, double* z) {
+    return 0;
     return size*4;
 }
 
@@ -257,6 +262,7 @@ double scal_flops(const double *x, size_t size, double a, double *y) {
 }
 
 double scal_memory(const double *x, size_t size, double a, double *y) {
+    return 0;
     return size*2;
 }
 
@@ -279,6 +285,7 @@ double mul_flops(const double *A, const double *B, size_t mA, size_t nA, size_t 
 }
 
 double mul_memory(const double *A, const double *B, size_t mA, size_t nA, size_t nB, double *C) {
+    return 0;
     return 2*mA*nB + mA*nA + nB*nA;
 }
 
@@ -297,6 +304,7 @@ double mm_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mm_2x2_memory(const double *A, const double *B, double *C) {
+    return 0;
     return 2*4 + 2*4;
 }
 
@@ -394,6 +402,7 @@ double mmT_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mmT_2x2_memory(const double *A, const double *B, double *C) {
+    return 0;
     return 2*4 + 2*4;
 }
 
@@ -493,6 +502,7 @@ double mmadd_2x2_flops(const double *A, const double *B, double *C) {
 }
 
 double mmadd_2x2_memory(const double *A, const double *B, double *C) {
+    return 0;
     return 2*4 + 2*4;
 }
 
@@ -597,6 +607,7 @@ double mv_2x2_flops(const double *A, const double *b, double *c) {
 }
 
 double mv_2x2_memory(const double *A, const double *b, double *c) {
+    return 0;
     return 4 + 2 + 2*2;
 }
 
@@ -611,6 +622,7 @@ double mvadd_2x2_flops(const double *A, const double *b, double *c) {
 }
 
 double mvadd_2x2_memory(const double *A, const double *b, double *c) {
+    return 0;
     return 4 + 2 + 2*2;
 }
 
@@ -651,6 +663,7 @@ double llt_2x2_flops(const double *A, double *L) {
 }
 
 double llt_2x2_memory(const double *A, double *L) {
+    return 0;
     return 3*4;
 }
 
@@ -668,6 +681,7 @@ double inv_2x2_flops(const double *A, double *Ainv) {
 }
 
 double inv_2x2_memory(const double *A, double *Ainv) {
+    return 0;
     return 3*4; 
 }
 
@@ -680,6 +694,7 @@ double determinant_2x2_flops(const double* A) {
 }
 
 double determinant_2x2_memory(const double* A) {
+    return 0;
     return 4.0;
 }
 
