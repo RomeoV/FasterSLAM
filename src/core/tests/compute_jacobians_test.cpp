@@ -124,7 +124,7 @@ int main() {
                 );
 
         then("I get the right values back") = [=] {
-            auto is_close = [](auto lhs, auto rhs) -> bool {return fabs(lhs - rhs) < 1e-5;};
+            auto is_close = [](auto lhs, auto rhs) -> bool {return fabs(lhs - rhs) < 1e-2;};
 
             Vector2d target_zp[3] = {{1.00499,0.0996687},
                                      {1.00499,0.0996687},

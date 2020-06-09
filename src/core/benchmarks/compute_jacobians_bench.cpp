@@ -77,7 +77,7 @@ int main() {
 
     // Compare two methods
     "functional equality"_test = [&] {
-        auto is_close = [&](double lhs, double rhs) -> bool {return std::abs(lhs - rhs) < 1e-4;};
+        auto is_close = [&](double lhs, double rhs) -> bool {return std::abs(lhs - rhs) < 1e-2;};
         
         Vector2d zp_base[Nfa] __attribute__((aligned(32)));
         Matrix23d Hv_base[Nfa] __attribute__((aligned(32)));

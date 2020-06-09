@@ -254,34 +254,69 @@ void compute_jacobians_fast(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]) {
 
-    double dx, dy, d2, d, dinv, d2inv, dx_d2inv, dy_d2inv, dx_dinv, dy_dinv;
+    double dx, dy, d2, d, dinv, d2inv, dx_dinv, dy_dinv, dx_d2inv, dy_d2inv;
+    double dinv_arr[4] = {0,0,0,0};
+    double d2inv_arr[4] = {0,0,0,0}; 
+    double dx_d2inv_arr[4] = {0,0,0,0}; 
+    double dy_d2inv_arr[4] = {0,0,0,0}; 
+    double dx_dinv_arr[4] = {0,0,0,0}; 
+    double dy_dinv_arr[4] = {0,0,0,0};
 
     double px = particle->xv[0];
     double py = particle->xv[1];
     double ptheta = particle->xv[2];
+    __m256d ptheta_simd = _mm256_set1_pd(ptheta);
 
     __m256d R_vec =  _mm256_load_pd(R);
 
+    double theta_arr[4] = {0,0,0,0};
+    double dy_arr[4] = {0,0,0,0};
+    double dx_arr[4] = {0,0,0,0};
+
     for (int i = 0; i < N_z; i++) {
-        dx = particle->xf[2*idf[i]] - px;
-        dy = particle->xf[2*idf[i]+1] - py;
-        //d2 = pow(dx, 2) + pow(dy, 2);
-        d2 = dx * dx + dy * dy;
 
-        
-        d = sqrt(d2);
-        dinv = 1.0/ d;
-        d2inv = dinv * dinv;
+        if(i%4 == 0){
+            for(int a = 0; a < 4 && (i+a) < N_z; a++){
+                dx = particle->xf[2*idf[i+a]] - px;
+                dy = particle->xf[2*idf[i+a]+1] - py;
+                d2 = dx * dx + dy * dy;
 
+                d = sqrt(d2);
+                dinv = 1.0/ d;
+                d2inv = dinv * dinv;
 
-        dx_dinv = dx * dinv;
-        dy_dinv = dy * dinv;
-        dx_d2inv = dx * d2inv;
-        dy_d2inv = dy * d2inv;
+                dx_dinv = dx * dinv;
+                dy_dinv = dy * dinv;
+                dx_d2inv = dx * d2inv;
+                dy_d2inv = dy * d2inv;
 
-        // predicted observation
-        zp[i][0] = d;
-        double theta = atan2(dy, dx) - ptheta;
+                dy_arr[a] = dy;
+                dx_arr[a] = dx;
+
+                // predicted observation
+                zp[i+a][0] = d;
+
+                dinv_arr[a] = dinv;
+                d2inv_arr[a] = d2inv;
+                dx_d2inv_arr[a] = dx_d2inv;
+                dy_d2inv_arr[a] = dy_d2inv;
+                dx_dinv_arr[a] = dx_dinv;
+                dy_dinv_arr[a] = dy_dinv;
+            }
+            __m256d dy_simd = _mm256_set_pd(dy_arr[3], dy_arr[2], dy_arr[1], dy_arr[0]);
+            __m256d dx_simd = _mm256_set_pd(dx_arr[3], dx_arr[2], dx_arr[1], dx_arr[0]);
+            __m256d theta_simd = _mm256_sub_pd(atan2_approximation2(dy_simd, dx_simd), ptheta_simd);
+            _mm256_store_pd(theta_arr, theta_simd);
+        } 
+
+        double theta = theta_arr[i%4];
+        // 20 cycles faster without SIMD ...
+        // double theta = atan2_approximation1(dy_arr[i%4], dx_arr[i%4]);
+        dx_dinv = dx_dinv_arr[i%4];
+        dy_dinv = dy_dinv_arr[i%4]; 
+        dx_d2inv = dx_d2inv_arr[i%4]; 
+        dy_d2inv = dy_d2inv_arr[i%4];
+
         zp[i][1] = pi_to_pi(theta);
 
         //! Hv is unused in fastslam1 !!!
@@ -295,7 +330,7 @@ void compute_jacobians_fast(Particle* particle,
         // innovation covariance of feature observation given the vehicle'
         // Eq. 60 in Thrun03g
         // MAt x Mat
-        auto pf_vec =  _mm256_load_pd(particle->Pf + 4* idf[i]);
+        auto pf_vec = _mm256_load_pd(particle->Pf + 4* idf[i]);
         auto hf_vec = _mm256_set_pd(dx_d2inv, -dy_d2inv, dy_dinv, dx_dinv);
         _mm256_store_pd(Hf[i], hf_vec);
         auto hf_perm = _mm256_permute_pd(hf_vec, 0b0101);
