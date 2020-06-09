@@ -54,6 +54,7 @@ float atan2_approximation1(float y, float x)
 {
     //http://pubs.opengroup.org/onlinepubs/009695399/functions/atan2.html
     //Volkan SALMA
+	//https://gist.github.com/volkansalma/2972237
 
     const float ONEQTR_PI = M_PI / 4.0;
 	const float THRQTR_PI = 3.0 * M_PI / 4.0;
@@ -74,8 +75,90 @@ float atan2_approximation1(float y, float x)
 		return( -angle );     // negate if in quad III or IV
 	else
 		return( angle );
+}
 
 
+
+__m256d atan2_approximation2(__m256d y, __m256d x){
+
+	const float ONEQTR_PI = M_PI / 4.0;
+	const float THRQTR_PI = 3.0 * M_PI / 4.0;
+
+	__m256d constant = _mm256_set1_pd(1e-10f);
+	// absolute value with mask
+	//__m256d sign_bit = _mm256_set1_ps(-0.0f);
+	//__m256d abs_y = _mm256_andnot_ps(sign_bit, y);
+	// simple absolute value
+	__m256d abs_y = _mm256_sqrt_pd( _mm256_mul_pd (y, y) );
+	__m256d abs_y_simd = _mm256_add_pd(abs_y, constant);
+	
+	__m256d ONEQTR_PI_simd = _mm256_set_pd(ONEQTR_PI, ONEQTR_PI, ONEQTR_PI, ONEQTR_PI);
+	__m256d THRQTR_PI_simd = _mm256_set_pd(THRQTR_PI, THRQTR_PI, THRQTR_PI, THRQTR_PI);
+
+	__m256d zeros = _mm256_set1_pd(0.0f);
+	__m256d vmask = _mm256_cmp_pd(x, zeros, _CMP_LT_OQ);
+
+	__m256d angle = _mm256_blendv_pd(ONEQTR_PI_simd, THRQTR_PI_simd, vmask);
+	__m256d r1 = _mm256_div_pd(_mm256_add_pd(x, abs_y_simd), _mm256_sub_pd(abs_y_simd, x));
+	__m256d r2 = _mm256_div_pd(_mm256_sub_pd(x, abs_y_simd), _mm256_add_pd(abs_y_simd, x));
+
+	__m256d sel_r = _mm256_blendv_pd(r2, r1, vmask);
+
+	__m256d scalar = _mm256_set1_pd(0.1963f);
+	__m256d scalar2 = _mm256_set1_pd(0.9817f);
+	__m256d temp = _mm256_sub_pd(_mm256_mul_pd(scalar, _mm256_mul_pd(sel_r, sel_r)), scalar2);
+	angle = _mm256_add_pd(angle, _mm256_mul_pd(temp, sel_r));
+
+	__m256d vmask2 = _mm256_cmp_pd(y, zeros, _CMP_LT_OQ);
+	__m256d angle_neg = _mm256_sub_pd(_mm256_set1_pd(0.0f), angle); 
+	__m256d result = _mm256_blendv_pd(angle, angle_neg, vmask2);
+
+	return result;
+}
+
+__m256d atan2_approximation3(__m256d y, __m256d x){
+	/*v4sf x_eq_0 = _mm_cmpeq_ps( x, *(v4sf*)_ps_0 );
+	v4sf x_gt_0 = _mm_cmpgt_ps( x, *(v4sf*)_ps_0 );
+	v4sf x_le_0 = _mm_cmple_ps( x, *(v4sf*)_ps_0 );
+	v4sf y_eq_0 = _mm_cmpeq_ps( y, *(v4sf*)_ps_0 );
+	v4sf x_lt_0 = _mm_cmplt_ps( x, *(v4sf*)_ps_0 );
+	v4sf y_lt_0 = _mm_cmplt_ps( y, *(v4sf*)_ps_0 );
+
+	v4sf zero_mask = _mm_and_ps( x_eq_0, y_eq_0 );
+	v4sf zero_mask_other_case = _mm_and_ps( y_eq_0, x_gt_0 );
+	zero_mask = _mm_or_ps( zero_mask, zero_mask_other_case );
+
+	v4sf pio2_mask = _mm_andnot_ps( y_eq_0, x_eq_0 );
+	v4sf pio2_mask_sign = _mm_and_ps( y_lt_0, *(v4sf*)_ps_sign_mask );
+	v4sf pio2_result = *(v4sf*)_ps_cephes_PIO2F;
+	pio2_result = _mm_xor_ps( pio2_result, pio2_mask_sign );
+	pio2_result = _mm_and_ps( pio2_mask, pio2_result );
+
+	v4sf pi_mask = _mm_and_ps( y_eq_0, x_le_0 );
+	v4sf pi = *(v4sf*)_ps_cephes_PIF;
+	v4sf pi_result = _mm_and_ps( pi_mask, pi );
+
+	v4sf swap_sign_mask_offset = _mm_and_ps( x_lt_0, y_lt_0 );
+	swap_sign_mask_offset = _mm_and_ps( swap_sign_mask_offset, *(v4sf*)_ps_sign_mask );
+
+	v4sf offset0 = _mm_setzero_ps();
+	v4sf offset1 = *(v4sf*)_ps_cephes_PIF;
+	offset1 = _mm_xor_ps( offset1, swap_sign_mask_offset );
+
+	v4sf offset = _mm_andnot_ps( x_lt_0, offset0 );
+	offset = _mm_and_ps( x_lt_0, offset1 );
+
+	v4sf arg = _mm_div_ps( y, x );
+	v4sf atan_result = atan_ps( arg );
+	atan_result = _mm_add_ps( atan_result, offset );
+
+	// select between zero_result, pio2_result and atan_result
+
+	v4sf result = _mm_andnot_ps( zero_mask, pio2_result );
+	atan_result = _mm_andnot_ps( pio2_mask, atan_result );
+	atan_result = _mm_andnot_ps( pio2_mask, atan_result);
+	result = _mm_or_ps( result, atan_result );
+	result = _mm_or_ps( result, pi_result );*/
 }
 
 //! Error in 0.00x range (appr)

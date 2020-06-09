@@ -39,6 +39,7 @@ double read_sin(double angle);
 
 //! ERROR in 0.x range (rad)!
 float atan2_approximation1(float y, float x);
+__m256d atan2_approximation2(__m256d y, __m256d x);
 
 //! Error in 0.00x range (appr)
 float sqrt3(const float& n);

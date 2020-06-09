@@ -107,7 +107,6 @@ int main() {
     auto read_sin_vec_lambda = trig_vec_lambda(&read_sin_vec);
     auto read_sin2_vec_lambda = trig_vec_lambda(&read_sin2_vec);
 
-
     Benchmark<decltype(std_sin_lambda)> bench("Trigonometry Benchmark");
 
     // Add lambda functions to aggregate over range of inputs. 
