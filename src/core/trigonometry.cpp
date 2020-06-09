@@ -117,6 +117,7 @@ __m256d atan2_approximation2(__m256d y, __m256d x){
 }
 
 __m256d atan2_approximation3(__m256d y, __m256d x){
+    // https://github.com/to-miz/sse_mathfun_extension/blob/master/sse_mathfun_extension.h?fbclid=IwAR1fAfFgZJldewkYYknL2E3JxamBC6KDYSZcY_kvQHqylpEFx6ApZLPm6EM
 	/*v4sf x_eq_0 = _mm_cmpeq_ps( x, *(v4sf*)_ps_0 );
 	v4sf x_gt_0 = _mm_cmpgt_ps( x, *(v4sf*)_ps_0 );
 	v4sf x_le_0 = _mm_cmple_ps( x, *(v4sf*)_ps_0 );
