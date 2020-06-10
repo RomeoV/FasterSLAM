@@ -43,3 +43,11 @@ target_link_libraries(FasterSlamVisualize_VP PUBLIC
   FasterSlamOutput
   FasterSlamUtils
 )
+
+add_executable(FlopEstimates
+  flop_estimates.cpp
+)
+
+target_link_libraries(FlopEstimates PUBLIC
+  FasterSlamUtils
+)

@@ -40,7 +40,7 @@ int main(int argc, char *argv[]) {
 
     Benchmark<decltype(&fastslam1_sim)> bench("fastslam1_sim Benchmark");
 
-    bench.controls.NUM_RUNS = 3;
+    bench.controls.NUM_RUNS = 1;
     bench.controls.REP = 1;
     bench.controls.CYCLES_REQUIRED = 0.0;
 
@@ -55,7 +55,7 @@ int main(int argc, char *argv[]) {
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     int N= 100;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 6; i++) {
         NPARTICLES = pow(2,i) * N;
         std::cout<< "Benchmarking N="<<NPARTICLES<<" Particles..."<<std::endl;
         bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);

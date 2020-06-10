@@ -16,15 +16,21 @@ int main (int argc, char *argv[])
     if (argc < 2)
         return -1;
 
-    read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
+    
 
     Particle *particles;
     double *weights;
 
     int flag = 1;
-    if ( argc == 3 ) {
+    if ( argc >2 ) {
         flag = atoi(argv[2]);
     }
+
+    if ( argc >3 ) {
+        NPARTICLES = atoi(argv[3]);
+    }
+
+    read_input_file(argv[1], &lm, &wp, lm_rows, wp_rows);
 
     if ( flag ) {
         //Active routine

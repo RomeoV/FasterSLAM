@@ -143,7 +143,13 @@ int main() {
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
     bench.add_function(&predict_update_base, "base", 0.0);
-    bench.add_function(&predict_update_fast, "fast", 0.0);
+    bench.add_function(&predict_update_old, "functions inplace", 0.0);
+    bench.add_function(&predict_update_sine, "sine approximation", 0.0);
+    bench.add_function(&predict_update_simd, "basic simd", 0.0);
+    bench.add_function(&predict_update_fast_scalar_pipi, "simd + scalar pi_to_pi", 0.0);
+    bench.add_function(&predict_update_fast_normal_rand, "simd opt. normal rand", 0.0);
+    bench.add_function(&predict_update_fast_plain, "simd opt. fast rand", 0.0);
+    bench.add_function(&predict_update_fast, "fastest", 0.0);
 
     //Run the benchmark: give the inputs of your function in the same order as they are defined.
     set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
@@ -164,6 +170,13 @@ int main() {
 
     Benchmark<decltype(&predict_update_base)> bench_scale("predict_update with Particles");
     bench_scale.add_function(&predict_update_base, "base", 0.0);
+    bench_scale.add_function(&predict_update_old, "functions inplace", 0.0);
+    bench_scale.add_function(&predict_update_sine, "sine approximation", 0.0);
+    bench_scale.add_function(&predict_update_simd, "basic simd", 0.0);
+    bench_scale.add_function(&predict_update_fast_scalar_pipi, "simd + scalar pi_to_pi", 0.0);
+    bench_scale.add_function(&predict_update_fast_normal_rand, "simd opt. normal rand", 0.0);
+    bench_scale.add_function(&predict_update_fast_plain, "simd opt. fast rand", 0.0);
+    bench_scale.add_function(&predict_update_fast, "fastest", 0.0);
     bench_scale.add_function(&predict_update_fast, "fast", 0.0);
 
     bench_scale.data_loader = data_loader;
@@ -171,7 +184,7 @@ int main() {
     bench_scale.csv_output = false;
 
     int Np = 100;
-    for (int i = 0; i< 8; i++) {
+    for (int i = 0; i< 9; i++) {
         const int Npi = std::pow(2,i) * Np;
         Particle* ps = (Particle*) aligned_alloc(32, Npi * sizeof(Particle));
         double xvi[3*Npi] __attribute__ ((aligned(32)));

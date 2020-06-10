@@ -306,7 +306,7 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
                     Particle **particles_, double** weights_) {
     const size_t N_features = lm_rows;
     const size_t N_waypoints = wp_rows;
-    NUMBER_LOOPS=_NUMBER_LOOPS;
+    NUMBER_LOOPS = _NUMBER_LOOPS;
     Particle *particles;
     double *weights;
     Vector3d xtrue   = {0,0,0};
@@ -349,7 +349,7 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
         // Prediction
         //////////////////////////////////////////////////////////////////
         memory_moved+= predict_update_active_memory(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
-        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+        predict_update_base(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 
@@ -370,10 +370,10 @@ double fastslam1_sim_active_memory( double* lm, const size_t lm_rows, const size
             }
 
             //z is the range and bearing of the observed landmark
-            memory_moved+= get_observations_base_memory(xtrue, MAX_RANGE, lm, N_features, ftag_visible, &Nf_visible, z);
+            memory_moved += get_observations_base_memory(xtrue, MAX_RANGE, lm, N_features, ftag_visible, &Nf_visible, z);
             get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, &Nf_visible, z); // Nf_visible = number of visible features
 
-            memory_moved+= observe_update_memory(lm, N_features, xtrue, *R, ftag, 
+            memory_moved += observe_update_base_memory(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
             observe_update_base(lm, N_features, xtrue, *R, ftag, 

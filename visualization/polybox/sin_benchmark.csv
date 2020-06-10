@@ -1,0 +1,9 @@
+Trigonometry Benchmark;sin;;1500000;100000;4333169.1778;0.3462;1.0000
+Trigonometry Benchmark;lookup;;1;1;3100462.7972;0.0000;1.3976
+Trigonometry Benchmark;appr. \n+clamp;;3000000;100000;1534137.8360;1.9555;2.8245
+Trigonometry Benchmark;appr. \n+reduced \nclamp;;2800000;100000;1147499.8562;2.4401;3.7762
+Trigonometry Benchmark;appr.;;1;100000;1130892.9934;0.0000;3.8316
+Trigonometry Benchmark; ;;1;100000;1445547.3958;0.0000;0.0
+Trigonometry Benchmark;lookup avx;;1;100000;1445547.3958;0.0000;3.8776
+Trigonometry Benchmark;appr. avx \n+ reduced \nclamp;;2075000;100000;342344.4669;6.0611;12.6573
+Trigonometry Benchmark;appr. avx;;100000;nan;302725.6910;0.3303;14.6254

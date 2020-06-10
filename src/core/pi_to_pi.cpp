@@ -52,7 +52,7 @@ double pi_to_pi_base(double ang)
 }
 
 double pi_to_pi_base_flops(double ang) {
-    double flop_count = 2*tp.mul + 2*tp.negation * 4*tp.doublecomp;
+    double flop_count = 2*tp.mul + 2*tp.negation + 4*tp.doublecomp;
     if ((ang <= (-2* M_PI)) || (ang > (2*M_PI))) {
         int n=floor(ang/(2*M_PI));
         ang = ang-n*(2*M_PI);    

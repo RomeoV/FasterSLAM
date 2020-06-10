@@ -1,7 +1,20 @@
-observe_update Benchmark;observe_update_base;;239781;2460360;1237367.3642;0.1938;1.0000
-observe_update Benchmark;observe_update_actve;;146881;120680;350228.9921;0.4194;3.5330
-observe_update Benchmark;observe_update_fast;;146881;120680;122078.5440;1.2032;10.1358
-observe_update Benchmark;observe_update_fast_romeo_vTMv;;146881;120680;133036.8884;1.1041;9.3009
-observe_update Benchmark;observe_update_all_unrolled;;146881;120680;106240.2867;1.3825;11.6469
-predict_update Benchmark;base;;17930;22488;39769.1213;0.4509;1.0000
-predict_update Benchmark;fast;;11230;4888;3685.8651;3.0468;10.7896
+observe_update Benchmark;observe_update_base;;326753;594984;890195.7142;0.3671;1.0000
+observe_update Benchmark;observe_update_active;;190053;117384;360464.2505;0.5272;2.4696
+observe_update Benchmark;observe_update_inplace;;190053;117384;320686.3369;0.5926;2.7759
+observe_update Benchmark;observe_update_simplified;;190053;117384;197237.7031;0.9636;4.5133
+observe_update Benchmark;observe_update_unrolled4x;;190053;117384;206500.8601;0.9203;4.3109
+observe_update Benchmark;observe_update_unrolled4x_plain;;190053;117384;318777.0497;0.5962;2.7925
+observe_update Benchmark;observe_update_simpleavx;;190053;117384;148363.3741;1.2810;6.0001
+observe_update Benchmark;observe_update_fast_KF_comp_not_unrolled;;190053;117384;143756.7757;1.3220;6.1924
+observe_update Benchmark;observe_update_fast_improved_vTMv;;190053;117384;147107.4759;1.2919;6.0513
+observe_update Benchmark;observe_update_fast_jacobians;;190053;117384;115087.5255;1.6514;7.7349
+observe_update Benchmark;observe_update_all_unrolled;;190053;117384;96476.3256;1.9699;9.2271
+observe_update Benchmark;observe_update;;190053;117384;98353.3615;1.9323;9.0510
+predict_update Benchmark;base;;18830;22488;34957.8470;0.5386;1.0000
+predict_update Benchmark;functions inplace;;16730;4888;33516.0752;0.4992;1.0430
+predict_update Benchmark;sine approximation;;16730;4888;20404.0143;0.8199;1.7133
+predict_update Benchmark;basic simd;;16730;4888;15991.0624;1.0462;2.1861
+predict_update Benchmark;simd + scalar pi_to_pi;;16730;4888;4436.7943;3.7707;7.8791
+predict_update Benchmark;simd opt. normal rand;;16730;4888;10199.2010;1.6403;3.4275
+predict_update Benchmark;simd opt. fast rand;;16730;4888;3682.2852;4.5434;9.4935
+predict_update Benchmark;fastest;;16730;4888;3691.6999;4.5318;9.4693

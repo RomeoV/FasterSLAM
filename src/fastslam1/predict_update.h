@@ -10,20 +10,15 @@ void predict_update_base(double *wp, size_t N_waypoints, double V, double* Q, do
 void predict_update_active(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
-void predict_update_sine(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
-                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
-void predict_update_old(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
-                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
-void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
-                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+
+
 
 void predict_update_fast(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
 size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
-void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
-                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
 
 // Utils
 double predict_update_base_flops(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
@@ -37,6 +32,25 @@ double predict_update_active_flops(double *wp, size_t N_waypoints, double V, dou
 
 double predict_update_active_memory(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
                     size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_old(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_sine(double *wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_simd(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_fast_scalar_pipi(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_fast_normal_rand(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
+void predict_update_fast_plain(double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles);
+
 
 //! ----------------------- !//
 //! ---- Victoria Park ---- !//
