@@ -245,7 +245,6 @@ void compute_jacobians_simd(Particle* particle,
 }
 
 void compute_jacobians_fast(Particle* particle,
-
                        int idf[],
                        size_t N_z,
                        Matrix2d R,

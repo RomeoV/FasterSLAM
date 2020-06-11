@@ -4,6 +4,7 @@ add_library(FasterSlamCore
   add_feature.cpp
   add_observation_noise.cpp
   compute_jacobians.cpp
+  compute_jacobians_avx.cpp
   compute_steering.cpp
   compute_weight.cpp
   configfile.cpp

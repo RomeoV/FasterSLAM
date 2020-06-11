@@ -169,7 +169,7 @@ void compute_jacobians_linalg_inplace(Particle* particle,
                        Matrix2d Hf[],
                        Matrix2d Sf[]);
 
-inline void compute_jacobians4x_avx(__m256d px, __m256d py,__m256d ptheta, __m256d xfp0p2, __m256d xfp1p3, 
+void compute_jacobians4x_avx(__m256d px, __m256d py,__m256d ptheta, __m256d xfp0p2, __m256d xfp1p3, 
                             __m256d Pf0, __m256d Pf1, __m256d Pf2, __m256d Pf3, __m256d R_vec,
                             __m256d* zp_dist, __m256d* zp_angle,
                             __m256d* Hf0v,  __m256d* Hf1v,  __m256d* Hf2v, __m256d* Hf3v,
