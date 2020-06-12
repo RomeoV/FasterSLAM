@@ -55,13 +55,13 @@ int main(int argc, char *argv[]) {
     //bench.add_function(&fastslam1_sim_fmod, "fastslam1_sim_fmod", work);
     int N= 100;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 6; i < 7; i++) {
         NPARTICLES = pow(2,i) * N;
         std::cout<< "Benchmarking N="<<NPARTICLES<<" Particles..."<<std::endl;
-        bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        bench.funcBytes[0] = 8*fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
-        bench.funcBytes[1] = 8*fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        //bench.funcFlops[0] = fastslam1_sim_base_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        //bench.funcFlops[1] = fastslam1_sim_active_flops(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        //bench.funcBytes[0] = 8*fastslam1_sim_base_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
+        //bench.funcBytes[1] = 8*fastslam1_sim_active_memory(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
         bench.run_name = std::to_string(NPARTICLES); // Set name of run to identify it easier
         bench.run_benchmark(lm, lm_rows, 2, wp, wp_rows, 2, &particles, &weights);
     }

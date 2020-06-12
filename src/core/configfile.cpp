@@ -16,12 +16,12 @@ double* Pv;
 double V_ = 3.0; // m/s
 double MAXG = 30*pi / 180; // radians, maximum steering angle (-MAXG < g < MAXG)
 double RATEG = 20*pi / 180; // rad/s, maximum rate of change in steer angle
-double WHEELBASE = 2.83; //4. metres, vehicle wheel-base
+double WHEELBASE = 4; //4. metres, vehicle wheel-base
 double DT_CONTROLS = 0.025; // seconds, time interval between control signals
 
 // control noises
-double sigmaV = 2.0; // m/s //2 for VP, 0.3 for default
-double sigmaG = (1.2 * pi / 180); // radians
+double sigmaV = 0.3; // m/s //2 for VP, 0.3 for default
+double sigmaG = (3.0 * pi / 180);//(1.2 * pi / 180); // radians
 
 double Q[2][2] __attribute__((aligned(32))) = {
     {0, 0},

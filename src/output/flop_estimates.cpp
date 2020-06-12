@@ -46,7 +46,7 @@ int main(char* argv)
     double name = (double) end ;          \
                                           \
     printf(#name);                        \
-    printf(" %.7f\n", (name - baseline)/322519040.0);
+    printf(" %.7f\n", (name - baseline)/322519040.0000000);
 
     // time the baseline code:
     //   for loop with no extra math op
@@ -56,7 +56,7 @@ int main(char* argv)
     //   subtracts off the baseline time to give
     //   a better approximation of the cost
     //   for just the specified operation
-    
+
     OP_TEST(plus, r1 + r2)
     OP_TEST(mult, r1 * r2)
     OP_TEST(div, r1 / r2)
@@ -70,10 +70,7 @@ int main(char* argv)
     OP_TEST(greaterequal, r1 >= r2)
     OP_TEST(random, rand())
     OP_TEST(abs, abs(r1))
-    OP_TEST(floor, floor(r1))
-    
-    
-    
+    OP_TEST(floor, floor(r2))
     
     return 0;
 }

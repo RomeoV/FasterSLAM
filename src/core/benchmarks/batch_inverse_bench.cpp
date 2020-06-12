@@ -80,15 +80,15 @@ int main() {
     // --------------- BENCHMARK --------------- //
     // ----------------------------------------- //
 
-    Benchmark<decltype(&batch_inverse_2x2)> bench_u4avx("batch_inverse_2x2 benchmark (UNROLLEDx4)");
+    Benchmark<decltype(&batch_inverse_2x2)> bench_u4avx("inv_2x2 benchmark (UNROLLEDx4)");
     bench_u4avx.data_loader = data_loader;
 
     bench_u4avx.add_function(&inv_2x2_x4, "base_x4", 0.0);
-    bench_u4avx.funcFlops[0] = 0;
+    bench_u4avx.funcFlops[0] = 4*inv_2x2_flops(A, AInv);
     bench_u4avx.funcBytes[0] = 0;
     
     bench_u4avx.add_function(&batch_inverse_2x2, "batch_inverse_2x2", 0.0);
-    bench_u4avx.funcFlops[1] = 0;
+    bench_u4avx.funcFlops[1] = 4*inv_2x2_flops(A, AInv);
     bench_u4avx.funcBytes[1] = 0;
 
     bench_u4avx.run_benchmark(r0, r1, r2, r3, &inv0, &inv1, &inv2, &inv3); 

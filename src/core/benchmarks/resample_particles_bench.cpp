@@ -43,7 +43,7 @@ int main() {
     int N_min = 2*N;
     
     const size_t Nf = 20;
-    const size_t Nfa = 1;
+    const size_t Nfa = 10;
 
     Particle *particles = NULL;
     weights = (double*) malloc(N*sizeof(double));
