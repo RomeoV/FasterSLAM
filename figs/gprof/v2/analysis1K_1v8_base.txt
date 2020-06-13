@@ -1,0 +1,599 @@
+Flat profile:
+
+Each sample counts as 0.01 seconds.
+  %   cumulative   self              self     total           
+ time   seconds   seconds    calls  us/call  us/call  name    
+ 41.17      0.96     0.96 72740000     0.01     0.01  mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*)
+  8.62      1.16     0.20 27658000     0.01     0.03  predict_base(Particle*, double, double, double*, double, double)
+  7.33      1.33     0.17 46418000     0.00     0.00  add(double const*, double const*, unsigned long, double*)
+  5.60      1.46     0.13  5290000     0.02     0.08  compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4])
+  4.74      1.57     0.11 27658000     0.00     0.02  multivariate_gauss_base(double const*, double const*, double*)
+  4.31      1.67     0.10 61514699     0.00     0.00  copy(double const*, unsigned long, double*)
+  3.45      1.75     0.08 27690976     0.00     0.00  fill_rand(double*, unsigned long, double, double)
+  3.02      1.82     0.07  2645000     0.03     0.16  compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4])
+  3.02      1.89     0.07     2659    26.33    42.22  resample_particles_dag(Particle*, unsigned long, double*, int, int)
+  2.59      1.95     0.06  3752000     0.02     0.13  KF_cholesky_update_base(double*, double*, double const*, double const*, double const*)
+  2.16      2.00     0.05 26293000     0.00     0.00  transpose(double const*, unsigned long, unsigned long, double*)
+  2.16      2.05     0.05  2645000     0.02     0.29  feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4])
+  1.72      2.09     0.04 42721314     0.00     0.00  pi_to_pi_base(double)
+  1.72      2.13     0.04 11256000     0.00     0.00  sub(double const*, double const*, unsigned long, double*)
+  1.72      2.17     0.04     3457    11.57   392.75  observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*)
+  1.29      2.20     0.03  3752000     0.01     0.01  scal(double const*, unsigned long, double, double*)
+  1.29      2.23     0.03     2659    11.28    15.05  stratified_resample_base(double const*, unsigned long, double*, unsigned long*)
+  1.08      2.25     0.03 31437658     0.00     0.00  llt_2x2(double const*, double*)
+  0.86      2.27     0.02    27658     0.72    33.35  predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*)
+  0.65      2.29     0.02                             scal_memory(double const*, unsigned long, double, double*)
+  0.43      2.30     0.01     2659     3.76     3.76  stratified_random(unsigned long, double*)
+  0.43      2.31     0.01                             stranspose_2x2(double*)
+  0.43      2.32     0.01                             icopy(int const*, unsigned long, int*)
+  0.22      2.32     0.01                             _mvadd_2x2_avx_v1(double __vector(4), double __vector(2), double __vector(2))
+  0.00      2.32     0.00  7504000     0.00     0.00  inv_2x2(double const*, double*)
+  0.00      2.32     0.00  3781000     0.00     0.00  set_Pfi(Particle*, double*, int)
+  0.00      2.32     0.00  3781000     0.00     0.00  set_xfi(Particle*, double*, int)
+  0.00      2.32     0.00  3752000     0.00     0.00  determinant_2x2(double const*)
+  0.00      2.32     0.00   348260     0.00     0.00  copyParticle(Particle const*, Particle*)
+  0.00      2.32     0.00    28000     0.00     0.03  add_feature_base(Particle*, double (*) [2], unsigned long, double*)
+  0.00      2.32     0.00    27658     0.00     0.00  predict_true_base(double, double, double, double, double*)
+  0.00      2.32     0.00    27658     0.00     0.00  multivariate_gauss(double const*, double const*, double*)
+  0.00      2.32     0.00    27658     0.00     0.00  compute_steering_base(double const*, double*, unsigned long, double, double, double, double, int*, double*)
+  0.00      2.32     0.00    27658     0.00     0.00  add_control_noise_base(double, double, double*, int, double*)
+  0.00      2.32     0.00    27658     0.00     0.00  mvadd_2x2(double const*, double const*, double*)
+  0.00      2.32     0.00     4000     0.00     0.00  aligned_alloc_size(unsigned long, unsigned long)
+  0.00      2.32     0.00     3457     0.00     0.00  get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2])
+  0.00      2.32     0.00     3457     0.00     0.00  get_visible_landmarks_base(double const*, double, double const*, unsigned long, double**, int*, unsigned long*)
+  0.00      2.32     0.00     2659     0.00     0.01  add_feature_active_memory(Particle*, double (*) [2], unsigned long, double*)
+  0.00      2.32     0.00     2659     0.00     0.00  data_associate_known_base(double const (*) [2], int const*, unsigned long, int*, int, double (*) [2], int*, unsigned long*, double (*) [2], unsigned long*)
+  0.00      2.32     0.00     2659     0.00     0.00  add_observation_noise_base(double (*) [2], unsigned long, double const*, int)
+  0.00      2.32     0.00     2659     0.00     0.00  compute_range_bearing_base(double const*, double const*, unsigned long, double (*) [2])
+  0.00      2.32     0.00     1000     0.00     0.00  initParticle(Particle*, int, double const*)
+  0.00      2.32     0.00     1000     0.00     0.00  delParticleMembers(Particle*)
+  0.00      2.32     0.00     1000     0.00     0.00  initParticle_prealloc(Particle*, int, double const*)
+  0.00      2.32     0.00      113     0.00     0.00  void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  0.00      2.32     0.00       57     0.00     0.00  std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > std::__copy_move_a<false, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >(std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >)
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z11add_featureP8ParticlePA2_dmPd
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z13fastslam1_simPdmmS_mmPP8ParticlePS_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z14compute_weightP8ParticlePA2_dmPiPdS2_PA6_dPA4_dS8_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z14feature_updateP8ParticlePA2_dPimPdS2_PA6_dPA4_dS8_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z14predict_updatePdmdS_dmS_PiS_P8Particle
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z15read_input_fileNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPPdS6_RmS7_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z16get_observationsPKddS0_mPiPmPA2_d
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z17add_control_noiseddPdiS_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z17compute_jacobiansP8ParticlePimPdPA2_dPA6_dPA4_dS8_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z17setup_initial_Q_Rv
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z17stratified_randommPd
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z18KF_cholesky_updatePdS_PKdS1_S1_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z18multivariate_gaussPKdS0_Pd
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z18resample_particlesP8ParticlemPdii
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z19stratified_resamplePKdmPdPm
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z19tscheb_dsines_flopsPdmS_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z20data_associate_knownPA2_KdPKimPiiPA2_dS4_PmS6_S7_
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z21add_observation_noisePA2_dmPKdi
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z21initParticle_preallocP8ParticleiPKd
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z5printPKdmmRSo
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I__Z7predictP8ParticleddPddd
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I_main
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I_read_rand_cntr
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I_two_pi_vec
+  0.00      2.32     0.00        1     0.00     0.00  _GLOBAL__sub_I_xv
+  0.00      2.32     0.00        1     0.00     0.00  setup_landmarks(int**, int**, unsigned long)
+  0.00      2.32     0.00        1     0.00     0.00  cleanup_landmarks(int**, int**)
+  0.00      2.32     0.00        1     0.00     0.00  setup_initial_Q_R()
+  0.00      2.32     0.00        1     0.00     0.00  setup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**, unsigned long)
+  0.00      2.32     0.00        1     0.00     0.00  cleanup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**)
+  0.00      2.32     0.00        1     0.00     1.63  setup_initial_particles(Particle**, double**, unsigned long, double const*)
+  0.00      2.32     0.00        1     0.00     0.00  read_input_file_and_scale(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**, double**, unsigned long&, unsigned long&)
+  0.00      2.32     0.00        1     0.00     0.00  avx_xorshift128plus_init(unsigned long, unsigned long) [clone .constprop.0]
+
+ %         the percentage of the total running time of the
+time       program used by this function.
+
+cumulative a running sum of the number of seconds accounted
+ seconds   for by this function and those listed above it.
+
+ self      the number of seconds accounted for by this
+seconds    function alone.  This is the major sort for this
+           listing.
+
+calls      the number of times this function was invoked, if
+           this function is profiled, else blank.
+
+ self      the average number of milliseconds spent in this
+ms/call    function per call, if this function is profiled,
+	   else blank.
+
+ total     the average number of milliseconds spent in this
+ms/call    function and its descendents per call, if this
+	   function is profiled, else blank.
+
+name       the name of the function.  This is the minor sort
+           for this listing. The index shows the location of
+	   the function in the gprof listing. If the index is
+	   in parenthesis it shows where it would appear in
+	   the gprof listing if it were to be printed.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+		     Call graph (explanation follows)
+
+
+granularity: each sample hit covers 2 byte(s) for 0.43% of 2.32 seconds
+
+index % time    self  children    called     name
+                                                 <spontaneous>
+[1]     98.3    0.00    2.28                 fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+                0.04    1.32    3457/3457        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+                0.02    0.90   27658/27658       predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+                0.00    0.00       1/1           setup_initial_particles(Particle**, double**, unsigned long, double const*) [34]
+                0.00    0.00       1/1           setup_initial_Q_R() [84]
+                0.00    0.00       1/1           setup_landmarks(int**, int**, unsigned long) [82]
+                0.00    0.00       1/1           setup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**, unsigned long) [85]
+                0.00    0.00       1/1           avx_xorshift128plus_init(unsigned long, unsigned long) [clone .constprop.0] [88]
+                0.00    0.00       1/1           cleanup_landmarks(int**, int**) [83]
+                0.00    0.00       1/1           cleanup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**) [86]
+-----------------------------------------------
+                0.04    1.32    3457/3457        fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[2]     58.5    0.04    1.32    3457         observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+                0.05    0.73 2645000/2645000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+                0.07    0.36 2645000/2645000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.07    0.04    2659/2659        resample_particles_dag(Particle*, unsigned long, double*, int, int) [12]
+                0.00    0.00   28000/28000       add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.00    0.00    2659/2659        add_feature_active_memory(Particle*, double (*) [2], unsigned long, double*) [32]
+                0.00    0.00    3457/3457        get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2]) [48]
+                0.00    0.00    2659/2659        add_observation_noise_base(double (*) [2], unsigned long, double const*, int) [51]
+                0.00    0.00    2659/2659        data_associate_known_base(double const (*) [2], int const*, unsigned long, int*, int, double (*) [2], int*, unsigned long*, double (*) [2], unsigned long*) [50]
+-----------------------------------------------
+                0.00    0.00   58000/72740000     add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.10    0.00 7504000/72740000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.20    0.00 15008000/72740000     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.30    0.00 22512000/72740000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.36    0.00 27658000/72740000     multivariate_gauss_base(double const*, double const*, double*) [7]
+[3]     41.2    0.96    0.00 72740000         mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+-----------------------------------------------
+                0.02    0.90   27658/27658       fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[4]     39.8    0.02    0.90   27658         predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+                0.20    0.70 27658000/27658000     predict_base(Particle*, double, double, double*, double, double) [5]
+                0.00    0.00   27658/27658       add_control_noise_base(double, double, double*, int, double*) [29]
+                0.00    0.00   27658/27658       predict_true_base(double, double, double, double, double*) [30]
+                0.00    0.00   27658/27658       compute_steering_base(double const*, double*, unsigned long, double, double, double, double, int*, double*) [31]
+-----------------------------------------------
+                0.20    0.70 27658000/27658000     predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+[5]     38.9    0.20    0.70 27658000         predict_base(Particle*, double, double, double*, double, double) [5]
+                0.11    0.57 27658000/27658000     multivariate_gauss_base(double const*, double const*, double*) [7]
+                0.03    0.00 27658000/42721314     pi_to_pi_base(double) [17]
+-----------------------------------------------
+                0.05    0.73 2645000/2645000     observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[6]     33.4    0.05    0.73 2645000         feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+                0.06    0.41 3752000/3752000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.07    0.16 2645000/5290000     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.01    0.00 3752000/11256000     sub(double const*, double const*, unsigned long, double*) [18]
+                0.01    0.00 7504000/61514699     copy(double const*, unsigned long, double*) [13]
+                0.00    0.00 3752000/42721314     pi_to_pi_base(double) [17]
+                0.00    0.00 3752000/3781000     set_xfi(Particle*, double*, int) [44]
+                0.00    0.00 3752000/3781000     set_Pfi(Particle*, double*, int) [43]
+-----------------------------------------------
+                0.11    0.57 27658000/27658000     predict_base(Particle*, double, double, double*, double, double) [5]
+[7]     29.2    0.11    0.57 27658000         multivariate_gauss_base(double const*, double const*, double*) [7]
+                0.36    0.00 27658000/72740000     mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+                0.10    0.00 27658000/46418000     add(double const*, double const*, unsigned long, double*) [11]
+                0.08    0.00 27658000/27690976     fill_rand(double*, unsigned long, double, double) [14]
+                0.02    0.00 27658000/31437658     llt_2x2(double const*, double*) [20]
+-----------------------------------------------
+                0.06    0.41 3752000/3752000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+[8]     20.3    0.06    0.41 3752000         KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.30    0.00 22512000/72740000     mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+                0.04    0.00 11256000/46418000     add(double const*, double const*, unsigned long, double*) [11]
+                0.03    0.00 3752000/3752000     scal(double const*, unsigned long, double, double*) [19]
+                0.03    0.00 15008000/26293000     transpose(double const*, unsigned long, unsigned long, double*) [15]
+                0.01    0.00 3752000/11256000     sub(double const*, double const*, unsigned long, double*) [18]
+                0.00    0.00 3752000/31437658     llt_2x2(double const*, double*) [20]
+                0.00    0.00 3752000/7504000     inv_2x2(double const*, double*) [42]
+-----------------------------------------------
+                0.07    0.16 2645000/5290000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.07    0.16 2645000/5290000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+[9]     19.4    0.13    0.32 5290000         compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.20    0.00 15008000/72740000     mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+                0.07    0.00 45024000/61514699     copy(double const*, unsigned long, double*) [13]
+                0.03    0.00 7504000/46418000     add(double const*, double const*, unsigned long, double*) [11]
+                0.01    0.00 7504000/26293000     transpose(double const*, unsigned long, unsigned long, double*) [15]
+                0.01    0.00 7504000/42721314     pi_to_pi_base(double) [17]
+-----------------------------------------------
+                0.07    0.36 2645000/2645000     observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[10]    18.5    0.07    0.36 2645000         compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.07    0.16 2645000/5290000     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.10    0.00 7504000/72740000     mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+                0.01    0.00 3752000/11256000     sub(double const*, double const*, unsigned long, double*) [18]
+                0.01    0.00 7504000/61514699     copy(double const*, unsigned long, double*) [13]
+                0.01    0.00 3752000/26293000     transpose(double const*, unsigned long, unsigned long, double*) [15]
+                0.00    0.00 3752000/42721314     pi_to_pi_base(double) [17]
+                0.00    0.00 3752000/7504000     inv_2x2(double const*, double*) [42]
+                0.00    0.00 3752000/3752000     determinant_2x2(double const*) [45]
+-----------------------------------------------
+                0.03    0.00 7504000/46418000     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.04    0.00 11256000/46418000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.10    0.00 27658000/46418000     multivariate_gauss_base(double const*, double const*, double*) [7]
+[11]     7.3    0.17    0.00 46418000         add(double const*, double const*, unsigned long, double*) [11]
+-----------------------------------------------
+                0.07    0.04    2659/2659        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[12]     4.8    0.07    0.04    2659         resample_particles_dag(Particle*, unsigned long, double*, int, int) [12]
+                0.03    0.01    2659/2659        stratified_resample_base(double const*, unsigned long, double*, unsigned long*) [16]
+                0.00    0.00  348260/348260      copyParticle(Particle const*, Particle*) [26]
+                0.00    0.00  348260/61514699     copy(double const*, unsigned long, double*) [13]
+-----------------------------------------------
+                0.00    0.00    1000/61514699     initParticle_prealloc(Particle*, int, double const*) [33]
+                0.00    0.00    2659/61514699     stratified_resample_base(double const*, unsigned long, double*, unsigned long*) [16]
+                0.00    0.00   86000/61514699     add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.00    0.00  348260/61514699     resample_particles_dag(Particle*, unsigned long, double*, int, int) [12]
+                0.00    0.00 1044780/61514699     copyParticle(Particle const*, Particle*) [26]
+                0.01    0.00 7504000/61514699     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.01    0.00 7504000/61514699     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+                0.07    0.00 45024000/61514699     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+[13]     4.3    0.10    0.00 61514699         copy(double const*, unsigned long, double*) [13]
+-----------------------------------------------
+                0.00    0.00    5318/27690976     add_feature_active_memory(Particle*, double (*) [2], unsigned long, double*) [32]
+                0.00    0.00   27658/27690976     multivariate_gauss(double const*, double const*, double*) [28]
+                0.08    0.00 27658000/27690976     multivariate_gauss_base(double const*, double const*, double*) [7]
+[14]     3.4    0.08    0.00 27690976         fill_rand(double*, unsigned long, double, double) [14]
+-----------------------------------------------
+                0.00    0.00   29000/26293000     add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.01    0.00 3752000/26293000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.01    0.00 7504000/26293000     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.03    0.00 15008000/26293000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+[15]     2.2    0.05    0.00 26293000         transpose(double const*, unsigned long, unsigned long, double*) [15]
+-----------------------------------------------
+                0.03    0.01    2659/2659        resample_particles_dag(Particle*, unsigned long, double*, int, int) [12]
+[16]     1.7    0.03    0.01    2659         stratified_resample_base(double const*, unsigned long, double*, unsigned long*) [16]
+                0.01    0.00    2659/2659        stratified_random(unsigned long, double*) [22]
+                0.00    0.00    2659/61514699     copy(double const*, unsigned long, double*) [13]
+-----------------------------------------------
+                0.00    0.00   27656/42721314     compute_steering_base(double const*, double*, unsigned long, double, double, double, double, int*, double*) [31]
+                0.00    0.00   27658/42721314     predict_true_base(double, double, double, double, double*) [30]
+                0.00    0.00 3752000/42721314     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.00    0.00 3752000/42721314     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+                0.01    0.00 7504000/42721314     compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [9]
+                0.03    0.00 27658000/42721314     predict_base(Particle*, double, double, double*, double, double) [5]
+[17]     1.7    0.04    0.00 42721314         pi_to_pi_base(double) [17]
+-----------------------------------------------
+                0.01    0.00 3752000/11256000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.01    0.00 3752000/11256000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+                0.01    0.00 3752000/11256000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+[18]     1.7    0.04    0.00 11256000         sub(double const*, double const*, unsigned long, double*) [18]
+-----------------------------------------------
+                0.03    0.00 3752000/3752000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+[19]     1.3    0.03    0.00 3752000         scal(double const*, unsigned long, double, double*) [19]
+-----------------------------------------------
+                0.00    0.00   27658/31437658     multivariate_gauss(double const*, double const*, double*) [28]
+                0.00    0.00 3752000/31437658     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.02    0.00 27658000/31437658     multivariate_gauss_base(double const*, double const*, double*) [7]
+[20]     1.1    0.03    0.00 31437658         llt_2x2(double const*, double*) [20]
+-----------------------------------------------
+                                                 <spontaneous>
+[21]     0.6    0.02    0.00                 scal_memory(double const*, unsigned long, double, double*) [21]
+-----------------------------------------------
+                0.01    0.00    2659/2659        stratified_resample_base(double const*, unsigned long, double*, unsigned long*) [16]
+[22]     0.4    0.01    0.00    2659         stratified_random(unsigned long, double*) [22]
+-----------------------------------------------
+                                                 <spontaneous>
+[23]     0.4    0.01    0.00                 stranspose_2x2(double*) [23]
+-----------------------------------------------
+                                                 <spontaneous>
+[24]     0.4    0.01    0.00                 icopy(int const*, unsigned long, int*) [24]
+-----------------------------------------------
+                                                 <spontaneous>
+[25]     0.2    0.01    0.00                 _mvadd_2x2_avx_v1(double __vector(4), double __vector(2), double __vector(2)) [25]
+-----------------------------------------------
+                0.00    0.00  348260/348260      resample_particles_dag(Particle*, unsigned long, double*, int, int) [12]
+[26]     0.1    0.00    0.00  348260         copyParticle(Particle const*, Particle*) [26]
+                0.00    0.00 1044780/61514699     copy(double const*, unsigned long, double*) [13]
+-----------------------------------------------
+                0.00    0.00   28000/28000       observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[27]     0.0    0.00    0.00   28000         add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.00    0.00   58000/72740000     mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*) [3]
+                0.00    0.00   86000/61514699     copy(double const*, unsigned long, double*) [13]
+                0.00    0.00   29000/26293000     transpose(double const*, unsigned long, unsigned long, double*) [15]
+                0.00    0.00   29000/3781000     set_xfi(Particle*, double*, int) [44]
+                0.00    0.00   29000/3781000     set_Pfi(Particle*, double*, int) [43]
+-----------------------------------------------
+                0.00    0.00   27658/27658       add_control_noise_base(double, double, double*, int, double*) [29]
+[28]     0.0    0.00    0.00   27658         multivariate_gauss(double const*, double const*, double*) [28]
+                0.00    0.00   27658/27690976     fill_rand(double*, unsigned long, double, double) [14]
+                0.00    0.00   27658/31437658     llt_2x2(double const*, double*) [20]
+                0.00    0.00   27658/27658       mvadd_2x2(double const*, double const*, double*) [46]
+-----------------------------------------------
+                0.00    0.00   27658/27658       predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+[29]     0.0    0.00    0.00   27658         add_control_noise_base(double, double, double*, int, double*) [29]
+                0.00    0.00   27658/27658       multivariate_gauss(double const*, double const*, double*) [28]
+-----------------------------------------------
+                0.00    0.00   27658/27658       predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+[30]     0.0    0.00    0.00   27658         predict_true_base(double, double, double, double, double*) [30]
+                0.00    0.00   27658/42721314     pi_to_pi_base(double) [17]
+-----------------------------------------------
+                0.00    0.00   27658/27658       predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [4]
+[31]     0.0    0.00    0.00   27658         compute_steering_base(double const*, double*, unsigned long, double, double, double, double, int*, double*) [31]
+                0.00    0.00   27656/42721314     pi_to_pi_base(double) [17]
+-----------------------------------------------
+                0.00    0.00    2659/2659        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[32]     0.0    0.00    0.00    2659         add_feature_active_memory(Particle*, double (*) [2], unsigned long, double*) [32]
+                0.00    0.00    5318/27690976     fill_rand(double*, unsigned long, double, double) [14]
+-----------------------------------------------
+                0.00    0.00    1000/1000        setup_initial_particles(Particle**, double**, unsigned long, double const*) [34]
+[33]     0.0    0.00    0.00    1000         initParticle_prealloc(Particle*, int, double const*) [33]
+                0.00    0.00    1000/61514699     copy(double const*, unsigned long, double*) [13]
+                0.00    0.00    2000/4000        aligned_alloc_size(unsigned long, unsigned long) [47]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[34]     0.0    0.00    0.00       1         setup_initial_particles(Particle**, double**, unsigned long, double const*) [34]
+                0.00    0.00    1000/1000        initParticle_prealloc(Particle*, int, double const*) [33]
+                0.00    0.00    1000/1000        initParticle(Particle*, int, double const*) [53]
+-----------------------------------------------
+                0.00    0.00 3752000/7504000     KF_cholesky_update_base(double*, double*, double const*, double const*, double const*) [8]
+                0.00    0.00 3752000/7504000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+[42]     0.0    0.00    0.00 7504000         inv_2x2(double const*, double*) [42]
+-----------------------------------------------
+                0.00    0.00   29000/3781000     add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.00    0.00 3752000/3781000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+[43]     0.0    0.00    0.00 3781000         set_Pfi(Particle*, double*, int) [43]
+-----------------------------------------------
+                0.00    0.00   29000/3781000     add_feature_base(Particle*, double (*) [2], unsigned long, double*) [27]
+                0.00    0.00 3752000/3781000     feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [6]
+[44]     0.0    0.00    0.00 3781000         set_xfi(Particle*, double*, int) [44]
+-----------------------------------------------
+                0.00    0.00 3752000/3752000     compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [10]
+[45]     0.0    0.00    0.00 3752000         determinant_2x2(double const*) [45]
+-----------------------------------------------
+                0.00    0.00   27658/27658       multivariate_gauss(double const*, double const*, double*) [28]
+[46]     0.0    0.00    0.00   27658         mvadd_2x2(double const*, double const*, double*) [46]
+-----------------------------------------------
+                0.00    0.00    2000/4000        initParticle_prealloc(Particle*, int, double const*) [33]
+                0.00    0.00    2000/4000        initParticle(Particle*, int, double const*) [53]
+[47]     0.0    0.00    0.00    4000         aligned_alloc_size(unsigned long, unsigned long) [47]
+-----------------------------------------------
+                0.00    0.00    3457/3457        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[48]     0.0    0.00    0.00    3457         get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2]) [48]
+                0.00    0.00    3457/3457        get_visible_landmarks_base(double const*, double, double const*, unsigned long, double**, int*, unsigned long*) [49]
+                0.00    0.00    2659/2659        compute_range_bearing_base(double const*, double const*, unsigned long, double (*) [2]) [52]
+-----------------------------------------------
+                0.00    0.00    3457/3457        get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2]) [48]
+[49]     0.0    0.00    0.00    3457         get_visible_landmarks_base(double const*, double, double const*, unsigned long, double**, int*, unsigned long*) [49]
+-----------------------------------------------
+                0.00    0.00    2659/2659        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[50]     0.0    0.00    0.00    2659         data_associate_known_base(double const (*) [2], int const*, unsigned long, int*, int, double (*) [2], int*, unsigned long*, double (*) [2], unsigned long*) [50]
+-----------------------------------------------
+                0.00    0.00    2659/2659        observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [2]
+[51]     0.0    0.00    0.00    2659         add_observation_noise_base(double (*) [2], unsigned long, double const*, int) [51]
+-----------------------------------------------
+                0.00    0.00    2659/2659        get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2]) [48]
+[52]     0.0    0.00    0.00    2659         compute_range_bearing_base(double const*, double const*, unsigned long, double (*) [2]) [52]
+-----------------------------------------------
+                0.00    0.00    1000/1000        setup_initial_particles(Particle**, double**, unsigned long, double const*) [34]
+[53]     0.0    0.00    0.00    1000         initParticle(Particle*, int, double const*) [53]
+                0.00    0.00    2000/4000        aligned_alloc_size(unsigned long, unsigned long) [47]
+-----------------------------------------------
+                0.00    0.00    1000/1000        cleanup_particles(Particle**, double**) [166]
+[54]     0.0    0.00    0.00    1000         delParticleMembers(Particle*) [54]
+-----------------------------------------------
+                0.00    0.00     113/113         std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > std::__copy_move_a<false, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >(std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >) [56]
+[55]     0.0    0.00    0.00     113         void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [55]
+-----------------------------------------------
+                0.00    0.00      57/57          read_input_file_and_scale(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**, double**, unsigned long&, unsigned long&) [87]
+[56]     0.0    0.00    0.00      57         std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > std::__copy_move_a<false, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >(std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >) [56]
+                0.00    0.00     113/113         void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&) [55]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[57]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z11add_featureP8ParticlePA2_dmPd [57]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[58]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z13fastslam1_simPdmmS_mmPP8ParticlePS_ [58]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[59]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z14compute_weightP8ParticlePA2_dmPiPdS2_PA6_dPA4_dS8_ [59]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[60]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z14feature_updateP8ParticlePA2_dPimPdS2_PA6_dPA4_dS8_ [60]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[61]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z14predict_updatePdmdS_dmS_PiS_P8Particle [61]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[62]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z15read_input_fileNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPPdS6_RmS7_ [62]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[63]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z16get_observationsPKddS0_mPiPmPA2_d [63]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[64]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z17add_control_noiseddPdiS_ [64]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[65]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z17compute_jacobiansP8ParticlePimPdPA2_dPA6_dPA4_dS8_ [65]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[66]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z17setup_initial_Q_Rv [66]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[67]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z17stratified_randommPd [67]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[68]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z18KF_cholesky_updatePdS_PKdS1_S1_ [68]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[69]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z18multivariate_gaussPKdS0_Pd [69]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[70]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z18resample_particlesP8ParticlemPdii [70]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[71]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z19stratified_resamplePKdmPdPm [71]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[72]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z19tscheb_dsines_flopsPdmS_ [72]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[73]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z20data_associate_knownPA2_KdPKimPiiPA2_dS4_PmS6_S7_ [73]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[74]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z21add_observation_noisePA2_dmPKdi [74]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[75]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z21initParticle_preallocP8ParticleiPKd [75]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[76]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z5printPKdmmRSo [76]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[77]     0.0    0.00    0.00       1         _GLOBAL__sub_I__Z7predictP8ParticleddPddd [77]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[78]     0.0    0.00    0.00       1         _GLOBAL__sub_I_main [78]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[79]     0.0    0.00    0.00       1         _GLOBAL__sub_I_read_rand_cntr [79]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[80]     0.0    0.00    0.00       1         _GLOBAL__sub_I_two_pi_vec [80]
+-----------------------------------------------
+                0.00    0.00       1/1           __libc_csu_init [382]
+[81]     0.0    0.00    0.00       1         _GLOBAL__sub_I_xv [81]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[82]     0.0    0.00    0.00       1         setup_landmarks(int**, int**, unsigned long) [82]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[83]     0.0    0.00    0.00       1         cleanup_landmarks(int**, int**) [83]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[84]     0.0    0.00    0.00       1         setup_initial_Q_R() [84]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[85]     0.0    0.00    0.00       1         setup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**, unsigned long) [85]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[86]     0.0    0.00    0.00       1         cleanup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**) [86]
+-----------------------------------------------
+                0.00    0.00       1/1           read_input_file(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, double**, double**, unsigned long&, unsigned long&) [148]
+[87]     0.0    0.00    0.00       1         read_input_file_and_scale(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**, double**, unsigned long&, unsigned long&) [87]
+                0.00    0.00      57/57          std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > std::__copy_move_a<false, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >(std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >) [56]
+-----------------------------------------------
+                0.00    0.00       1/1           fastslam1_sim_base(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) [1]
+[88]     0.0    0.00    0.00       1         avx_xorshift128plus_init(unsigned long, unsigned long) [clone .constprop.0] [88]
+-----------------------------------------------
+
+ This table describes the call tree of the program, and was sorted by
+ the total amount of time spent in each function and its children.
+
+ Each entry in this table consists of several lines.  The line with the
+ index number at the left hand margin lists the current function.
+ The lines above it list the functions that called this function,
+ and the lines below it list the functions this one called.
+ This line lists:
+     index	A unique number given to each element of the table.
+		Index numbers are sorted numerically.
+		The index number is printed next to every function name so
+		it is easier to look up where the function is in the table.
+
+     % time	This is the percentage of the `total' time that was spent
+		in this function and its children.  Note that due to
+		different viewpoints, functions excluded by options, etc,
+		these numbers will NOT add up to 100%.
+
+     self	This is the total amount of time spent in this function.
+
+     children	This is the total amount of time propagated into this
+		function by its children.
+
+     called	This is the number of times the function was called.
+		If the function called itself recursively, the number
+		only includes non-recursive calls, and is followed by
+		a `+' and the number of recursive calls.
+
+     name	The name of the current function.  The index number is
+		printed after it.  If the function is a member of a
+		cycle, the cycle number is printed between the
+		function's name and the index number.
+
+
+ For the function's parents, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the function into this parent.
+
+     children	This is the amount of time that was propagated from
+		the function's children into this parent.
+
+     called	This is the number of times this parent called the
+		function `/' the total number of times the function
+		was called.  Recursive calls to the function are not
+		included in the number after the `/'.
+
+     name	This is the name of the parent.  The parent's index
+		number is printed after it.  If the parent is a
+		member of a cycle, the cycle number is printed between
+		the name and the index number.
+
+ If the parents of the function cannot be determined, the word
+ `<spontaneous>' is printed in the `name' field, and all the other
+ fields are blank.
+
+ For the function's children, the fields have the following meanings:
+
+     self	This is the amount of time that was propagated directly
+		from the child into the function.
+
+     children	This is the amount of time that was propagated from the
+		child's children to the function.
+
+     called	This is the number of times the function called
+		this child `/' the total number of times the child
+		was called.  Recursive calls by the child are not
+		listed in the number after the `/'.
+
+     name	This is the name of the child.  The child's index
+		number is printed after it.  If the child is a
+		member of a cycle, the cycle number is printed
+		between the name and the index number.
+
+ If there are any cycles (circles) in the call graph, there is an
+ entry for the cycle-as-a-whole.  This entry shows who called the
+ cycle (as parents) and the members of the cycle (as children.)
+ The `+' recursive calls entry shows the number of function calls that
+ were internal to the cycle, and the calls entry for each member shows,
+ for that member, how many times it was called from other members of
+ the cycle.
+
+Copyright (C) 2012-2015 Free Software Foundation, Inc.
+
+Copying and distribution of this file, with or without modification,
+are permitted in any medium without royalty provided the copyright
+notice and this notice are preserved.
+
+Index by function name
+
+  [57] _GLOBAL__sub_I__Z11add_featureP8ParticlePA2_dmPd [53] initParticle(Particle*, int, double const*) [8] KF_cholesky_update_base(double*, double*, double const*, double const*, double const*)
+  [58] _GLOBAL__sub_I__Z13fastslam1_simPdmmS_mmPP8ParticlePS_ [5] predict_base(Particle*, double, double, double*, double, double) [7] multivariate_gauss_base(double const*, double const*, double*)
+  [59] _GLOBAL__sub_I__Z14compute_weightP8ParticlePA2_dmPiPdS2_PA6_dPA4_dS8_ [17] pi_to_pi_base(double) [34] setup_initial_particles(Particle**, double**, unsigned long, double const*)
+  [60] _GLOBAL__sub_I__Z14feature_updateP8ParticlePA2_dPimPdS2_PA6_dPA4_dS8_ [23] stranspose_2x2(double*) [16] stratified_resample_base(double const*, unsigned long, double*, unsigned long*)
+  [61] _GLOBAL__sub_I__Z14predict_updatePdmdS_dmS_PiS_P8Particle [45] determinant_2x2(double const*) [32] add_feature_active_memory(Particle*, double (*) [2], unsigned long, double*)
+  [62] _GLOBAL__sub_I__Z15read_input_fileNSt7__cxx1112basic_stringIcSt11char_traitsIcESaIcEEEPPdS6_RmS7_ [82] setup_landmarks(int**, int**, unsigned long) [50] data_associate_known_base(double const (*) [2], int const*, unsigned long, int*, int, double (*) [2], int*, unsigned long*, double (*) [2], unsigned long*)
+  [63] _GLOBAL__sub_I__Z16get_observationsPKddS0_mPiPmPA2_d [27] add_feature_base(Particle*, double (*) [2], unsigned long, double*) [87] read_input_file_and_scale(std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, int, double**, double**, unsigned long&, unsigned long&)
+  [64] _GLOBAL__sub_I__Z17add_control_noiseddPdiS_ [25] _mvadd_2x2_avx_v1(double __vector(4), double __vector(2), double __vector(2)) [51] add_observation_noise_base(double (*) [2], unsigned long, double const*, int)
+  [65] _GLOBAL__sub_I__Z17compute_jacobiansP8ParticlePimPdPA2_dPA6_dPA4_dS8_ [83] cleanup_landmarks(int**, int**) [52] compute_range_bearing_base(double const*, double const*, unsigned long, double (*) [2])
+  [66] _GLOBAL__sub_I__Z17setup_initial_Q_Rv [30] predict_true_base(double, double, double, double, double*) [49] get_visible_landmarks_base(double const*, double, double const*, unsigned long, double**, int*, unsigned long*)
+  [67] _GLOBAL__sub_I__Z17stratified_randommPd [84] setup_initial_Q_R() [11] add(double const*, double const*, unsigned long, double*)
+  [68] _GLOBAL__sub_I__Z18KF_cholesky_updatePdS_PKdS1_S1_ [22] stratified_random(unsigned long, double*) [3] mul(double const*, double const*, unsigned long, unsigned long, unsigned long, double*)
+  [69] _GLOBAL__sub_I__Z18multivariate_gaussPKdS0_Pd [47] aligned_alloc_size(unsigned long, unsigned long) [18] sub(double const*, double const*, unsigned long, double*)
+  [70] _GLOBAL__sub_I__Z18resample_particlesP8ParticlemPdii [54] delParticleMembers(Particle*) [13] copy(double const*, unsigned long, double*)
+  [71] _GLOBAL__sub_I__Z19stratified_resamplePKdmPdPm [28] multivariate_gauss(double const*, double const*, double*) [19] scal(double const*, unsigned long, double, double*)
+  [72] _GLOBAL__sub_I__Z19tscheb_dsines_flopsPdmS_ [85] setup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**, unsigned long) [24] icopy(int const*, unsigned long, int*)
+  [73] _GLOBAL__sub_I__Z20data_associate_knownPA2_KdPKimPiiPA2_dS4_PmS6_S7_ [10] compute_weight_base(Particle*, double (*) [2], unsigned long, int*, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [42] inv_2x2(double const*, double*)
+  [74] _GLOBAL__sub_I__Z21add_observation_noisePA2_dmPKdi [6] feature_update_base(Particle*, double (*) [2], int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [20] llt_2x2(double const*, double*)
+  [75] _GLOBAL__sub_I__Z21initParticle_preallocP8ParticleiPKd [2] observe_update_base(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) [43] set_Pfi(Particle*, double*, int)
+  [76] _GLOBAL__sub_I__Z5printPKdmmRSo [4] predict_update_base(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) [44] set_xfi(Particle*, double*, int)
+  [77] _GLOBAL__sub_I__Z7predictP8ParticleddPddd [86] cleanup_measurements(double (**) [2], double (**) [2], double (**) [2], int**, int**) [14] fill_rand(double*, unsigned long, double, double)
+  [78] _GLOBAL__sub_I_main    [31] compute_steering_base(double const*, double*, unsigned long, double, double, double, double, int*, double*) [46] mvadd_2x2(double const*, double const*, double*)
+  [79] _GLOBAL__sub_I_read_rand_cntr [48] get_observations_base(double const*, double, double const*, unsigned long, int*, unsigned long*, double (*) [2]) [15] transpose(double const*, unsigned long, unsigned long, double*)
+  [80] _GLOBAL__sub_I_two_pi_vec [33] initParticle_prealloc(Particle*, int, double const*) [88] avx_xorshift128plus_init(unsigned long, unsigned long) [clone .constprop.0]
+  [81] _GLOBAL__sub_I_xv      [29] add_control_noise_base(double, double, double*, int, double*) [55] void std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > >::_M_realloc_insert<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&>(__gnu_cxx::__normal_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >*, std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >, std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > const&)
+  [21] scal_memory(double const*, unsigned long, double, double*) [9] compute_jacobians_base(Particle*, int*, unsigned long, double*, double (*) [2], double (*) [6], double (*) [4], double (*) [4]) [56] std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > std::__copy_move_a<false, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > > >(std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::istream_iterator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, char, std::char_traits<char>, long>, std::back_insert_iterator<std::vector<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> >, std::allocator<std::__cxx11::basic_string<char, std::char_traits<char>, std::allocator<char> > > > >)
+  [26] copyParticle(Particle const*, Particle*) [12] resample_particles_dag(Particle*, unsigned long, double*, int, int)

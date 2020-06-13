@@ -8,3 +8,29 @@ build
 doc
 .DS_Store
 *-checkpoint.ipynb
+src/fastslam1/placeholder
+src/build*
+callgrind*
+*.mp4
+*.log
+*.ipynb
+src/benchis
+visualization/New Text Document (2).txt
+visualization/New Text Document (3).txt
+visualization/New Text Document.txt
+visualization/final_data/approximation.csv
+visualization/final_data/benchmark_fastslam1.csv
+visualization/final_data/benchmark.csv
+visualization/final_data/fastslam1_feature.csv
+visualization/final_data/fastslam1_particle.csv
+visualization/final_data/fastslam1_VP_particle.csv
+visualization/final_data/observe_update_scale_features.csv
+visualization/final_data/observe_update_scale_particles.csv
+visualization/final_data/predict_update_scale_particles.csv
+visualization/final_data/predict_update_VP_scale_particles.csv
+visualization/final_data/resample_particles_scale_particles.csv
+visualization/final_data/sin_benchmark.csv
+visualization/polybox/approximation.csv
+visualization/polybox/benchmark.csv
+visualization/polybox/fastslam1_particle_cycle.csv
+visualization/polybox/trigonometry_benchmark.csv

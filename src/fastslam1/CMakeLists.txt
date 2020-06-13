@@ -15,7 +15,17 @@ target_link_libraries(FasterSlamLib PUBLIC
 add_executable(FasterSlamExe
   main.cpp
 )
+
 target_link_libraries(FasterSlamExe PUBLIC
+  FasterSlamCore
+  FasterSlamLib
+)
+
+add_executable(FasterSlamVPExe
+  main_VP.cpp
+)
+
+target_link_libraries(FasterSlamVPExe PUBLIC
   FasterSlamCore
   FasterSlamLib
 )

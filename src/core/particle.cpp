@@ -1,5 +1,7 @@
 #include "particle.h"
 #include "linalg.h"
+#include "alignment_utils.h"
+#include <cstdlib>
 
 /*****************************************************************************
  * OPTIMIZATION STATUS
@@ -29,14 +31,14 @@ void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial) 
 	for (int i = 0; i<9;i++) {
 		p->Pv[i] = 0.0;
 	}
-	p->xf = static_cast<double *>(aligned_alloc(32, 2* Nf * sizeof(double)));
+	p->xf = (double *) aligned_alloc(32, aligned_alloc_size(2*Nf*sizeof(double), 32));
     if (p->xf == NULL) {
         free (p);  // \todo is this correct? What if particle is statically allocated...
 		return;
 	}
 	// Try to allocate Pf, free structure if fail.
 
-	p->Pf = static_cast<double *>(aligned_alloc(32, 4* Nf * sizeof(double)));
+	p->Pf = (double *) aligned_alloc(32, aligned_alloc_size(4*Nf*sizeof(double), 32));
 	if (p->Pf == NULL) {
 		free(p->xf);
         free (p);
@@ -48,8 +50,8 @@ void initParticle_prealloc(Particle* p, const int Nf, const double* xv_initial) 
 }
 
 void initParticle(Particle* p, const int Nf, const double* xv_initial) {
-	p->xv = (double*) aligned_alloc (32, 3 * sizeof (double)); //NEW
-	p->Pv = (double*) aligned_alloc (32, 9 * sizeof (double)); //NEW
+	p->xv = (double*) aligned_alloc (32, aligned_alloc_size(3*sizeof(double), 32));
+	p->Pv = (double*) aligned_alloc (32, aligned_alloc_size(9*sizeof(double), 32));
 	initParticle_prealloc(p, Nf, xv_initial);
 }
 
@@ -67,7 +69,7 @@ void copyParticle(const Particle* p_ref, Particle* p_target) {
 
 Particle* newParticle(const int Nf, const double* xv_initial) {
 	// Try to allocate particle structure.
-	Particle* p = (Particle*) aligned_alloc(32, sizeof(Particle));
+	Particle* p = (Particle*) aligned_alloc(32, aligned_alloc_size(sizeof(Particle), 32));
 	if (p == NULL) {
         return NULL;
 	}

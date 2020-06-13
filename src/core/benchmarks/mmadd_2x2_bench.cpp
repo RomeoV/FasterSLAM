@@ -12,9 +12,19 @@
 using namespace boost::ut;  // provides `expect`, `""_test`, etc
 using namespace boost::ut::bdd;  // provides `given`, `when`, `then`
 
-auto data_loader(const double *A, const double *B, double *C) {
-    double CC[4] = {5., 5., 5., 5.};
-    std::copy(CC, CC+4, C);
+__m256d data_loader( __m256d a, __m256d b, __m256d c ) { 
+    return a;
+}
+
+__m256d mmadd_2x2_reg( __m256d a, __m256d b, __m256d c ) {
+    double A[4] __attribute__ ((aligned(32)));
+    double B[4] __attribute__ ((aligned(32)));
+    double C[4] __attribute__ ((aligned(32)));
+    _mm256_store_pd(A, a);
+    _mm256_store_pd(B, b);
+    _mm256_store_pd(C, c);
+    mmadd_2x2(A, B, C);
+    return a; //dummy
 }
 
 int main() {
@@ -22,58 +32,24 @@ int main() {
     // Test: 
     double A[4] __attribute__ ((aligned(32))) = {0., 1., 2., 3.};
     double B[4] __attribute__ ((aligned(32))) = {1., 2., 3., 4.};
-    double C[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
-    double C1[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
-    double C2[4] __attribute__ ((aligned(32))) = {0., 0., 0., 0.};
-    double D[4] __attribute__ ((aligned(32))) = {8., 9., 16., 21.};
+    double C[4] __attribute__ ((aligned(32))) = {8., 9., 16., 21.};
 
-    data_loader(A, B, C);
-    mmadd_2x2(A, B, C);
+    __m256d const a = _mm256_load_pd( A );
+    __m256d const b = _mm256_load_pd( B );
+    __m256d const c = _mm256_load_pd( C );
+
+    Benchmark<decltype(&_mmadd_2x2_avx_v2)> bench("mmadd_2x2 benchmark");
     
-#ifdef __FMA__
-    data_loader(A, B, C1);
-    mmadd_2x2_avx_v1(A, B, C1);
+    bench.data_loader = data_loader;
     
-    data_loader(A, B, C2);
-    mmadd_2x2_avx_v2(A, B, C2);
-#endif
-     
-    double error = 0.0;
-    for (int i = 0; i < 4; i++) {
-        error = fabs(  C[i] - D[i] ); expect(that % error < 1e-16) << i;
-        error = fabs( C1[i] - D[i] ); expect(that % error < 1e-16) << i + 10;
-        error = fabs( C2[i] - D[i] ); expect(that % error < 1e-16) << i + 20;
-    }
-    
-    Benchmark<decltype(&mmadd_2x2)> bench("mmadd_2x2 benchmark");
-    double work = 16; 
-    bench.data_loader = data_loader; // To guarantee same inputs
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    bench.add_function(&mmadd_2x2, "base", work);
-#ifdef __FMA__
-    bench.add_function(&mmadd_2x2_avx_v1, "avx_v1", work);
-    bench.add_function(&mmadd_2x2_avx_v2, "avx_v2", work);
-#endif
+    bench.add_function(&mmadd_2x2_reg, "base", 0.0);
+    bench.funcFlops[0] = mmadd_2x2_flops(A, B, C);
+    bench.funcBytes[0] = 8*mmadd_2x2_memory(A, B, C);
+    bench.add_function(&_mmadd_2x2_avx_v2, "avx_v2", 0.0);
+    bench.funcFlops[1] = mmadd_2x2_flops(A, B, C);
+    bench.funcBytes[1] = 8*mmadd_2x2_memory(A, B, C);
 
-    bench.run_benchmark(A, B, C);
-
-    /*
-    // Alternative (much slower here, but nicer to look at. Generally useful if you want to average over a few inputs). Yields averages over all runs.
-    
-    Benchmark<decltype(&pi_to_pi)> bench("pi_to_pi Benchmark");
-
-    // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
-    // First function should always be the base case you want to benchmark against!
-    bench.add_function(&pi_to_pi, "pi_to_pi", 6);
-    bench.add_function(&pi_to_pi_fmod, "pi_to_pi_fmod", 6);
-
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
-    for (int i = 0; i<N; i++) {
-        // You could set the data_loader function here to generate new input. bench.data_loader =&my_load_func_i...
-        bench.run_benchmark(angles[i]);
-    }
-    */
+    bench.run_benchmark(a, b, c);
 
     return 0;
 }

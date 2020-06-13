@@ -29,6 +29,7 @@ void data_loader(double* wp, size_t N_waypoints, double V, double* Q, double dt,
     pcg32_srand(1,1);
 
     avx2_pcg32_srand(init_state, init_seq);
+    avx_xorshift128plus_init(1,1);
     xtrue[0]= 1.0;
     xtrue[1]= 2.0;
     xtrue[2]= 0.0;
@@ -54,6 +55,30 @@ void init_particles_contigous(Particle* particle, double* xv, double* Pv, const 
         particle[i].Pv = Pv+9*i;
         initParticle_prealloc(particle+i, 0, xv+3*i);
     } 
+}
+
+// I will try to add this as smooth as possible to the benchmark, but for now do this
+void set_work(Benchmark<decltype(&predict_update)>& bench, 
+                double* wp, size_t N_waypoints, double V, double* Q, double dt, 
+                    size_t N, Vector3d xtrue, int* iwp, double* G, Particle* particles) {
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    bench.funcFlops[0] = predict_update_base_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    bench.funcBytes[0] = 8 * predict_update_base_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    for (int i = 1; i < bench.numFuncs; i++) {
+        bench.funcFlops[i] = predict_update_active_flops(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        bench.funcBytes[i] = 8* predict_update_active_memory(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+        data_loader(wp, N_waypoints, V, Q, dt, N, xtrue, iwp, G, particles);
+    }
+}
+
+
+void cleanup_members(Particle* particles, int N) {
+    for(int i = 0; i<N; i++) {
+        delParticleMembers_prealloc(particles+i);
+    }
 }
 
 int main() {
@@ -101,7 +126,7 @@ int main() {
     expect(that % fabs(G - G_exact) < 1.0e-10) << "G";
     expect(that % (iwp - iwp_exact) == 0 ) << "iwp";
 
-    for (int i =0; i<N; i++) {
+    for (int i=0; i<N; i++) {
         expect(that % fabs(particles[i].xv[0] - particles_exact[i].xv[0]) < 1.0e-6) <<particles[i].xv[0] << "x"<< i <<particles_exact[i].xv[0];
         expect(that % fabs(particles[i].xv[1] - particles_exact[i].xv[1]) < 1.0e-6) <<particles[i].xv[1] << "y"<< i <<particles_exact[i].xv[1];
         expect(that % fabs(particles[i].xv[2] - particles_exact[i].xv[2]) < 1.0e-6);
@@ -114,26 +139,65 @@ int main() {
     // Initialize the benchmark struct by declaring the type of the function you want to benchmark
     Benchmark<decltype(&predict_update_base)> bench("predict_update Benchmark");
 
-    double work = 41 + N*19; // best
-
     bench.data_loader = data_loader;
     // Add your functions to the struct, give it a name (Should describe improvements there) and yield the flops this function has to do (=work)
     // First function should always be the base case you want to benchmark against!
-    bench.add_function(&predict_update_base, "base", work);
-    bench.add_function(&predict_update_fast, "fast", work);
+    bench.add_function(&predict_update_base, "base", 0.0);
+    bench.add_function(&predict_update_old, "functions inplace", 0.0);
+    bench.add_function(&predict_update_sine, "sine approximation", 0.0);
+    bench.add_function(&predict_update_simd, "basic simd", 0.0);
+    bench.add_function(&predict_update_fast_scalar_pipi, "simd + scalar pi_to_pi", 0.0);
+    bench.add_function(&predict_update_fast_normal_rand, "simd opt. normal rand", 0.0);
+    bench.add_function(&predict_update_fast_plain, "simd opt. fast rand", 0.0);
+    bench.add_function(&predict_update_fast, "fastest", 0.0);
 
-    //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    //Run the benchmark: give the inputs of your function in the same order as they are defined.
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
-    G= M_PI;
+    G = M_PI;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
     minD = 5.0;
     //Run the benchmark: give the inputs of your function in the same order as they are defined. 
+    set_work(bench, wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles) ;
     bench.run_benchmark(wp, N_waypoints, V, *Q, dt, N, xtrue, &iwp, &G,particles);
 
     //bench.destructor_output = false;
     bench.details();
+
+    Benchmark<decltype(&predict_update_base)> bench_scale("predict_update with Particles");
+    bench_scale.add_function(&predict_update_base, "base", 0.0);
+    bench_scale.add_function(&predict_update_old, "functions inplace", 0.0);
+    bench_scale.add_function(&predict_update_sine, "sine approximation", 0.0);
+    bench_scale.add_function(&predict_update_simd, "basic simd", 0.0);
+    bench_scale.add_function(&predict_update_fast_scalar_pipi, "simd + scalar pi_to_pi", 0.0);
+    bench_scale.add_function(&predict_update_fast_normal_rand, "simd opt. normal rand", 0.0);
+    bench_scale.add_function(&predict_update_fast_plain, "simd opt. fast rand", 0.0);
+    bench_scale.add_function(&predict_update_fast, "fastest", 0.0);
+    bench_scale.add_function(&predict_update_fast, "fast", 0.0);
+
+    bench_scale.data_loader = data_loader;
+    bench_scale.csv_path = "predict_update_scale_particles.csv";
+    bench_scale.csv_output = false;
+
+    int Np = 100;
+    for (int i = 0; i< 9; i++) {
+        const int Npi = std::pow(2,i) * Np;
+        Particle* ps = (Particle*) aligned_alloc(32, Npi * sizeof(Particle));
+        double xvi[3*Npi] __attribute__ ((aligned(32)));
+        double Pvi[9*Npi] __attribute__ ((aligned(32)));
+        fill(xvi, 2*Npi, 0.0);
+        init_particles_contigous(ps, xvi, Pvi, Npi);
+        set_work(bench_scale, wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
+        bench_scale.run_name = std::to_string(Npi);
+        bench_scale.run_benchmark(wp, N_waypoints, V, *Q, dt, Npi, xtrue, &iwp, &G,ps);
+        cleanup_members(ps, Npi);
+        free(ps);
+    }
+    bench_scale.details();
+    bench_scale.write_csv_details();
     return 0;
 }

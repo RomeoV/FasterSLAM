@@ -1,0 +1,395 @@
+100 Particles:
+
+==21157== Cachegrind, a cache and branch-prediction profiler
+==21157== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21157== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21157== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100
+==21157== 
+--21157-- warning: L3 cache found, using its data for the LL simulation.
+==21157== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21157== 
+==21157== I   refs:      230,591,707
+==21157== I1  misses:          8,309
+==21157== LLi misses:          2,928
+==21157== I1  miss rate:        0.00%
+==21157== LLi miss rate:        0.00%
+==21157== 
+==21157== D   refs:      129,012,063  (98,706,440 rd   + 30,305,623 wr)
+==21157== D1  misses:      1,539,135  ( 1,065,925 rd   +    473,210 wr)
+==21157== LLd misses:         13,411  (     8,991 rd   +      4,420 wr)
+==21157== D1  miss rate:         1.2% (       1.1%     +        1.6%  )
+==21157== LLd miss rate:         0.0% (       0.0%     +        0.0%  )
+==21157== 
+==21157== LL refs:         1,547,444  ( 1,074,234 rd   +    473,210 wr)
+==21157== LL misses:          16,339  (    11,919 rd   +      4,420 wr)
+==21157== LL miss rate:          0.0% (       0.0%     +        0.0%  )
+
+200 Particles:
+
+==21181== Cachegrind, a cache and branch-prediction profiler
+==21181== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21181== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21181== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 200
+==21181== 
+--21181-- warning: L3 cache found, using its data for the LL simulation.
+==21181== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21181== 
+==21181== I   refs:      445,136,198
+==21181== I1  misses:         17,139
+==21181== LLi misses:          2,922
+==21181== I1  miss rate:        0.00%
+==21181== LLi miss rate:        0.00%
+==21181== 
+==21181== D   refs:      248,196,542  (191,785,846 rd   + 56,410,696 wr)
+==21181== D1  misses:      3,276,395  (  2,049,231 rd   +  1,227,164 wr)
+==21181== LLd misses:         16,229  (      8,991 rd   +      7,238 wr)
+==21181== D1  miss rate:         1.3% (        1.1%     +        2.2%  )
+==21181== LLd miss rate:         0.0% (        0.0%     +        0.0%  )
+==21181== 
+==21181== LL refs:         3,293,534  (  2,066,370 rd   +  1,227,164 wr)
+==21181== LL misses:          19,151  (     11,913 rd   +      7,238 wr)
+==21181== LL miss rate:          0.0% (        0.0%     +        0.0%  )
+
+400 Particles:
+
+==21192== Cachegrind, a cache and branch-prediction profiler
+==21192== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21192== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21192== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 400
+==21192== 
+--21192-- warning: L3 cache found, using its data for the LL simulation.
+==21192== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21192== 
+==21192== I   refs:      828,799,799
+==21192== I1  misses:         17,486
+==21192== LLi misses:          2,931
+==21192== I1  miss rate:        0.00%
+==21192== LLi miss rate:        0.00%
+==21192== 
+==21192== D   refs:      475,316,945  (370,627,419 rd   + 104,689,526 wr)
+==21192== D1  misses:      8,099,422  (  6,640,490 rd   +   1,458,932 wr)
+==21192== LLd misses:         21,856  (      8,991 rd   +      12,865 wr)
+==21192== D1  miss rate:         1.7% (        1.8%     +         1.4%  )
+==21192== LLd miss rate:         0.0% (        0.0%     +         0.0%  )
+==21192== 
+==21192== LL refs:         8,116,908  (  6,657,976 rd   +   1,458,932 wr)
+==21192== LL misses:          24,787  (     11,922 rd   +      12,865 wr)
+==21192== LL miss rate:          0.0% (        0.0%     +         0.0%  )
+
+800 Particles:
+
+==21203== Cachegrind, a cache and branch-prediction profiler
+==21203== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21203== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21203== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 800
+==21203== 
+--21203-- warning: L3 cache found, using its data for the LL simulation.
+==21203== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21203== 
+==21203== I   refs:      1,594,426,924
+==21203== I1  misses:           18,699
+==21203== LLi misses:            2,935
+==21203== I1  miss rate:          0.00%
+==21203== LLi miss rate:          0.00%
+==21203== 
+==21203== D   refs:        929,689,349  (728,043,911 rd   + 201,645,438 wr)
+==21203== D1  misses:       23,109,222  ( 21,400,377 rd   +   1,708,845 wr)
+==21203== LLd misses:           33,182  (      8,991 rd   +      24,191 wr)
+==21203== D1  miss rate:           2.5% (        2.9%     +         0.8%  )
+==21203== LLd miss rate:           0.0% (        0.0%     +         0.0%  )
+==21203== 
+==21203== LL refs:          23,127,921  ( 21,419,076 rd   +   1,708,845 wr)
+==21203== LL misses:            36,117  (     11,926 rd   +      24,191 wr)
+==21203== LL miss rate:            0.0% (        0.0%     +         0.0%  )
+
+1600 Particles:
+
+==21291== Cachegrind, a cache and branch-prediction profiler
+==21291== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21291== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21291== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1600
+==21291== 
+--21291-- warning: L3 cache found, using its data for the LL simulation.
+==21291== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21291== 
+==21291== I   refs:      3,355,764,586
+==21291== I1  misses:           20,423
+==21291== LLi misses:            2,930
+==21291== I1  miss rate:          0.00%
+==21291== LLi miss rate:          0.00%
+==21291== 
+==21291== D   refs:      1,875,030,739  (1,476,530,084 rd   + 398,500,655 wr)
+==21291== D1  misses:       44,841,157  (   41,800,662 rd   +   3,040,495 wr)
+==21291== LLd misses:           55,832  (        8,991 rd   +      46,841 wr)
+==21291== D1  miss rate:           2.4% (          2.8%     +         0.8%  )
+==21291== LLd miss rate:           0.0% (          0.0%     +         0.0%  )
+==21291== 
+==21291== LL refs:          44,861,580  (   41,821,085 rd   +   3,040,495 wr)
+==21291== LL misses:            58,762  (       11,921 rd   +      46,841 wr)
+==21291== LL miss rate:            0.0% (          0.0%     +         0.0%  )
+
+6400 Particles:
+
+==21303== Cachegrind, a cache and branch-prediction profiler
+==21303== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21303== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21303== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 6400
+==21303== 
+--21303-- warning: L3 cache found, using its data for the LL simulation.
+==21303== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21303== brk segment overflow in thread #1: can't grow to 0x4a49000
+==21303== (see section Limitations in user manual)
+==21303== NOTE: further instances of this message will not be shown
+
+==21303== 
+==21303== I   refs:      16,333,122,252
+==21303== I1  misses:            18,842
+==21303== LLi misses:             6,724
+==21303== I1  miss rate:           0.00%
+==21303== LLi miss rate:           0.00%
+==21303== 
+==21303== D   refs:       7,883,558,344  (6,310,168,696 rd   + 1,573,389,648 wr)
+==21303== D1  misses:       181,187,547  (  172,069,016 rd   +     9,118,531 wr)
+==21303== LLd misses:         5,115,248  (      757,503 rd   +     4,357,745 wr)
+==21303== D1  miss rate:            2.3% (          2.7%     +           0.6%  )
+==21303== LLd miss rate:            0.1% (          0.0%     +           0.3%  )
+==21303== 
+==21303== LL refs:          181,206,389  (  172,087,858 rd   +     9,118,531 wr)
+==21303== LL misses:          5,121,972  (      764,227 rd   +     4,357,745 wr)
+==21303== LL miss rate:             0.0% (          0.0%     +           0.3%  )
+
+12800 Particles:
+
+==21314== Cachegrind, a cache and branch-prediction profiler
+==21314== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21314== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21314== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 12800
+==21314== 
+--21314-- warning: L3 cache found, using its data for the LL simulation.
+==21314== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21314== brk segment overflow in thread #1: can't grow to 0x4a34000
+==21314== (see section Limitations in user manual)
+==21314== NOTE: further instances of this message will not be shown
+==21314== 
+==21314== I   refs:      26,460,677,121
+==21314== I1  misses:            15,963
+==21314== LLi misses:             7,424
+==21314== I1  miss rate:           0.00%
+==21314== LLi miss rate:           0.00%
+==21314== 
+==21314== D   refs:      14,842,782,967  (11,720,619,520 rd   + 3,122,163,447 wr)
+==21314== D1  misses:       377,486,557  (   366,871,108 rd   +    10,615,449 wr)
+==21314== LLd misses:        24,487,837  (    21,751,698 rd   +     2,736,139 wr)
+==21314== D1  miss rate:            2.5% (           3.1%     +           0.3%  )
+==21314== LLd miss rate:            0.2% (           0.2%     +           0.1%  )
+==21314== 
+==21314== LL refs:          377,502,520  (   366,887,071 rd   +    10,615,449 wr)
+==21314== LL misses:         24,495,261  (    21,759,122 rd   +     2,736,139 wr)
+==21314== LL miss rate:             0.1% (           0.1%     +           0.1%  )
+
+
+
+==21806== Cachegrind, a cache and branch-prediction profiler
+==21806== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21806== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21806== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 1
+==21806== 
+--21806-- warning: L3 cache found, using its data for the LL simulation.
+==21806== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21806== 
+==21806== I   refs:      230,587,092
+==21806== I1  misses:         10,281
+==21806== LLi misses:          2,929
+==21806== I1  miss rate:        0.00%
+==21806== LLi miss rate:        0.00%
+==21806== 
+==21806== D   refs:      129,009,881  (98,706,130 rd   + 30,303,751 wr)
+==21806== D1  misses:      1,528,753  ( 1,056,825 rd   +    471,928 wr)
+==21806== LLd misses:         13,405  (     8,987 rd   +      4,418 wr)
+==21806== D1  miss rate:         1.2% (       1.1%     +        1.6%  )
+==21806== LLd miss rate:         0.0% (       0.0%     +        0.0%  )
+==21806== 
+==21806== LL refs:         1,539,034  ( 1,067,106 rd   +    471,928 wr)
+==21806== LL misses:          16,334  (    11,916 rd   +      4,418 wr)
+==21806== LL miss rate:          0.0% (       0.0%     +        0.0%  )
+
+
+
+Features:
+
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 5
+==21817== Cachegrind, a cache and branch-prediction profiler
+==21817== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21817== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21817== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 5
+==21817== 
+--21817-- warning: L3 cache found, using its data for the LL simulation.
+==21817== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21817== 
+==21817== I   refs:      568,328,912
+==21817== I1  misses:         18,208
+==21817== LLi misses:          2,932
+==21817== I1  miss rate:        0.00%
+==21817== LLi miss rate:        0.00%
+==21817== 
+==21817== D   refs:      245,995,715  (177,623,746 rd   + 68,371,969 wr)
+==21817== D1  misses:      9,538,818  (  5,453,047 rd   +  4,085,771 wr)
+==21817== LLd misses:         22,509  (      8,987 rd   +     13,522 wr)
+==21817== D1  miss rate:         3.9% (        3.1%     +        6.0%  )
+==21817== LLd miss rate:         0.0% (        0.0%     +        0.0%  )
+==21817== 
+==21817== LL refs:         9,557,026  (  5,471,255 rd   +  4,085,771 wr)
+==21817== LL misses:          25,441  (     11,919 rd   +     13,522 wr)
+==21817== LL miss rate:          0.0% (        0.0%     +        0.0%  )
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 8
+==21828== Cachegrind, a cache and branch-prediction profiler
+==21828== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21828== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21828== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 8
+==21828== 
+--21828-- warning: L3 cache found, using its data for the LL simulation.
+==21828== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21828== 
+==21828== I   refs:      756,222,003
+==21828== I1  misses:         14,179
+==21828== LLi misses:          2,935
+==21828== I1  miss rate:        0.00%
+==21828== LLi miss rate:        0.00%
+==21828== 
+==21828== D   refs:      314,900,795  (226,016,000 rd   + 88,884,795 wr)
+==21828== D1  misses:     11,147,243  (  6,582,496 rd   +  4,564,747 wr)
+==21828== LLd misses:         29,343  (      8,987 rd   +     20,356 wr)
+==21828== D1  miss rate:         3.5% (        2.9%     +        5.1%  )
+==21828== LLd miss rate:         0.0% (        0.0%     +        0.0%  )
+==21828== 
+==21828== LL refs:        11,161,422  (  6,596,675 rd   +  4,564,747 wr)
+==21828== LL misses:          32,278  (     11,922 rd   +     20,356 wr)
+==21828== LL miss rate:          0.0% (        0.0%     +        0.0%  )
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 15
+==21839== Cachegrind, a cache and branch-prediction profiler
+==21839== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21839== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21839== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 100 15
+==21839== 
+--21839-- warning: L3 cache found, using its data for the LL simulation.
+==21839== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21839== 
+==21839== I   refs:      1,123,492,032
+==21839== I1  misses:           10,689
+==21839== LLi misses:            2,934
+==21839== I1  miss rate:          0.00%
+==21839== LLi miss rate:          0.00%
+==21839== 
+==21839== D   refs:        450,856,532  (326,897,832 rd   + 123,958,700 wr)
+==21839== D1  misses:        5,346,238  (  4,207,787 rd   +   1,138,451 wr)
+==21839== LLd misses:           45,337  (      8,987 rd   +      36,350 wr)
+==21839== D1  miss rate:           1.2% (        1.3%     +         0.9%  )
+==21839== LLd miss rate:           0.0% (        0.0%     +         0.0%  )
+==21839== 
+==21839== LL refs:           5,356,927  (  4,218,476 rd   +   1,138,451 wr)
+==21839== LL misses:            48,271  (     11,921 rd   +      36,350 wr)
+==21839== LL miss rate:            0.0% (        0.0%     +         0.0%  )
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 15
+==21850== Cachegrind, a cache and branch-prediction profiler
+==21850== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21850== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21850== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 15
+==21850== 
+--21850-- warning: L3 cache found, using its data for the LL simulation.
+==21850== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21850== brk segment overflow in thread #1: can't grow to 0x4a49000
+==21850== (see section Limitations in user manual)
+==21850== NOTE: further instances of this message will not be shown
+^C==21850== 
+==21850== Process terminating with default action of signal 2 (SIGINT)
+==21850==    at 0x1127F7: observe_update_fast_fullavx(double*, int, double*, double*, int*, int*, int*, double (*) [2], unsigned long*, double (*) [2], int*, double (*) [2], Particle*, double*) (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21850==    by 0x10DCD2: fastslam1_sim_active(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21850==    by 0x10A275: main (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21850== 
+==21850== I   refs:      2,671,639,009
+==21850== I1  misses:            9,573
+==21850== LLi misses:            3,435
+==21850== I1  miss rate:          0.00%
+==21850== LLi miss rate:          0.00%
+==21850== 
+==21850== D   refs:      1,080,114,496  (787,240,231 rd   + 292,874,265 wr)
+==21850== D1  misses:       12,785,640  ( 12,308,267 rd   +     477,373 wr)
+==21850== LLd misses:        4,424,005  (  4,192,874 rd   +     231,131 wr)
+==21850== D1  miss rate:           1.2% (        1.6%     +         0.2%  )
+==21850== LLd miss rate:           0.4% (        0.5%     +         0.1%  )
+==21850== 
+==21850== LL refs:          12,795,213  ( 12,317,840 rd   +     477,373 wr)
+==21850== LL misses:         4,427,440  (  4,196,309 rd   +     231,131 wr)
+==21850== LL miss rate:            0.1% (        0.1%     +         0.1%  )
+
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 1
+==21861== Cachegrind, a cache and branch-prediction profiler
+==21861== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21861== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21861== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 1
+==21861== 
+--21861-- warning: L3 cache found, using its data for the LL simulation.
+==21861== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+^C==21861== 
+==21861== Process terminating with default action of signal 2 (SIGINT)
+==21861==    at 0x1103B7: predict_update_fast(double*, unsigned long, double, double*, double, unsigned long, double*, int*, double*, Particle*) (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21861==    by 0x10D990: fastslam1_sim_active(double*, unsigned long, unsigned long, double*, unsigned long, unsigned long, Particle**, double**) (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21861==    by 0x10A275: main (in /mnt/c/Users/phill/Projects/team040/src/build/fastslam1/FasterSlamExe)
+==21861== 
+==21861== I   refs:      299,787,067
+==21861== I1  misses:          8,064
+==21861== LLi misses:          2,796
+==21861== I1  miss rate:        0.00%
+==21861== LLi miss rate:        0.00%
+==21861== 
+==21861== D   refs:      181,708,675  (141,995,426 rd   + 39,713,249 wr)
+==21861== D1  misses:      4,311,826  (  4,147,082 rd   +    164,744 wr)
+==21861== LLd misses:         24,833  (      8,979 rd   +     15,854 wr)
+==21861== D1  miss rate:         2.4% (        2.9%     +        0.4%  )
+==21861== LLd miss rate:         0.0% (        0.0%     +        0.0%  )
+==21861== 
+==21861== LL refs:         4,319,890  (  4,155,146 rd   +    164,744 wr)
+==21861== LL misses:          27,629  (     11,775 rd   +     15,854 wr)
+==21861== LL miss rate:          0.0% (        0.0%     +        0.0%  )
+
+phil@DESKTOP-PA157JU:/mnt/c/Users/phill/Projects/team040/src/build$ valgrind --tool=cachegrind ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 6
+==21872== Cachegrind, a cache and branch-prediction profiler
+==21872== Copyright (C) 2002-2017, and GNU GPL'd, by Nicholas Nethercote et al.
+==21872== Using Valgrind-3.13.0 and LibVEX; rerun with -h for copyright info
+==21872== Command: ./fastslam1/FasterSlamExe ../input_data/example_webmap.mat 1 1000 6
+==21872== 
+--21872-- warning: L3 cache found, using its data for the LL simulation.
+==21872== error calling PR_SET_PTRACER, vgdb might block
+Running Active
+==21872== brk segment overflow in thread #1: can't grow to 0x4a39000
+==21872== (see section Limitations in user manual)
+==21872== NOTE: further instances of this message will not be shown
+==21872== 
+==21872== I   refs:      5,336,867,773
+==21872== I1  misses:           15,767
+==21872== LLi misses:            6,687
+==21872== I1  miss rate:          0.00%
+==21872== LLi miss rate:          0.00%
+==21872== 
+==21872== D   refs:      2,335,159,252  (1,743,048,102 rd   + 592,111,150 wr)
+==21872== D1  misses:       47,124,517  (   36,462,261 rd   +  10,662,256 wr)
+==21872== LLd misses:        9,576,010  (    1,845,920 rd   +   7,730,090 wr)
+==21872== D1  miss rate:           2.0% (          2.1%     +         1.8%  )
+==21872== LLd miss rate:           0.4% (          0.1%     +         1.3%  )
+==21872== 
+==21872== LL refs:          47,140,284  (   36,478,028 rd   +  10,662,256 wr)
+==21872== LL misses:         9,582,697  (    1,852,607 rd   +   7,730,090 wr)
+==21872== LL miss rate:            0.1% (          0.0%     +         1.3%  )

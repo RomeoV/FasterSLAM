@@ -14,6 +14,7 @@
 #include "predict_update.h"
 #include "observe_update.h"
 #include "configfile.h"
+#include "get_observations.h"
 #include "fastslam1_utils.h"
 
 #include "read_input_file.h"
@@ -25,8 +26,8 @@
 
 int main (int argc, char *argv[])
 {
-	std::string output_filename = "robot_trace.json";
-    std::string ground_truth_filename = "ground_truth.json";
+	std::string output_filename = "robot_trace_old.json";
+    std::string ground_truth_filename = "ground_truth_old.json";
 
     double *lm; // landmark positions
 	double *wp; // way points
@@ -61,16 +62,11 @@ int main (int argc, char *argv[])
     Vector2d *zn;
     int *idf, *ftag_visible;
     setup_measurements(&z, &zf, &zn, &idf, &ftag_visible, N_features);
- 
-    if ( SWITCH_SEED_RANDOM ) {
-        srand( SWITCH_SEED_RANDOM );
-    }	
+
+    srand( SWITCH_SEED_RANDOM );
+
 #ifdef __AVX2__
-    uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
     avx_xorshift128plus_init(1,1);
-    uint64_t init_seq[8] = {1,3,5,7,9,11,13,15};
-    pcg32_srand(1,1);
-    avx2_pcg32_srand(init_state, init_seq);
 #endif
 
     double dt        = DT_CONTROLS; // change in time btw predicts
@@ -85,9 +81,11 @@ int main (int argc, char *argv[])
     bool observe=true;
 	int id=0;
     int observe_id =0;
+
     nlohmann::json particle_trace = {{"timesteps", nlohmann::json::array()}};
 	nlohmann::json ground_truth = {{"timesteps", nlohmann::json::array()}};
 	ground_truth.update(ground_truth_keypoints_json(wp, lm, N_waypoints, N_features));
+
 
     // Main loop
     while ( iwp != -1 ) {
@@ -112,7 +110,7 @@ int main (int argc, char *argv[])
         // Prediction
         //////////////////////////////////////////////////////////////////
 
-        predict_update(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
+        predict_update_fast(wp, N_waypoints, V, *Q, dt, NPARTICLES, xtrue, &iwp, &G,particles);
 
         /////////////////////////////////////////////////////////////////
 
@@ -130,6 +128,14 @@ int main (int argc, char *argv[])
             // Observation
             //////////////////////////////////////////////////////////////
 
+            for (size_t i = 0; i < N_features; i++) {
+                ftag_visible[i] = ftag[i];
+            }
+
+            //z is the range and bearing of the observed landmark
+    
+            get_observations_base(xtrue, MAX_RANGE, lm, N_features, ftag_visible, &Nf_visible, z); // Nf_visible = number of visible features
+
             observe_update(lm, N_features, xtrue, *R, ftag, 
             da_table, ftag_visible, z, &Nf_visible, zf, idf, 
             zn, particles, weights);
@@ -141,7 +147,6 @@ int main (int argc, char *argv[])
     // Write JSON
     std::ofstream of(output_filename);
     of << particle_trace;
-
 
 	std::ofstream of_gt(ground_truth_filename);
     of_gt << ground_truth;

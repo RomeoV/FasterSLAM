@@ -8,6 +8,9 @@
  ****************************************************************************/
 
 
+
+
+
 void multivariate_gauss(cVector2d x, cMatrix2d P, Vector2d result) {
     multivariate_gauss_active(x, P, result);
 }
@@ -31,6 +34,16 @@ void multivariate_gauss_base(cVector2d x, cMatrix2d P, Vector2d result)
     //! result = S*X + x
     mul(S, X, 2, 2, 1, result);
     add(result, x, 2, result);
+}
+
+double multivariate_gauss_base_flops(cVector2d x, cMatrix2d P, Vector2d result) {
+    Matrix2d S;
+    return llt_2x2_flops(P,S) + fill_rand_flops(result,2,-1.0,1.0) + mul_flops(S,result,2,2,1,result) +
+    add_flops(result, result, 2, result);
+}
+
+double multivariate_gauss_base_memory(cVector2d x, cMatrix2d P, Vector2d result) {
+    return 2* (2+4+2) +4 +2;
 }
 
 
@@ -75,4 +88,12 @@ void multivariate_gauss_active(cVector2d x, cMatrix2d P, Vector2d result)
     result[0] = x[0];
     result[1] = x[1];
     mvadd_2x2(S, X, result);
+}
+
+double multivariate_gauss_active_flops(cVector2d x, cMatrix2d P, Vector2d result) {
+    return multivariate_gauss_base_flops(x, P, result);
+}
+
+double multivariate_gauss_active_memory(cVector2d x, cMatrix2d P, Vector2d result) {
+    return multivariate_gauss_base_memory(x, P, result);
 }

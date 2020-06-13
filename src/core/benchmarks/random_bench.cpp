@@ -102,8 +102,8 @@ int main() {
 
     avx_fast_srand(0,10,100,1000);
 
-    uint64_t init_state[8] = {1,1,1,1,1,1,1,1};
-    uint64_t init_seq[8] = {1,2,3,4,5,6,7,8};
+    uint64_t init_state[8] __attribute__((aligned(32))) = {1,1,1,1,1,1,1,1};
+    uint64_t init_seq[8] __attribute__((aligned(32))) = {1,2,3,4,5,6,7,8};
 
 
     avx2_pcg32_srand(init_state, init_seq);
@@ -145,6 +145,8 @@ int main() {
     bench.add_function(avx_fast_rand_lambda, "avx_fast_rand", work);
     bench.add_function(avx2_pcg32_lambda, "avx2_pcg32", work);
     bench.run_benchmark(recipient, N);
+
+    free(recipient);
 
 #else
 #warning "Disabled trigonometry_bench because AVX2 is not supported!"

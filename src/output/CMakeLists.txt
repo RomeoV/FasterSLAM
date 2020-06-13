@@ -23,10 +23,31 @@ add_subdirectory(tests)
 add_executable(FasterSlamVisualize
   visualize.cpp
 )
+
+add_executable(FasterSlamVisualize_VP
+  visualize_VP.cpp
+)
+
 target_link_libraries(FasterSlamVisualize PUBLIC
   FasterSlamCore
   FasterSlamLib
   nlohmann_json
   FasterSlamOutput
+  FasterSlamUtils
+)
+
+target_link_libraries(FasterSlamVisualize_VP PUBLIC
+  FasterSlamCore
+  FasterSlamLib
+  nlohmann_json
+  FasterSlamOutput
+  FasterSlamUtils
+)
+
+add_executable(FlopEstimates
+  flop_estimates.cpp
+)
+
+target_link_libraries(FlopEstimates PUBLIC
   FasterSlamUtils
 )
