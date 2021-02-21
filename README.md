@@ -4,6 +4,12 @@
 [![pipeline status](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/pipeline.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
 [![coverage report](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/coverage.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
 
+| Performance increase: ~60x over C++ implementation using Eigen | Example evaluation on test dataset |
+| ------- | ---- |
+| ![Speedup](./figs/runtime.png) | ![Test run](./figs/VP_trace_small.png) |
+
+See the report for in-depth benchmarks.
+
 #### References
 > Montemerlo, M., Thrun, S., Koller, D., & Wegbreit, B. (2002). FastSLAM: A factored solution to the simultaneous localization and mapping problem. Aaai/iaai, 593598.
 [paper link](https://www.aaai.org/Papers/AAAI/2002/AAAI02-089.pdf)
