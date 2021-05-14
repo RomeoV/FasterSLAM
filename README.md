@@ -1,13 +1,8 @@
 # FasterSLAM
 > Fast Slam on steroids.
 
-[![pipeline status](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/pipeline.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
-[![coverage report](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/coverage.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
-
-## Report
-Please refer to the [full report](./40_report.pdf) for a detailed description and evaluation of the method.
-
 ## Abstract
+Please refer to the [full report](./40_report.pdf) for a detailed description and evaluation of the method.
 > We propose an optimized implementation of FastSLAM with known data association for a single core.
 A benchmark driven optimization approach is presented, with detailed studies on function performance and input scaling.
 We introduce a new memory layout for the particles and a memory-efficient resampling method.
