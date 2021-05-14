@@ -4,11 +4,19 @@
 [![pipeline status](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/pipeline.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
 [![coverage report](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/badges/master/coverage.svg)](https://gitlab.inf.ethz.ch/COURSE-ASL2020/team040/-/commits/master)
 
+## Report
+Please refer to the [full report](./40_report.pdf) for a detailed description and evaluation of the method.
+
+## Abstract
+> We propose an optimized implementation of FastSLAM with known data association for a single core.
+A benchmark driven optimization approach is presented, with detailed studies on function performance and input scaling.
+We introduce a new memory layout for the particles and a memory-efficient resampling method.
+Densely vectorized AVX2-implementations of the prediction and observation step, based on 2D linear algebra kernels, trigonometric function approximations and pseudo-random number generation, are presented. We discuss the efficiency of our proposed optimizations in terms of performance and operational intensity.
+To validate our method, we test our proposed method on the Victoria Park Dataset.
+
 | Performance increase: ~60x over C++ implementation using Eigen | Example evaluation on test dataset |
 | ------- | ---- |
 | ![Speedup](./figs/runtime.png) | ![Test run](./figs/VP_trace_small.png) |
-
-See the report for in-depth benchmarks.
 
 #### References
 > Montemerlo, M., Thrun, S., Koller, D., & Wegbreit, B. (2002). FastSLAM: A factored solution to the simultaneous localization and mapping problem. Aaai/iaai, 593598.
